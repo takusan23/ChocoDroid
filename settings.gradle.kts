@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ChocoDroid"
 include(":app")
+include(":htmlparse")

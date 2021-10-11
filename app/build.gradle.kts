@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":htmlparse"))
 
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
@@ -64,7 +65,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
 
-    testImplementation("junit:junit:4.+")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.15.1")
+
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }

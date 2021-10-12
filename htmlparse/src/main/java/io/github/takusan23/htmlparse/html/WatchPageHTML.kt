@@ -16,12 +16,16 @@ object WatchPageHTML {
      * 視聴ページから情報を取得する
      *
      * 失敗時は IOException / HttpStatusCodeException をスローします
-     * @param videoId 動画ID
+     * @param videoIdOrHttpUrl 動画IDかURL。Https://から始まっている場合はURLと認識します。
      * @return 視聴ページデータ
      * */
-    suspend fun getWatchPage(videoId: String = "0976Z1s0V1A") = withContext(Dispatchers.IO) {
+    suspend fun getWatchPage(videoIdOrHttpUrl: String = "0976Z1s0V1A") = withContext(Dispatchers.IO) {
         val request = Request.Builder().apply {
-            url("https://www.youtube.com/watch?v=$videoId")
+            if (videoIdOrHttpUrl.startsWith("https://")) {
+                url(videoIdOrHttpUrl)
+            } else {
+                url("https://www.youtube.com/watch?v=$videoIdOrHttpUrl")
+            }
             addHeader("User-Agent", SingletonOkHttpClientTool.USER_AGENT)
         }.build()
         val response = SingletonOkHttpClientTool.client.newCall(request).execute()

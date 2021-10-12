@@ -44,8 +44,18 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 miniPlayerState = miniPlayerState,
                 bottomBar = { HomeScreenBottomNavigation() },
                 isShowMiniPlayer = watchPageResponseData.value != null,
-                playerContent = { watchPageResponseData.value?.apply { VideoPlayerUI(this) } },
-                detailContent = { watchPageResponseData.value?.apply { VideoDetailUI(this) } },
+                playerContent = {
+                    // 動画再生
+                    watchPageResponseData.value?.apply {
+                        val exoPlayerComposeController = rememberExoPlayerComposeController(true)
+                        VideoPlayerUI(watchPageResponseData = this, exoPlayerComposeController)
+                        VideoControlUI(watchPageResponseData = this, controller = exoPlayerComposeController, miniPlayerState = miniPlayerState)
+                    }
+                },
+                detailContent = {
+                    // 動画情報
+                    watchPageResponseData.value?.apply { VideoDetailUI(this) }
+                },
                 content = {
                     // 将来的に
                     Scaffold(

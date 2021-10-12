@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.video.VideoSize
+import kotlinx.coroutines.*
 
 /**
  * SurfaceViewとExoPlayer
@@ -67,6 +68,15 @@ class ExoPlayerComposeController(
     /** 読み込み中？ */
     val isLoading = mutableStateOf(false)
 
+    /** 再生時間（ミリ秒）。定期的に更新されます */
+    val currentPosition = mutableStateOf(0L)
+
+    /** 動画時間（ミリ秒）*/
+    val duration = mutableStateOf(0L)
+
+    /** コルーチンスコープ。終了時にキャンセルするため */
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
+
     /** ExoPlayer */
     val exoPlayer = SimpleExoPlayer.Builder(context).build().apply {
         playWhenReady = isDefaultAutoPlay
@@ -84,24 +94,44 @@ class ExoPlayerComposeController(
         override fun onPlaybackStateChanged(playbackState: Int) {
             super.onPlaybackStateChanged(playbackState)
             isLoading.value = playbackState == Player.STATE_BUFFERING
+            duration.value = exoPlayer.duration
         }
 
     }
 
     init {
         exoPlayer.addListener(playerListener)
+        // 再生時間更新用
+        coroutineScope.launch {
+            while (isActive) {
+                delay(100)
+                currentPosition.value = exoPlayer.currentPosition
+            }
+        }
     }
 
-    /** URLをExoPlayerにセットする */
+    /**
+     * URLをExoPlayerにセットする
+     * @param uri 動画URL
+     * */
     fun setMediaItem(uri: String) {
         val mediaItem = MediaItem.fromUri(uri.toUri())
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
     }
 
+    /**
+     * シークする関数
+     * @param position 時間（ミリ秒）
+     * */
+    fun seek(position: Long) {
+        exoPlayer.seekTo(position)
+    }
+
     /** 終了時に呼んでください */
     fun destroy() {
         exoPlayer.release()
+        coroutineScope.cancel()
     }
 
     companion object {

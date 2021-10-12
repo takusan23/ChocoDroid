@@ -49,6 +49,8 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
      * @param videoId 動画ID
      * */
     fun loadWatchPage(videoId: String) {
+        // 再生中なら中止
+        closePlayer()
         // 叩く
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             _isLoadingFlow.emit(true)

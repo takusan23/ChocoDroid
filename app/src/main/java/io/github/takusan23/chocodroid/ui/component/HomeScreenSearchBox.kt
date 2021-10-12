@@ -68,7 +68,7 @@ fun HomeScreenSearchBox(
             ) {
                 if (videoId.isEmpty() || !isFocusTextBox.value) {
                     // ヒント代わり
-                    Text(text = "動画のIDを入力")
+                    Text(text = "動画のID / URL を入力")
                 }
                 BasicTextField(
                     value = videoId,

@@ -39,32 +39,13 @@ fun MiniPlayerScaffold(
     content: @Composable () -> Unit,
 ) {
     // AppbarもBottomNavBarも56.dpらしい
-    val progress = if (isShowMiniPlayer) miniPlayerState.progress.value else 1f
+    val barHeight = 56.dp
+    val progressHeight = barHeight * if (isShowMiniPlayer) miniPlayerState.progress.value else 1f
 
     Scaffold(
         modifier = modifier,
-        topBar = {
-            var topBarHeight = 0f
-            BoxWithConstraints(
-                modifier = if (topBarHeight != 0f) Modifier.height((topBarHeight * progress).dp) else Modifier,
-                content = {
-                    if (topBarHeight == 0f) {
-                        topBarHeight = maxHeight.value
-                    }
-                    topBar()
-                }
-            )
-        },
-        bottomBar = {
-            val bottomBarHeight = remember { mutableStateOf(0.dp) }
-            BoxWithConstraints(
-                // modifier = if (bottomBarHeight.value != 0.dp) Modifier.height(bottomBarHeight.value * progress) else Modifier,
-                content = {
-                    bottomBarHeight.value = maxHeight
-                    bottomBar()
-                }
-            )
-        },
+        topBar = { Box(modifier = Modifier.height(progressHeight)) { topBar() } },
+        bottomBar = { Box(modifier = Modifier.height(progressHeight)) { bottomBar() } },
         snackbarHost = snackbarHost,
         content = {
             // topBar / bottomBar 分のPaddingを足す

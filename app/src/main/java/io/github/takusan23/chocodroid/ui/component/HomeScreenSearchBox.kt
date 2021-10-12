@@ -53,7 +53,8 @@ fun HomeScreenSearchBox(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .height(56.dp)
+            .padding(start = 10.dp, end = 10.dp),
         color = MaterialTheme.colors.primary,
         shape = RoundedCornerShape(50),
     ) {
@@ -74,7 +75,9 @@ fun HomeScreenSearchBox(
                     value = videoId,
                     maxLines = 1,
                     onValueChange = onChangeVideoId,
-                    modifier = Modifier.fillMaxWidth().onFocusChanged { isFocusTextBox.value = it.isFocused }
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isFocusTextBox.value = it.isFocused }
                 )
             }
             IconButton(

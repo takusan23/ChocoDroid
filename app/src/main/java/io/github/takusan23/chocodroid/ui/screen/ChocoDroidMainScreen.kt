@@ -30,7 +30,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
-            // 動画プレイヤー
+
+            // 動画ミニプレイヤー
             val miniPlayerState = rememberMiniPlayerState {
                 // 終了 or コンポーネントが終了 したら
                 if (it == MiniPlayerStateValue.End || it == MiniPlayerStateValue.Destroy) {
@@ -41,19 +42,23 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // MiniPlayerとScaffoldをつなげたもの
             MiniPlayerScaffold(
                 miniPlayerState = miniPlayerState,
-                topBar = { HomeScreenSearchBox(onEnterVideoId = { viewModel.loadWatchPage(it) }) },
                 bottomBar = { HomeScreenBottomNavigation() },
                 isShowMiniPlayer = watchPageResponseData.value != null,
                 playerContent = { watchPageResponseData.value?.apply { VideoPlayerUI(this) } },
                 detailContent = { watchPageResponseData.value?.apply { VideoDetailUI(this) } },
                 content = {
                     // 将来的に
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "工事中")
-                    }
+                    Scaffold(
+                        topBar = { HomeScreenSearchBox(onEnterVideoId = { viewModel.loadWatchPage(it) }) },
+                        content = {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "工事中")
+                            }
+                        }
+                    )
                 }
             )
 

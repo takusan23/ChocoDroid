@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
@@ -89,7 +90,10 @@ fun MiniPlayerCompose(
                 isEnd.value -> MiniPlayerStateValue.End // 終了時
                 else -> MiniPlayerStateValue.Default // 通常時
             }
-            state.onStateChange.invoke(state.currentState)
+            state.onStateChange(state.currentState)
+
+            // 外部にプレイヤーの進捗を公開する
+            state.progress.value = offSetYEx.value / (boxHeight - miniPlayerHeight)
 
             // ミニプレイヤー部分
             Column(
@@ -171,6 +175,12 @@ fun MiniPlayerCompose(
                     }
                 }
             }
+
+            // そもそも表示されなくなったら呼ばれる
+            DisposableEffect(key1 = Unit, effect = {
+                onDispose { state.onStateChange(MiniPlayerStateValue.Destroy) }
+            })
+
         }
     }
 }
@@ -184,7 +194,7 @@ fun MiniPlayerCompose(
  * */
 class MiniPlayerState(
     isMiniPlayer: Boolean = false,
-    val onStateChange: (Int) -> Unit
+    val onStateChange: (Int) -> Unit,
 ) {
     /** ミニプレイヤーにする場合はtrueに */
     val isMiniPlayer = mutableStateOf(isMiniPlayer)
@@ -194,6 +204,9 @@ class MiniPlayerState(
 
     /** プレイヤーの状態 */
     var currentState = MiniPlayerStateValue.Default
+
+    /** プレイヤーの遷移状態。 */
+    val progress = mutableStateOf(0f)
 
     companion object {
 
@@ -205,7 +218,7 @@ class MiniPlayerState(
          * */
         fun Saver(
             isMiniPlayer: Boolean,
-            onStateChange: (Int) -> Unit
+            onStateChange: (Int) -> Unit,
         ): Saver<MiniPlayerState, *> = Saver(
             save = { isMiniPlayer },
             restore = { restoreIsMiniPlayer -> MiniPlayerState(restoreIsMiniPlayer, onStateChange) }
@@ -226,7 +239,7 @@ class MiniPlayerState(
 @Composable
 fun rememberMiniPlayerState(
     isMiniPlayer: Boolean = false,
-    onStateChange: (Int) -> Unit = {}
+    onStateChange: (Int) -> Unit = {},
 ): MiniPlayerState {
     return rememberSaveable(
         saver = MiniPlayerState.Saver(isMiniPlayer, onStateChange),
@@ -244,4 +257,8 @@ object MiniPlayerStateValue {
 
     /** プレイヤーが終了したらこれ */
     const val End = 2
+
+    /** DisposableEffectが呼ばれたらこれ */
+    const val Destroy = 4
+
 }

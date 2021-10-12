@@ -7,9 +7,9 @@ import java.util.ArrayList
  *
  * なお 文字列を逆順にする、指定した文字列の部分を取得する、文字を入れ替える が実装できれば勝ち
  *
- * ソースはようつべ視聴ページ内base.jsの、gB.prototype.getAvailableAudioTracks の近くに書いてある。
+ * ソースはようつべ視聴ページ内base.jsの、prototype.getAvailableAudioTracks の近くに書いてある。
  *
- * そしてこれらの関数にブレークポイントをおいて、どっから呼ばれてるか探します。これらの関数が何回か呼ばれてる箇所があるのでそれです。
+ * そしたら、上記の関数たちがとこから呼ばれているかを調べるために「a.split("");」で検索をかけます。
  *
  * 作成時：2021/10/11
  * */
@@ -22,10 +22,16 @@ object DecryptMagic {
      * */
     fun decrypt(signatureText: String): String {
         val textList = signatureText.toCharArray().toMutableList()
-        swap(textList, 66)
-        reverse(textList)
-        swap(textList, 11)
-        substring(textList, 2)
+
+        substring(textList, 1)
+        swap(textList, 53)
+        substring(textList, 3)
+        swap(textList, 10)
+        swap(textList, 5)
+        swap(textList, 12)
+        substring(textList, 3)
+        reverse(textList, 37)
+
         return textList.joinToString(separator = "")
     }
 
@@ -36,8 +42,8 @@ object DecryptMagic {
         a[b % a.size] = c
     }
 
-    /** 文字を逆順に */
-    private fun reverse(a: MutableList<Char>) {
+    /** 文字を逆順に。第２引数は使ってないけど他と合わせるために */
+    private fun reverse(a: MutableList<Char>, b: Int) {
         a.reverse()
     }
 

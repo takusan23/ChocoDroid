@@ -36,10 +36,6 @@ fun ExoPlayerComposeUI(controller: ExoPlayerComposeController) {
             .aspectRatio(1.7f),
         contentAlignment = Alignment.Center,
     ) {
-        if (controller.isLoading.value) {
-            // くるくる
-            CircularProgressIndicator()
-        }
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,6 +46,10 @@ fun ExoPlayerComposeUI(controller: ExoPlayerComposeController) {
                 }
             }
         )
+        if (controller.isLoading.value) {
+            // くるくる
+            CircularProgressIndicator()
+        }
     }
 }
 

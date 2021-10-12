@@ -16,8 +16,8 @@ fun HomeScreenBottomNavigation() {
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 0.dp
     ) {
+        BottomNavigationItem(selected = false, onClick = { }, icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = "お気に入り") }, label = { Text(text = "お気に入り") })
         BottomNavigationItem(selected = false, onClick = { }, icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = "キャッシュ") }, label = { Text(text = "キャッシュ") })
         BottomNavigationItem(selected = false, onClick = { }, icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_history_24), contentDescription = "履歴") }, label = { Text(text = "履歴") })
-        BottomNavigationItem(selected = false, onClick = { }, icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_search_24), contentDescription = "検索") }, label = { Text(text = "検索") })
     }
 }

@@ -10,15 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.takusan23.htmlparse.data.WatchPageResponseData
+import io.github.takusan23.htmlparse.html.data.WatchPageData
 
 /**
  * 動画説明部分のUI
  *
- * @param watchPageResponseData 視聴ページレスポンスデータ
+ * @param watchPageData 視聴ページレスポンスデータ
  * */
 @Composable
-fun VideoDetailUI(watchPageResponseData: WatchPageResponseData) {
+fun VideoDetailUI(watchPageData: WatchPageData) {
     Surface(
         color = MaterialTheme.colors.surface,
         modifier = Modifier.fillMaxSize()
@@ -27,12 +27,12 @@ fun VideoDetailUI(watchPageResponseData: WatchPageResponseData) {
             Text(
                 modifier = Modifier.padding(5.dp),
                 fontSize = 20.sp,
-                text = watchPageResponseData.videoDetails.title,
+                text = watchPageData.watchPageJSONResponseData.videoDetails.title,
             )
             Text(
                 modifier = Modifier.padding(5.dp),
                 fontSize = 15.sp,
-                text = watchPageResponseData.videoDetails.shortDescription,
+                text = watchPageData.watchPageJSONResponseData.videoDetails.shortDescription,
             )
         }
     }

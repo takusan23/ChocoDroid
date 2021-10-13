@@ -88,10 +88,7 @@ fun MiniPlayerCompose(
                 else -> MiniPlayerStateValue.Default // 通常時
             }
             // 更新を通知
-            LaunchedEffect(key1 = currentState, block = {
-                println(currentState)
-                state.onStateChange(currentState)
-            })
+            LaunchedEffect(key1 = currentState, block = { state.onStateChange(currentState) })
 
             // 外部にプレイヤーの進捗を公開する
             state.progress.value = offSetYEx.value / (boxHeight - miniPlayerHeight)

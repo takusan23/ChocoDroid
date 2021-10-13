@@ -1,12 +1,15 @@
-package io.github.takusan23.htmlparse.data
+package io.github.takusan23.htmlparse.html.data
 
 import io.github.takusan23.htmlparse.magic.DecryptMagic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.net.URLDecoder
 
+/**
+ * HTML内にあるJSON。動画情報とかURLとか
+ * */
 @Serializable
-data class WatchPageResponseData(
+data class WatchPageJSONResponseData(
     val streamingData: StreamingData,
     val videoDetails: VideoDetails,
 )
@@ -22,30 +25,13 @@ data class StreamingData(
  * 本来は音声と映像が別々になったファイルを読み込むべき
  *
  * @param url 動画URL。[signatureCipher]がnullの場合はそのまま再生できます
- * @param signatureCipher [url]がnullの場合は[decryptionMagic]を呼んで復号化したURLを取得してください。
+ * @param signatureCipher [url]がnullの場合は[WatchPageData.decryptURL]を呼んで復号化したURLを取得してください。
  * */
 @Serializable
 data class StreamingDataFormat(
     val url: String? = null,
     val signatureCipher: String? = null,
-) {
-    /**
-     * [signatureCipher]から正規のURLを作成する。このままではアクセスしても403返ってくるので
-     *
-     * てかそもそもURLの形じゃない
-     * @return [signatureCipher]がnullじゃない場合は正規のURLを返します。
-     * */
-    fun decryptionMagic(): String? {
-        if (signatureCipher == null) return null
-        val params = signatureCipher
-            .split("&")
-            .map { URLDecoder.decode(it.split("=")[1], "utf-8") } // key=value の文字列を value だけにしてパーセントエンコーディングを戻す
-        // 一個目が暗号化の鍵？鍵も加工してURLにつける
-        val decryptKey = DecryptMagic.decrypt(params.first())
-        // URL完成
-        return "${params[2]}&sig=$decryptKey"
-    }
-}
+)
 
 @Serializable
 @SerialName("videoDetails")

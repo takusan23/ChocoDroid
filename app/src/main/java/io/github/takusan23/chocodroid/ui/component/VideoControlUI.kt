@@ -3,7 +3,10 @@ package io.github.takusan23.chocodroid.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Slider
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -16,18 +19,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
-import io.github.takusan23.htmlparse.data.WatchPageResponseData
+import io.github.takusan23.htmlparse.html.data.WatchPageData
 
 /**
  * 動画プレイヤーのUI。重ねる
  *
  * @param controller ExoPlayer操作用
- * @param watchPageResponseData 視聴ページデータ
+ * @param watchPageData 視聴ページデータ
  * @param state ミニプレイヤー操作用
  * */
 @Composable
 fun VideoControlUI(
-    watchPageResponseData: WatchPageResponseData,
+    watchPageData: WatchPageData,
     controller: ExoPlayerComposeController,
     state: MiniPlayerState,
 ) {
@@ -41,7 +44,7 @@ fun VideoControlUI(
                 )
             }
             Text(
-                text = watchPageResponseData.videoDetails.title,
+                text = watchPageData.watchPageJSONResponseData.videoDetails.title,
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp),
                 maxLines = 1,
                 color = Color.White

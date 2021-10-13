@@ -1,5 +1,7 @@
 package io.github.takusan23.htmlparse.magic
 
+import io.github.takusan23.htmlparse.magic.data.AlgorithmFuncNameData
+import io.github.takusan23.htmlparse.magic.data.AlgorithmInvokeData
 import java.util.ArrayList
 
 /**
@@ -19,6 +21,7 @@ object DecryptMagic {
      * sinパラメータの値を作成する
      *
      * @param signatureText 暗号化された文字列
+     * @return URLにsinパラメーターとして付与してください。
      * */
     fun decrypt(signatureText: String): String {
         val textList = signatureText.toCharArray().toMutableList()
@@ -33,6 +36,29 @@ object DecryptMagic {
         reverse(textList, 37)
 
         return textList.joinToString(separator = "")
+    }
+
+    /**
+     * sinパラメータの値を作成する。[AlgorithmParser]を利用した動的JS解析対応版
+     *
+     * @param invokeList 文字列操作を呼ぶ順番に合わせた配列
+     * @param algorithmFuncNameData 文字列操作の関数名
+     * @param signatureText 暗号化された文字列
+     * @return URLにsinパラメーターとして付与してください。
+     * */
+    fun decrypt(signatureText: String, algorithmFuncNameData: AlgorithmFuncNameData, invokeList: List<AlgorithmInvokeData>): String {
+        // 難読化されてる関数名とKotlinで実装した関数本体とのペア
+        val funcNameToFuncMap = listOf(
+            algorithmFuncNameData.swapFuncName to ::swap,
+            algorithmFuncNameData.reverseFuncName to ::reverse,
+            algorithmFuncNameData.substringFuncName to ::substring
+        )
+        // 関数を呼ぶ順番に合わせた配列を使って復号化する
+        val textList = signatureText.toCharArray().toMutableList()
+        invokeList.forEach { invokeData ->
+            funcNameToFuncMap.find { map -> invokeData.funcName == map.first }!!.second.invoke(textList, invokeData.secondParameterValue)
+        }
+        return textList.joinToString("")
     }
 
     /** Charの配列を入れ替える */

@@ -2,17 +2,13 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.unit.dp
 
 /**
  * ミニプレイヤーとScaffoldを連動させたやつ
@@ -40,8 +36,7 @@ fun MiniPlayerScaffold(
     detailContent: @Composable (BoxScope.() -> Unit),
     content: @Composable () -> Unit,
 ) {
-    val alpha = miniPlayerState.progress.value
-    val bottomBarPadding = remember { mutableStateOf(PaddingValues()) }
+    val alpha = kotlin.math.max(miniPlayerState.progress.value, 0f)
     Box {
         Scaffold(
             modifier = modifier,
@@ -49,16 +44,22 @@ fun MiniPlayerScaffold(
             bottomBar = { Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
             content = {
                 // topBar / bottomBar 分のPaddingを足す
-                bottomBarPadding.value = it
                 Box(modifier = Modifier.padding(it)) {
                     content()
-                    MiniPlayerCompose(
-                        state = miniPlayerState,
-                        backgroundContent = { },
-                        playerContent = playerContent,
-                        detailContent = detailContent
-                    )
                 }
+                // 沈んでるので
+                val bottomPadding = if (miniPlayerState.progress.value < 1f) {
+                    (alpha * it.calculateBottomPadding().value).dp
+                } else {
+                    it.calculateBottomPadding()
+                }
+                MiniPlayerCompose(
+                    modifier = Modifier.padding(bottom = bottomPadding), // 沈んでるので
+                    state = miniPlayerState,
+                    backgroundContent = { },
+                    playerContent = playerContent,
+                    detailContent = detailContent
+                )
             }
         )
     }

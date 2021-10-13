@@ -23,19 +23,19 @@ import io.github.takusan23.htmlparse.data.WatchPageResponseData
  *
  * @param controller ExoPlayer操作用
  * @param watchPageResponseData 視聴ページデータ
- * @param miniPlayerState ミニプレイヤー操作用
+ * @param state ミニプレイヤー操作用
  * */
 @Composable
 fun VideoControlUI(
     watchPageResponseData: WatchPageResponseData,
     controller: ExoPlayerComposeController,
-    miniPlayerState: MiniPlayerState,
+    state: MiniPlayerState,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { miniPlayerState.isMiniPlayer.value = !miniPlayerState.isMiniPlayer.value }) {
+            IconButton(onClick = { state.currentState.value = if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) MiniPlayerStateValue.Default else MiniPlayerStateValue.MiniPlayer }) {
                 Icon(
-                    painter = painterResource(id = if (miniPlayerState.isMiniPlayer.value) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
+                    painter = painterResource(id = if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
                     tint = Color.White,
                     contentDescription = null
                 )
@@ -48,7 +48,7 @@ fun VideoControlUI(
             )
         }
         // ミニプレイヤー時はこれ以降表示しない
-        if (miniPlayerState.progress.value < 0.5f) {
+        if (state.progress.value < 0.5f) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

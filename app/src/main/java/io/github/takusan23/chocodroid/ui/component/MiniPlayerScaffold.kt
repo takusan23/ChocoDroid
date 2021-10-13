@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -25,40 +26,38 @@ import androidx.compose.ui.draw.alpha
  * @param content 動画一覧とか、プレイヤーの後ろに置くコンポーネント
  * @param detailContent 動画説明部分
  * @param playerContent 動画再生部分
- * @param snackbarHost SnackbarHost
+ * @param scaffoldState Snackbar表示用
  * @param miniPlayerState ミニプレイヤーの状態とかをみれる
  * */
 @Composable
 fun MiniPlayerScaffold(
     modifier: Modifier = Modifier,
+    scaffoldState: ScaffoldState,
+    miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
     isShowMiniPlayer: Boolean = true,
     bottomBar: @Composable () -> Unit = {},
     playerContent: @Composable (BoxScope.() -> Unit),
     detailContent: @Composable (BoxScope.() -> Unit),
-    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
-    miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
     content: @Composable () -> Unit,
 ) {
-    val alpha = if (isShowMiniPlayer) miniPlayerState.progress.value else 1f
+    val alpha = miniPlayerState.progress.value
     val bottomBarPadding = remember { mutableStateOf(PaddingValues()) }
     Box {
         Scaffold(
             modifier = modifier,
+            scaffoldState = scaffoldState,
             bottomBar = { Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
-            snackbarHost = snackbarHost,
             content = {
                 // topBar / bottomBar 分のPaddingを足す
                 bottomBarPadding.value = it
                 Box(modifier = Modifier.padding(it)) {
                     content()
-                    if (isShowMiniPlayer) {
-                        MiniPlayerCompose(
-                            state = miniPlayerState,
-                            backgroundContent = { },
-                            playerContent = playerContent,
-                            detailContent = detailContent
-                        )
-                    }
+                    MiniPlayerCompose(
+                        state = miniPlayerState,
+                        backgroundContent = { },
+                        playerContent = playerContent,
+                        detailContent = detailContent
+                    )
                 }
             }
         )

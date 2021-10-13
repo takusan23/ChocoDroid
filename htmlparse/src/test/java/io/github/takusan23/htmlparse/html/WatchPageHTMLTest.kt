@@ -14,7 +14,8 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val result = WatchPageHTML.getWatchPage("F2ZAlXrldIM") // トーモ
+            val result = WatchPageHTML.getWatchPage("https://www.youtube.com/watch?v=NyUTYwZe_l4")
+            println(result.streamingData.formats.last().url)
             if (result.streamingData.formats[0].signatureCipher != null) {
                 println(result.streamingData.formats[0].decryptionMagic())
             }

@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,7 @@ fun HomeScreenSearchBox(
 ) {
     // テキストボックスにフォーカスがあたっているか
     val isFocusTextBox = remember { mutableStateOf(false) }
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -70,12 +73,22 @@ fun HomeScreenSearchBox(
                     // ヒント代わり
                     Text(text = "動画のID / URL を入力")
                 }
-                BasicTextField(
-                    value = videoId,
-                    maxLines = 1,
-                    onValueChange = onChangeVideoId,
-                    modifier = Modifier.fillMaxWidth().onFocusChanged { isFocusTextBox.value = it.isFocused }
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    BasicTextField(
+                        modifier = Modifier
+                            .weight(1f)
+                            .onFocusChanged { isFocusTextBox.value = it.isFocused },
+                        value = videoId,
+                        maxLines = 1,
+                        onValueChange = onChangeVideoId,
+                    )
+                    // クリアボタン
+                    if (isFocusTextBox.value) {
+                        IconButton(onClick = { onChangeVideoId("") }) {
+                            Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = "クリア")
+                        }
+                    }
+                }
             }
             IconButton(
                 modifier = Modifier.padding(start = 5.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),

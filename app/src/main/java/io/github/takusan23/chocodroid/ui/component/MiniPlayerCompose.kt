@@ -6,10 +6,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -39,8 +36,8 @@ fun MiniPlayerCompose(
     isDisableMiniPlayer: Boolean = false,
     isFullScreenMode: Boolean = false,
     backgroundContent: @Composable () -> Unit,
-    playerContent: @Composable() (BoxScope.() -> Unit),
-    detailContent: @Composable() (BoxScope.() -> Unit),
+    playerContent: @Composable (BoxScope.() -> Unit),
+    detailContent: @Composable (BoxScope.() -> Unit),
 ) {
     // 親Viewの大きさを取るのに使った。
     BoxWithConstraints(modifier = modifier) {
@@ -59,38 +56,42 @@ fun MiniPlayerCompose(
             val offsetX = remember { mutableStateOf(0f) }
             val offsetY = remember { mutableStateOf(0f) }
 
+            // 現在ミニプレイヤーかどうか
+            val isCurrentMiniPlayer = state.currentState.value == MiniPlayerStateValue.MiniPlayer
+            // 現在終了モードか
+            val isCurrentEndMode = state.currentState.value == MiniPlayerStateValue.End
             // パーセンテージ。offsetYの値が変わると自動で変わる
             val progress = offsetY.value / (boxHeight - miniPlayerHeight)
             // ミニプレイヤーの大きさをFloatで。1fから0.5fまで
             val playerWidthProgress = remember { mutableStateOf(1f) }
-            // ミニプレイヤーにする場合はtrueに
-            val isMiniPlayer = state.isMiniPlayer
-            // 終了ならtrue
-            val isEnd = state.isEnd
             // 操作中はtrue
             val isDragging = remember { mutableStateOf(false) }
             // アニメーションしながら戻る。isMiniPlayerの値が変わると動く
             // ちなみにJetpack Composeのアニメーションはスタートの値の指定がない。スタートの値はアニメーション開始前の値になる。
             val playerWidthEx = animateFloatAsState(targetValue = when {
                 isDragging.value -> playerWidthProgress.value // 操作中なら操作中の場所へ
-                isMiniPlayer.value && !isEnd.value -> 0.5f // ミニプレイヤー遷移命令ならミニプレイヤーのサイズへ
-                isEnd.value -> 0.5f // 終了時はミニプレイヤーのまま
+                isCurrentMiniPlayer && !isCurrentEndMode -> 0.5f // ミニプレイヤー遷移命令ならミニプレイヤーのサイズへ
+                isCurrentEndMode -> 0.5f // 終了時はミニプレイヤーのまま
                 else -> 1f // それ以外
             }, finishedListener = { playerWidthProgress.value = it })
             val offSetYEx = animateFloatAsState(targetValue = when {
                 isDragging.value -> offsetY.value // 操作中なら操作中の値
-                isMiniPlayer.value && !isEnd.value -> (boxHeight - miniPlayerHeight).toFloat() // ミニプレイヤー遷移命令ならミニプレイヤーのサイズへ
-                isEnd.value -> boxHeight.toFloat()
+                isCurrentMiniPlayer && !isCurrentEndMode -> (boxHeight - miniPlayerHeight).toFloat() // ミニプレイヤー遷移命令ならミニプレイヤーのサイズへ
+                isCurrentEndMode -> boxHeight.toFloat()
                 else -> 1f // それ以外
             }, finishedListener = { offsetY.value = it })
 
             // ミニプレイヤーの状態を高階関数で提供する
-            state.currentState = when {
-                isMiniPlayer.value && !isEnd.value -> MiniPlayerStateValue.MiniPlayer // ミニプレイヤー時
-                isEnd.value -> MiniPlayerStateValue.End // 終了時
+            val currentState = when {
+                isCurrentMiniPlayer && !isCurrentEndMode -> MiniPlayerStateValue.MiniPlayer // ミニプレイヤー時
+                isCurrentEndMode -> MiniPlayerStateValue.End // 終了時
                 else -> MiniPlayerStateValue.Default // 通常時
             }
-            state.onStateChange(state.currentState)
+            // 更新を通知
+            LaunchedEffect(key1 = currentState, block = {
+                println(currentState)
+                state.onStateChange(currentState)
+            })
 
             // 外部にプレイヤーの進捗を公開する
             state.progress.value = offSetYEx.value / (boxHeight - miniPlayerHeight)
@@ -145,16 +146,15 @@ fun MiniPlayerCompose(
                                 },
                                 onDragStopped = { velocity ->
                                     // スワイプ速度が渡される
-                                    when {
+                                    state.currentState.value = when {
                                         progress < 0.5f -> {
-                                            isMiniPlayer.value = false
+                                            MiniPlayerStateValue.Default
                                         }
                                         progress in 0.5f..1f -> {
-                                            isMiniPlayer.value = true
+                                            MiniPlayerStateValue.MiniPlayer
                                         }
                                         else -> {
-                                            isMiniPlayer.value = true
-                                            isEnd.value = true
+                                            MiniPlayerStateValue.End
                                         }
                                     }
                                     isDragging.value = false
@@ -175,12 +175,6 @@ fun MiniPlayerCompose(
                     }
                 }
             }
-
-            // そもそも表示されなくなったら呼ばれる
-            DisposableEffect(key1 = Unit, effect = {
-                onDispose { state.onStateChange(MiniPlayerStateValue.Destroy) }
-            })
-
         }
     }
 }
@@ -189,21 +183,15 @@ fun MiniPlayerCompose(
  * ミニプレイヤー操作用クラス？
  * rememberなんちゃらState()をパクりたかった
  *
- * @param isMiniPlayer 初期状態でミニプレイヤーならtrue
- * @param onStateChange 状態が変更されたら呼ばれる関数
+ * @param initialValue 最初の状態。[MiniPlayerStateValue]参照
+ * @param onStateChange 状態が変更されたら呼ばれる関数。同じ値の場合は呼ばれません
  * */
 class MiniPlayerState(
-    isMiniPlayer: Boolean = false,
+    initialValue: Int = MiniPlayerStateValue.Default,
     val onStateChange: (Int) -> Unit,
 ) {
-    /** ミニプレイヤーにする場合はtrueに */
-    val isMiniPlayer = mutableStateOf(isMiniPlayer)
-
-    /** 終了させる場合はtrue */
-    val isEnd = mutableStateOf(false)
-
     /** プレイヤーの状態 */
-    var currentState = MiniPlayerStateValue.Default
+    var currentState = mutableStateOf(initialValue)
 
     /** プレイヤーの遷移状態。 */
     val progress = mutableStateOf(0f)
@@ -213,15 +201,15 @@ class MiniPlayerState(
         /**
          * MiniPlayerStateの状態を保存、または復元するための関数。
          *
-         * @param isMiniPlayer 保存前ミニプレイヤーならtrue
+         * @param currentState 保存前の状態
          * @param onStateChange 復元後の変更コールバック
          * */
         fun Saver(
-            isMiniPlayer: Boolean,
+            currentState: Int = MiniPlayerStateValue.Default,
             onStateChange: (Int) -> Unit,
         ): Saver<MiniPlayerState, *> = Saver(
-            save = { isMiniPlayer },
-            restore = { restoreIsMiniPlayer -> MiniPlayerState(restoreIsMiniPlayer, onStateChange) }
+            save = { currentState },
+            restore = { restoreState -> MiniPlayerState(restoreState, onStateChange) }
         )
 
     }
@@ -238,13 +226,13 @@ class MiniPlayerState(
  * */
 @Composable
 fun rememberMiniPlayerState(
-    isMiniPlayer: Boolean = false,
+    initialState: Int = MiniPlayerStateValue.Default,
     onStateChange: (Int) -> Unit = {},
 ): MiniPlayerState {
     return rememberSaveable(
-        saver = MiniPlayerState.Saver(isMiniPlayer, onStateChange),
+        saver = MiniPlayerState.Saver(initialState, onStateChange),
     ) {
-        MiniPlayerState(isMiniPlayer, onStateChange)
+        MiniPlayerState(initialState, onStateChange)
     }
 }
 

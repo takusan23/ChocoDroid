@@ -2,11 +2,8 @@ package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.takusan23.chocodroid.ui.component.*
@@ -28,28 +25,52 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 再生中の動画情報
             val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
-            // スリープモード制御
-            SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
+            // エラーが流れてくるFlow
+            val errorData = viewModel.errorMessageFlow.collectAsState(initial = null)
+
+            val isShowMiniPlayer = remember {
+                mutableStateOf(0)
+            }
 
             // 動画ミニプレイヤー
-            val miniPlayerState = rememberMiniPlayerState {
-                // 終了 or コンポーネントが終了 したら
-                if (it == MiniPlayerStateValue.End || it == MiniPlayerStateValue.Destroy) {
+            val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateValue.End) {
+                // 終了したら
+                if (it == MiniPlayerStateValue.End) {
                     viewModel.closePlayer()
                 }
             }
 
+            // スリープモード制御
+            SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
+            // 動画情報更新したらミニプレイヤーの状態も変更
+            LaunchedEffect(key1 = watchPageResponseData.value, block = {
+                miniPlayerState.currentState.value = if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End
+            })
+
+            // Snackbar出す
+            val scaffoldState = rememberScaffoldState()
+            LaunchedEffect(key1 = errorData.value, block = {
+                if (errorData.value != null) {
+                    val snackbarHostState = scaffoldState.snackbarHostState
+                    val result = snackbarHostState.showSnackbar(errorData.value!!, actionLabel = "閉じる", duration = SnackbarDuration.Indefinite)
+                    if (result == SnackbarResult.ActionPerformed) {
+                        // 閉じるボタン押したら閉じる
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                    }
+                }
+            })
+
             // MiniPlayerとScaffoldをつなげたもの
             MiniPlayerScaffold(
                 miniPlayerState = miniPlayerState,
+                scaffoldState = scaffoldState,
                 bottomBar = { HomeScreenBottomNavigation() },
-                isShowMiniPlayer = watchPageResponseData.value != null,
                 playerContent = {
                     // 動画再生
                     watchPageResponseData.value?.apply {
                         val exoPlayerComposeController = rememberExoPlayerComposeController(true)
                         VideoPlayerUI(watchPageResponseData = this, exoPlayerComposeController)
-                        VideoControlUI(watchPageResponseData = this, controller = exoPlayerComposeController, miniPlayerState = miniPlayerState)
+                        VideoControlUI(watchPageResponseData = this, controller = exoPlayerComposeController, state = miniPlayerState)
                     }
                 },
                 detailContent = {

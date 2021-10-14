@@ -18,27 +18,6 @@ import java.util.ArrayList
 object DecryptMagic {
 
     /**
-     * sinパラメータの値を作成する
-     *
-     * @param signatureText 暗号化された文字列
-     * @return URLにsinパラメーターとして付与してください。
-     * */
-    fun decrypt(signatureText: String): String {
-        val textList = signatureText.toCharArray().toMutableList()
-
-        substring(textList, 1)
-        swap(textList, 53)
-        substring(textList, 3)
-        swap(textList, 10)
-        swap(textList, 5)
-        swap(textList, 12)
-        substring(textList, 3)
-        reverse(textList, 37)
-
-        return textList.joinToString(separator = "")
-    }
-
-    /**
      * sinパラメータの値を作成する。[AlgorithmParser]を利用した動的JS解析対応版
      *
      * @param invokeList 文字列操作を呼ぶ順番に合わせた配列

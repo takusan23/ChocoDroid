@@ -4,30 +4,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import io.github.takusan23.htmlparse.html.data.WatchPageData
-import io.github.takusan23.htmlparse.html.data.WatchPageJSONResponseData
 
 /**
  * 動画のプレイヤー部分のUI
  *
- * @param watchPageJSONResponseData 動画情報
- * @param exoPlayerComposeController ExoPlayer操作用
+ * @param watchPageData 動画情報
+ * @param quality 画質。nullなら適当に
+ * @param controller ExoPlayer操作用
  * */
 @Composable
 fun VideoPlayerUI(
     watchPageData: WatchPageData,
-    exoPlayerComposeController: ExoPlayerComposeController = rememberExoPlayerComposeController()
+    quality: String? = null,
+    controller: ExoPlayerComposeController = rememberExoPlayerComposeController()
 ) {
-    LaunchedEffect(key1 = watchPageData, block = {
+    LaunchedEffect(key1 = watchPageData, key2 = quality, block = {
         // 動画URLを読み込む
-        val signatureCipher = watchPageData.watchPageJSONResponseData.streamingData.formats[0].signatureCipher
-        val url = if (signatureCipher == null) {
-            watchPageData.watchPageJSONResponseData.streamingData.formats[0].url!!
-        } else {
-            watchPageData.decryptURL(signatureCipher)
-        }
-        exoPlayerComposeController.setMediaItem(url)
+        val mediaData = watchPageData.getMediaUrl("360p")
+        controller.setMediaSourceVideoAudioUriSupportVer(mediaData.videoTrackUrl, mediaData.audioTrackUrl)
     })
     // SurfaceView設置とリソース開放用意
-    ExoPlayerComposeUI(controller = exoPlayerComposeController)
-    DisposableEffect(key1 = Unit, effect = { onDispose { exoPlayerComposeController.destroy() } })
+    ExoPlayerComposeUI(controller = controller)
+    DisposableEffect(key1 = Unit, effect = { onDispose { controller.destroy() } })
 }

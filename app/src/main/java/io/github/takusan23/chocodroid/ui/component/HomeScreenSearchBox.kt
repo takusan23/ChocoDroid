@@ -80,6 +80,7 @@ fun HomeScreenSearchBox(
                             .onFocusChanged { isFocusTextBox.value = it.isFocused },
                         value = videoId,
                         maxLines = 1,
+                        singleLine = true,
                         onValueChange = onChangeVideoId,
                     )
                     // クリアボタン

@@ -65,7 +65,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                     // 動画再生
                     watchPageResponseData.value?.apply {
                         val exoPlayerComposeController = rememberExoPlayerComposeController(true)
-                        VideoPlayerUI(watchPageData = this, exoPlayerComposeController)
+                        VideoPlayerUI(watchPageData = this, controller = exoPlayerComposeController)
                         VideoControlUI(watchPageData = this, controller = exoPlayerComposeController, state = miniPlayerState)
                     }
                 },

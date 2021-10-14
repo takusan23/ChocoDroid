@@ -111,7 +111,7 @@ fun MiniPlayerCompose(
                     // プレイヤー部分
                     Box(
                         modifier = Modifier
-                            .background(Color(0xFF252525))
+                            .background(Color.Black)
                             .fillMaxWidth(playerWidthEx.value) // 引数で大きさを決められる
                             .aspectRatio(1.7f) // 16:9を維持
                             .draggable(

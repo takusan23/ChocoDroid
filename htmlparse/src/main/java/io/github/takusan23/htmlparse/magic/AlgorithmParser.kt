@@ -23,17 +23,13 @@ object AlgorithmParser {
          *
          * でも上記3つの関数の呼ばれる順番が変わっている。ぶっ壊れるのはそのせい
          * */
-        val swapFuncGetRegex = "(\\D{2}):function\\(a,b\\)\\{var c=a\\[0\\];a\\[0\\]=a\\[b%a\\.length\\];a\\[b%a\\.length\\]=c\\}".toRegex()
-        val reverseFuncGetRegex = "(\\D{2}):function\\(a\\)\\{a\\.reverse\\(\\)\\}".toRegex()
-        val dropFuncGetRegex = "(\\D{2}):function\\(a,b\\)\\{a\\.splice\\(0,b\\)\\}".toRegex()
-        // 関数部分のコードを取得
-        val swapFuncCode = swapFuncGetRegex.find(baseJS)!!.value
-        val reverseFuncCode = reverseFuncGetRegex.find(baseJS)!!.value
-        val dropFuncCode = dropFuncGetRegex.find(baseJS)!!.value
-        // 関数名を取得。splitで分割すれば良さそう
-        val swapFuncName = swapFuncCode.split(":").first()
-        val reverseFuncName = reverseFuncCode.split(":").first()
-        val dropFuncName = dropFuncCode.split(":").first()
+        val swapFuncGetRegex = "(.{2}):function\\(a,b\\)\\{var c=a\\[0\\];a\\[0\\]=a\\[b%a\\.length\\];a\\[b%a\\.length\\]=c\\}".toRegex()
+        val reverseFuncGetRegex = "(.{2}):function\\(a\\)\\{a\\.reverse\\(\\)\\}".toRegex()
+        val dropFuncGetRegex = "(.{2}):function\\(a,b\\)\\{a\\.splice\\(0,b\\)\\}".toRegex()
+        // 関数名を取る
+        val swapFuncName = swapFuncGetRegex.find(baseJS)!!.groupValues[1]
+        val reverseFuncName = reverseFuncGetRegex.find(baseJS)!!.groupValues[1]
+        val dropFuncName = dropFuncGetRegex.find(baseJS)!!.groupValues[1]
         // 返す
         return AlgorithmFuncNameData(swapFuncName, reverseFuncName, dropFuncName)
     }
@@ -52,13 +48,13 @@ object AlgorithmParser {
         // カッコの中身なので配列で結果を貰って1個目の要素
         val algorithmCode = decryptAlgorithmFuncCodeRegex.find(baseJS)!!.groupValues[1]
         // 関数の前の部分を消す。関数だけにする
-        val removeObjectNameRegex = "\\D{2}\\.".toRegex()
+        val removeObjectNameRegex = ".{2}\\.".toRegex()
         val removeObjectNameAlgorithmCode = algorithmCode.replace(removeObjectNameRegex, "")
         // 関数ごとに配列にする
         val funcList = removeObjectNameAlgorithmCode.split(";").filter { it.isNotEmpty() }
         // 数字を見つける正規表現
-        val numberRegex = "\\d{1,}".toRegex()
-        val invokeList = funcList.map { funcCode -> AlgorithmInvokeData(funcCode.substring(0, 2), numberRegex.find(funcCode)!!.value.toInt()) }
+        val numberRegex = "a,(\\d{1,})".toRegex()
+        val invokeList = funcList.map { funcCode -> AlgorithmInvokeData(funcCode.substring(0, 2), numberRegex.find(funcCode)!!.groupValues[1].toInt()) }
         return invokeList
     }
 

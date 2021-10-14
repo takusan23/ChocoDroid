@@ -15,8 +15,14 @@ class WatchPageHTMLTest {
             println(watchPageData)
             val signatureCipher = watchPageData.watchPageJSONResponseData.streamingData.formats.last().signatureCipher
             if (signatureCipher != null) {
-                println("復号アルゴリズム---")
+                println("復号URL---")
                 println(watchPageData.decryptURL(signatureCipher))
+                println("アダプティブ---")
+                watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
+                    println(it.mimeType)
+                    println(it.qualityLabel ?: "audio")
+                    println(watchPageData.decryptURL(it.signatureCipher!!))
+                }
             } else {
                 println(watchPageData.watchPageJSONResponseData.streamingData.formats.last().url)
             }

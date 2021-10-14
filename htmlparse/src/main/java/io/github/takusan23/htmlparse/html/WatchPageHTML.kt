@@ -38,7 +38,7 @@ object WatchPageHTML {
             } else {
                 url("https://www.youtube.com/watch?v=$videoIdOrHttpUrl")
             }
-            addHeader("User-Agent", SingletonOkHttpClientTool.USER_AGENT)
+            // addHeader("User-Agent", SingletonOkHttpClientTool.USER_AGENT)
         }.build()
         val response = SingletonOkHttpClientTool.client.newCall(request).execute()
         if (response.isSuccessful) {
@@ -86,7 +86,7 @@ object WatchPageHTML {
      * @param baseJSURL base.jsのURL
      * @return base.jsの中身
      * */
-    suspend fun getBaseJSCode(baseJSURL: String) = withContext(Dispatchers.Default) {
+    private suspend fun getBaseJSCode(baseJSURL: String) = withContext(Dispatchers.Default) {
         // リクエスト飛ばす
         val request = Request.Builder().apply {
             url(baseJSURL)

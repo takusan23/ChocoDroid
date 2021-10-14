@@ -6,9 +6,7 @@ class DecryptMagicTest {
 
     @Test
     fun decryptTest() {
-        val text = ""
-        val decryptText = DecryptMagic.decrypt(text)
-        println(decryptText)
+
     }
 
 }

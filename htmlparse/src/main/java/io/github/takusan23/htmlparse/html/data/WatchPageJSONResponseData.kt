@@ -14,10 +14,25 @@ data class WatchPageJSONResponseData(
     val videoDetails: VideoDetails,
 )
 
+/**
+ * 映像データの情報。
+ *
+ * [formats]の方は音声と映像が一つになったURLが提供されるんだけど、画質が選べない。
+ * ついでにくっっそゴミ帯域幅でストリーミングだとまともに見れない。ｐｔｐｔすぎる。
+ *
+ * ちなみに[formats]を快適に読み込みたいならQUICプロトコルでやり取りすると多分快適に見れる（ブラウザではそうだった）
+ *
+ * じゃあ[adaptiveFormats]なら快適かと言われたらそうでもない。こっちの方は見る速度と同じ速度で読み込むぐらい帯域幅を節約してる模様。
+ * 全然先読みしない。今回は[adaptiveFormats]を読み込んでる。ExoPlayerならMergingMediaSource？で行ける
+ *
+ * @param adaptiveFormats
+ * @param formats
+ * */
 @Serializable
 @SerialName("streamingData")
 data class StreamingData(
     val formats: List<StreamingDataFormat>,
+    val adaptiveFormats: List<AdaptiveFormat>
 )
 
 /**
@@ -29,6 +44,14 @@ data class StreamingData(
  * */
 @Serializable
 data class StreamingDataFormat(
+    val url: String? = null,
+    val signatureCipher: String? = null,
+)
+
+@Serializable
+data class AdaptiveFormat(
+    val mimeType: String,
+    val qualityLabel: String? = null,
     val url: String? = null,
     val signatureCipher: String? = null,
 )

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.SurfaceView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -18,7 +19,13 @@ import androidx.core.net.toUri
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MergingMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.video.VideoSize
+import io.github.takusan23.htmlparse.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
 
 /**
@@ -38,7 +45,8 @@ fun ExoPlayerComposeUI(controller: ExoPlayerComposeController) {
     ) {
         AndroidView(
             modifier = Modifier
-                .fillMaxWidth()
+                .align(Alignment.Center)
+                .fillMaxHeight()
                 .aspectRatio(controller.aspectRate.value),
             factory = { context ->
                 SurfaceView(context).apply {
@@ -57,7 +65,7 @@ fun ExoPlayerComposeUI(controller: ExoPlayerComposeController) {
  * [ExoPlayerComposeUI]操作用クラス
  * */
 class ExoPlayerComposeController(
-    context: Context,
+    val context: Context,
     isDefaultAutoPlay: Boolean = false,
 ) {
 
@@ -74,10 +82,12 @@ class ExoPlayerComposeController(
     val duration = mutableStateOf(0L)
 
     /** コルーチンスコープ。終了時にキャンセルするため */
-    val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+    private val trackSelector = DefaultTrackSelector(context)
 
     /** ExoPlayer */
-    val exoPlayer = SimpleExoPlayer.Builder(context).build().apply {
+    val exoPlayer = SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build().apply {
         playWhenReady = isDefaultAutoPlay
     }
 
@@ -110,12 +120,16 @@ class ExoPlayerComposeController(
     }
 
     /**
-     * URLをExoPlayerにセットする
-     * @param uri 動画URL
+     * ExoPlayerに動画と音声をセットする。
+     *
+     * ビデオトラックとオーディオトラックが別のURLの場合に使ってね。
      * */
-    fun setMediaItem(uri: String) {
-        val mediaItem = MediaItem.fromUri(uri.toUri())
-        exoPlayer.setMediaItem(mediaItem)
+    fun setMediaSourceVideoAudioUriSupportVer(videoTrackUri: String, audioTrackUri: String) {
+        val factory = DefaultDataSourceFactory(context, SingletonOkHttpClientTool.USER_AGENT)
+        val videoSource = ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(videoTrackUri))
+        val audioSource = ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(audioTrackUri))
+        val mergeSource = MergingMediaSource(videoSource, audioSource)
+        exoPlayer.setMediaSource(mergeSource)
         exoPlayer.prepare()
     }
 

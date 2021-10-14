@@ -4,6 +4,7 @@ import io.github.takusan23.htmlparse.magic.DecryptMagic
 import io.github.takusan23.htmlparse.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.htmlparse.magic.data.AlgorithmInvokeData
 import java.net.URLDecoder
+import javax.print.attribute.standard.PrintQuality
 
 /**
  * 視聴ページ取得関数の戻り値
@@ -31,6 +32,41 @@ data class WatchPageData(
             .map { URLDecoder.decode(it.split("=")[1], "utf-8") } // key=value の文字列を value だけにしてパーセントエンコーディングを戻す
         val decryptKey = DecryptMagic.decrypt(params.first(), algorithmFuncNameData, decryptInvokeList)
         return "${params[2]}&sig=$decryptKey"
+    }
+
+    /**
+     * URLが署名されているか。署名されている場合は[decryptURL]を使って正規のURLへ変換する必要があります。
+     *
+     * @return URLが署名されている場合はtrue
+     * */
+    fun isSignatureUrl(): Boolean {
+        return watchPageJSONResponseData.streamingData.formats[0].signatureCipher != null
+    }
+
+    /**
+     * 指定した画質の映像トラック、音声トラックを取り出す
+     *
+     * 映像のコーデックはH.264を取ってきます。
+     *
+     * @param quality 映像の画質。
+     * @return 映像と音声のURLを入れたデーラクラス
+     * */
+    fun getMediaUrl(quality: String = "360p"): MediaUrlData {
+        return if (isSignatureUrl()) {
+            val videoTrackUrl = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.qualityLabel?.contains(quality) == true && it.mimeType.contains("video") && it.mimeType.contains("avc1") }!!.signatureCipher!!
+            // 音声はとりあえず一番いいやつ
+            val audioTrackUrl = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.mimeType.contains("audio") }!!.signatureCipher!!
+            val decryptVideoTrackUrl = decryptURL(videoTrackUrl)
+            val decryptAudioTrackUrl = decryptURL(audioTrackUrl)
+            MediaUrlData(decryptVideoTrackUrl, decryptAudioTrackUrl)
+        } else {
+            val videoTrackUrl = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.qualityLabel?.contains(quality) == true && it.mimeType.contains("video") && it.mimeType.contains("avc1") }!!.url!!
+            // 音声はとりあえず一番いいやつ
+            val audioTrackUrl = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.mimeType.contains("audio") }!!.url!!
+            val decryptVideoTrackUrl = decryptURL(videoTrackUrl)
+            val decryptAudioTrackUrl = decryptURL(audioTrackUrl)
+            MediaUrlData(decryptVideoTrackUrl, decryptAudioTrackUrl)
+        }
     }
 
 }

@@ -3,7 +3,7 @@ package io.github.takusan23.chocodroid.ui.component
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import io.github.takusan23.htmlparse.html.data.WatchPageData
+import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
 
 /**
  * 動画のプレイヤー部分のUI

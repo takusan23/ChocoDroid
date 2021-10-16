@@ -17,7 +17,7 @@ object AlgorithmSerializer {
      * @return JSON文字列
      * */
     inline fun <reified T> toJSON(data: T): String {
-        return SerializationTool.Serialization.encodeToString(data)
+        return SerializationTool.jsonSerialization.encodeToString(data)
     }
 
     /**
@@ -26,7 +26,7 @@ object AlgorithmSerializer {
      * @return データクラス
      * */
     inline fun <reified T> toData(json: String?): T? {
-        return if (json != null) SerializationTool.Serialization.decodeFromString<T>(json) else null
+        return if (json != null) SerializationTool.jsonSerialization.decodeFromString<T>(json) else null
     }
 
 }

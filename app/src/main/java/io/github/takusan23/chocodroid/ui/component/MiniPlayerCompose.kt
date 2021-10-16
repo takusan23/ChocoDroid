@@ -19,6 +19,8 @@ import kotlin.math.roundToInt
 /**
  * ミニプレイヤー。KotlinとComposeでできている
  *
+ * たちみどろいどで使ってたやつ
+ *
  * これを親にするのでプレイヤーの裏側になにか描画したい内容があれば[backgroundContent]を使ってください。
  *
  * @param modifier Modifier

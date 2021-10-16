@@ -1,11 +1,8 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.component.tool.SetActivitySleepComposeApp
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
@@ -18,11 +15,14 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  *
  * @param viewModel ViewModel
  * */
+@ExperimentalMaterialApi
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {
         Surface {
 
+            // 画面遷移。ナビゲーション
+            val navController = rememberNavController()
             // 再生中の動画情報
             val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
             // エラーが流れてくるFlow
@@ -74,21 +74,10 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                     watchPageResponseData.value?.apply { VideoDetailUI(this) }
                 },
                 content = {
-                    // 将来的に
-                    Scaffold(
-                        topBar = { HomeScreenSearchBox(onEnterVideoId = { viewModel.loadWatchPage(it) }) },
-                        content = {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = "工事中")
-                            }
-                        }
-                    )
+                    // 画面遷移。別コンポーネントへ
+                    ChocoDroidNavigationComponent(navController = navController, mainScreenViewModel = viewModel)
                 }
             )
-
         }
     }
 }

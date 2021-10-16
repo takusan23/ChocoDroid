@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
-import io.github.takusan23.htmlparse.html.data.WatchPageData
+import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
 
 /**
  * 動画プレイヤーのUI。重ねる

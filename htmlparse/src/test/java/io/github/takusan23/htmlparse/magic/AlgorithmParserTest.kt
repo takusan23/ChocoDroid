@@ -11,7 +11,7 @@ class AlgorithmParserTest {
     /** 正規表現で使ってる文字をエスケープする */
     @Test
     fun escapeTest() {
-        val escapedText = AlgorithmParser.replaceRegexEscapeChar(""":function(a,b){a.splice(0,b)""")
+        val escapedText = AlgorithmParser.replaceRegexEscapeChar(""" """)
         println(escapedText)
     }
 

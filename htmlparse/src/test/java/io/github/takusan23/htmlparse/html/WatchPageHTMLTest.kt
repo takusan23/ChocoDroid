@@ -25,6 +25,12 @@ class WatchPageHTMLTest {
                 }
             } else {
                 println(watchPageData.watchPageJSONResponseData.streamingData.formats.last().url)
+                println("アダプティブ---")
+                watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
+                    println(it.mimeType)
+                    println(it.qualityLabel ?: "audio")
+                    println(it.url)
+                }
             }
             println("アルゴリズム---")
             println(watchPageData.algorithmFuncNameData)

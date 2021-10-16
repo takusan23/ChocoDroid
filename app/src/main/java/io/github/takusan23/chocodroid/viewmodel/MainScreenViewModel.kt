@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.htmlparse.html.WatchPageHTML
-import io.github.takusan23.htmlparse.html.data.WatchPageData
+import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
 import io.github.takusan23.htmlparse.magic.AlgorithmSerializer
 import io.github.takusan23.htmlparse.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.htmlparse.magic.data.AlgorithmInvokeData
@@ -30,7 +30,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
 
     /** コルーチン起動時の引数に指定してね。例外を捕まえ、Flowに流します */
-    private val errorHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
         _errorMessageFlow.value = throwable.message
         _isLoadingFlow.value = false

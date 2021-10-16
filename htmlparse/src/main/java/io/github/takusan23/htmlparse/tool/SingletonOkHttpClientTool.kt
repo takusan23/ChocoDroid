@@ -1,6 +1,11 @@
 package io.github.takusan23.htmlparse.tool
 
+import io.github.takusan23.htmlparse.exception.HttpStatusCodeException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /** シングルトンのOkHttpクライアント */
 object SingletonOkHttpClientTool {
@@ -10,5 +15,41 @@ object SingletonOkHttpClientTool {
 
     /** 使い回すOkHttpのクライアント */
     val client = OkHttpClient()
+
+    /**
+     * GETリクエストをする関数。URLを指定すれば使える簡単なものです
+     *
+     * 失敗したら IOException / HttpStatusCodeException をスローします。コルーチンなので例外処理は簡単なはず？
+     *
+     * @param url URL
+     * @return レスポンスボディー
+     * */
+    suspend fun executeGetRequest(url: String) = withContext(Dispatchers.Default) {
+        val request = Request.Builder().apply {
+            url(url)
+            addHeader("User-Agent", USER_AGENT)
+            get()
+        }.build()
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            response.body!!.string()
+        } else {
+            throw HttpStatusCodeException(response.code, response.message)
+        }
+    }
+
+    suspend fun executePostRequest(url: String, postJSON: String) = withContext(Dispatchers.Default) {
+        val request = Request.Builder().apply {
+            url(url)
+            addHeader("User-Agent", USER_AGENT)
+            post(postJSON.toRequestBody())
+        }.build()
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            response.body!!.string()
+        } else {
+            throw HttpStatusCodeException(response.code, response.message)
+        }
+    }
 
 }

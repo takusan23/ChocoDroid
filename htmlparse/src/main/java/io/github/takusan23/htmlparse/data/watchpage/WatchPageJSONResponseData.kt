@@ -1,9 +1,7 @@
-package io.github.takusan23.htmlparse.html.data
+package io.github.takusan23.htmlparse.data.watchpage
 
-import io.github.takusan23.htmlparse.magic.DecryptMagic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.net.URLDecoder
 
 /**
  * HTML内にあるJSON。動画情報とかURLとか

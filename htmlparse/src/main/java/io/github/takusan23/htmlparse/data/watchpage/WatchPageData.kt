@@ -1,10 +1,9 @@
-package io.github.takusan23.htmlparse.html.data
+package io.github.takusan23.htmlparse.data.watchpage
 
 import io.github.takusan23.htmlparse.magic.DecryptMagic
 import io.github.takusan23.htmlparse.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.htmlparse.magic.data.AlgorithmInvokeData
 import java.net.URLDecoder
-import javax.print.attribute.standard.PrintQuality
 
 /**
  * 視聴ページ取得関数の戻り値
@@ -63,9 +62,7 @@ data class WatchPageData(
             val videoTrackUrl = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.qualityLabel?.contains(quality) == true && it.mimeType.contains("video") && it.mimeType.contains("avc1") }!!.url!!
             // 音声はとりあえず一番いいやつ
             val audioTrackUrl = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.mimeType.contains("audio") }!!.url!!
-            val decryptVideoTrackUrl = decryptURL(videoTrackUrl)
-            val decryptAudioTrackUrl = decryptURL(audioTrackUrl)
-            MediaUrlData(decryptVideoTrackUrl, decryptAudioTrackUrl)
+            MediaUrlData(videoTrackUrl, audioTrackUrl)
         }
     }
 

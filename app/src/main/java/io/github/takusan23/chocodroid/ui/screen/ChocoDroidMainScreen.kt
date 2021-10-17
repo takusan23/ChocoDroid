@@ -9,7 +9,7 @@ import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
- * MainActivityに置くやつ
+ * MainActivityに置くやつ。メイン画面です。
  *
  * Jetpack Composeのスタート地点
  *
@@ -60,7 +60,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             MiniPlayerScaffold(
                 miniPlayerState = miniPlayerState,
                 scaffoldState = scaffoldState,
-                bottomBar = { HomeScreenBottomNavigation() },
+                bottomBar = { HomeScreenBottomNavigation(navHostController = navController) },
                 playerContent = {
                     // 動画再生
                     watchPageResponseData.value?.apply {

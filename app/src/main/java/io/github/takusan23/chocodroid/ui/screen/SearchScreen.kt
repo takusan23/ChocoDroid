@@ -1,20 +1,14 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.SearchScreenBar
 import io.github.takusan23.chocodroid.ui.component.VideoList
-import io.github.takusan23.chocodroid.ui.component.VideoListItem
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
 import kotlinx.coroutines.launch
 

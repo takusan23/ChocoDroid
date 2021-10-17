@@ -1,0 +1,2 @@
+# setting パッケージ
+SharedPreferenceの後継、Preference DataStore関係が置いてある

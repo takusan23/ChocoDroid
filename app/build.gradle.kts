@@ -69,6 +69,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
 
     // ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer-core:2.15.1")

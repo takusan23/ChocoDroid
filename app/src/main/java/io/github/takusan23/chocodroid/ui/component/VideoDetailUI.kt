@@ -46,17 +46,17 @@ fun VideoDetailUI(watchPageData: WatchPageData) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f),
-                shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp),
+                shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp),
                 elevation = 10.dp
             ) {
                 Column {
                     Text(
-                        modifier = Modifier.padding(5.dp),
+                        modifier = Modifier.padding(10.dp),
                         fontSize = 20.sp,
                         text = watchPageData.watchPageJSONResponseData.videoDetails.title,
                     )
                     Text(
-                        modifier = Modifier.padding(5.dp),
+                        modifier = Modifier.padding(10.dp),
                         fontSize = 15.sp,
                         text = watchPageData.watchPageJSONResponseData.videoDetails.shortDescription,
                     )

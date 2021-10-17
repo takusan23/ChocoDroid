@@ -10,6 +10,14 @@ import kotlinx.serialization.encodeToString
  * 検索APIを叩く用意
  *
  * どうやら検索URLで使うパラメーターを得るために一回HTMLを取得する必要がある模様。
+ *
+ * - 検索のURLを完成させるためにトップページ（多分なんでもいい）を取得する
+ * - 検索する。多分最低限clientオブジェクトにはclientNameとclientVersionを入れないといけない
+ * - 検索結果のレスポンスボデーからtokenを控える。正規表現で取った
+ * - 追加で検索をかけるときはさっきとったtokenをリクエストボディーにつけてPOST飛ばす
+ * - 追加検索時は若干レスポンスボデーが違う
+ * - さらいに追加で検索かけるときは追加検索時のレスポンスボデーのtokenをリクエストボデーにつけてPOSTする
+ *
  * */
 class SearchAPI {
 
@@ -21,6 +29,9 @@ class SearchAPI {
 
     /** 次検索用 */
     private var NEXT_PAGE_CONTINUATION: String? = null
+
+    /** 次検索するときに使うtokenを取得する正規表現 */
+    private val tokenGetRegex = "\"token\": \"(.*?)\"".toRegex()
 
     companion object {
         /** 並べ替え。関連度順 */
@@ -64,6 +75,8 @@ class SearchAPI {
         val requestBody = SerializationTool.jsonSerialization.encodeToString(requestData)
         val postResponseBody = SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
         val searchResponseData = SerializationTool.jsonSerialization.decodeFromString<SearchResponseData>(postResponseBody)
+        // 次回検索用
+        NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
         return searchResponseData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer?.contents
     }
 
@@ -83,6 +96,8 @@ class SearchAPI {
         val postResponseBody = SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
         // 追加検索では検索結果JSONが若干違う
         val moreSearchResponseData = SerializationTool.jsonSerialization.decodeFromString<MoreSearchResponseData>(postResponseBody)
+        // 次回検索用
+        NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
         return moreSearchResponseData.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[0].itemSectionRenderer?.contents
     }
 

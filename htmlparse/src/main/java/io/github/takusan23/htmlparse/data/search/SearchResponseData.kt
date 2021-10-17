@@ -71,7 +71,25 @@ data class VideoRenderer(
     val videoId: String,
     val title: Title,
     val thumbnail: Thumbnail,
-    val ownerText: OwnerText
+    val ownerText: OwnerText,
+    val publishedTimeText: PublishedTimeText,
+    val lengthText: LengthText,
+    val viewCountText: ViewCountText,
+)
+
+@Serializable
+data class ViewCountText(
+    val simpleText: String
+)
+
+@Serializable
+data class LengthText(
+    val simpleText: String
+)
+
+@Serializable
+data class PublishedTimeText(
+    val simpleText: String
 )
 
 @Serializable

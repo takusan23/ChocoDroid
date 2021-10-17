@@ -28,6 +28,9 @@ class SearchScreenViewModel(application: Application, private val query: String,
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
 
+    /** これ以上追加読み込みしない */
+    private var isEOL = false
+
     /** 検索が失敗したときに例外を拾う */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
@@ -55,6 +58,13 @@ class SearchScreenViewModel(application: Application, private val query: String,
     }
 
     /**
+     * 再検索をする
+     * */
+    suspend fun reSearch() = withContext(errorHandler){
+        search(query, sort)
+    }
+
+    /**
      * 検索する関数。検索ワードやソート条件が変わったときは呼び直してください
      *
      * 結果はFlow、失敗してもFlowに流します。
@@ -74,8 +84,18 @@ class SearchScreenViewModel(application: Application, private val query: String,
      * 結果はFlowに流れます。
      * */
     suspend fun moreLoad() = withContext(errorHandler) {
+        // これ以上読み込まない場合 or 追加読み込み中ならreturn
+        if (isEOL || _isLoadingFlow.value) return@withContext
+
         _isLoadingFlow.value = true
-        _searchResultListFlow.value = _searchResultListFlow.value + (searchAPI.moreSearch() ?: listOf())
+        val moreSearchResult = searchAPI.moreSearch() ?: listOf()
+        if (moreSearchResult.isNotEmpty()) {
+            // 連結させる。というかディープ（意味深）コピーしないとFlowに差分検知が行かない。参照渡しとかそのへんの話だと思う
+            _searchResultListFlow.value = (_searchResultListFlow.value + moreSearchResult)
+        } else {
+            // もう読み込まない
+            isEOL = true
+        }
         _isLoadingFlow.value = false
     }
 

@@ -38,6 +38,15 @@ object SingletonOkHttpClientTool {
         }
     }
 
+    /**
+     * POSTリクエストを飛ばす関数。URLとPOSTするJSON（文字列）を入れれば使える簡単なもの
+     *
+     * 失敗したら IOException / HttpStatusCodeException をスローします。コルーチンなので例外処理は簡単なはず？
+     *
+     * @param url URL
+     * @param postJSON リクエストボディー。JSON
+     * @return レスポンスボディー
+     * */
     suspend fun executePostRequest(url: String, postJSON: String) = withContext(Dispatchers.Default) {
         val request = Request.Builder().apply {
             url(url)

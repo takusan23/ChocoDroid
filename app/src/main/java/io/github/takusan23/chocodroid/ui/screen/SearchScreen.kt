@@ -12,6 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.ui.component.SearchScreenBar
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.component.VideoListItem
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
@@ -29,6 +30,8 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     val videoList = viewModel.searchResultListFlow.collectAsState()
     val isLoading = viewModel.isLoadingFlow.collectAsState()
     val errorMessage = viewModel.errorMessageFlow.collectAsState()
+    val query = viewModel.queryFlow.collectAsState()
+    val sort = viewModel.sortFlow.collectAsState()
 
     val scaffoldState = rememberScaffoldState()
     val lazyListState = rememberLazyListState()
@@ -55,16 +58,19 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBack,
-                        content = { Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = null) }
-                    )
+            SearchScreenBar(
+                onBack = onBack,
+                onSearch = { scope.launch { viewModel.reSearch() } },
+                onSort = {
+                    // 並び順押したら再検索
+                    scope.launch {
+                        viewModel.setSort(it)
+                        viewModel.reSearch()
+                    }
                 },
-                title = { /*Text(text = "検索結果")*/ },
-                elevation = 0.dp,
-                backgroundColor = MaterialTheme.colors.background
+                onSearchWordChange = { viewModel.setQuery(it) },
+                searchWord = query.value,
+                sort = sort.value
             )
         },
         content = {

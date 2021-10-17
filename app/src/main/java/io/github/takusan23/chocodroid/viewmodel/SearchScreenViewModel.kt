@@ -27,6 +27,8 @@ class SearchScreenViewModel(application: Application, private val query: String,
     private val _searchResultListFlow = MutableStateFlow<List<VideoContent>>(listOf())
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
+    private val _queryFlow = MutableStateFlow(query)
+    private val _sortFlow = MutableStateFlow(sort)
 
     /** これ以上追加読み込みしない */
     private var isEOL = false
@@ -47,6 +49,11 @@ class SearchScreenViewModel(application: Application, private val query: String,
     /** エラー出たら呼ばれます */
     val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
 
+    /** 検索ワード */
+    val queryFlow = _queryFlow as StateFlow<String>
+
+    /** 並び順 */
+    val sortFlow = _sortFlow as StateFlow<String>
 
     init {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
@@ -57,11 +64,11 @@ class SearchScreenViewModel(application: Application, private val query: String,
         }
     }
 
-    /**
-     * 再検索をする
-     * */
-    suspend fun reSearch() = withContext(errorHandler){
-        search(query, sort)
+    /** 再検索をする */
+    fun reSearch() {
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            search(_queryFlow.value, _sortFlow.value)
+        }
     }
 
     /**
@@ -83,20 +90,38 @@ class SearchScreenViewModel(application: Application, private val query: String,
      *
      * 結果はFlowに流れます。
      * */
-    suspend fun moreLoad() = withContext(errorHandler) {
-        // これ以上読み込まない場合 or 追加読み込み中ならreturn
-        if (isEOL || _isLoadingFlow.value) return@withContext
+    fun moreLoad() {
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            // これ以上読み込まない場合 or 追加読み込み中ならreturn
+            if (isEOL || _isLoadingFlow.value) return@launch
 
-        _isLoadingFlow.value = true
-        val moreSearchResult = searchAPI.moreSearch() ?: listOf()
-        if (moreSearchResult.isNotEmpty()) {
-            // 連結させる。というかディープ（意味深）コピーしないとFlowに差分検知が行かない。参照渡しとかそのへんの話だと思う
-            _searchResultListFlow.value = (_searchResultListFlow.value + moreSearchResult)
-        } else {
-            // もう読み込まない
-            isEOL = true
+            _isLoadingFlow.value = true
+            val moreSearchResult = searchAPI.moreSearch() ?: listOf()
+            if (moreSearchResult.isNotEmpty()) {
+                // 連結させる。というかディープ（意味深）コピーしないとFlowに差分検知が行かない。参照渡しとかそのへんの話だと思う
+                _searchResultListFlow.value = (_searchResultListFlow.value + moreSearchResult)
+            } else {
+                // もう読み込まない
+                isEOL = true
+            }
+            _isLoadingFlow.value = false
         }
-        _isLoadingFlow.value = false
+    }
+
+    /**
+     * 検索ワードをセット
+     * @param query 検索ワード
+     * */
+    fun setQuery(query: String) {
+        _queryFlow.value = query
+    }
+
+    /**
+     * ソート条件をセット
+     * @param sort [SearchAPI.PARAMS_SORT_REVIEW]など
+     * */
+    fun setSort(sort: String) {
+        _sortFlow.value = sort
     }
 
 }

@@ -38,7 +38,7 @@ class SearchAPI {
         const val PARAMS_SORT_RELEVANCE = "CAASAhAB"
 
         /** 並べ替え。アップロード日時順 */
-        const val PARAMS_SORT_UPLOAD_DATE = "CAI%253D"
+        const val PARAMS_SORT_UPLOAD_DATE = "CAISAhAB"
 
         /** 並べ替え。視聴回数順 */
         const val PARAMS_SORT_WATCH_COUNT = "CAMSAhAB"

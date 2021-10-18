@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
-import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
 import io.github.takusan23.htmlparse.html.SearchAPI
 
@@ -45,7 +44,7 @@ fun ChocoDroidNavigationComponent(mainScreenViewModel: MainScreenViewModel, navC
         }
         composable(NavigationLinkList.HistoryScreen) {
             // 履歴画面
-            HistoryScreen(viewModel = mainScreenViewModel, navController = navController)
+            HistoryScreen(mainViewModel = mainScreenViewModel, navController = navController)
         }
         composable(NavigationLinkList.DownloadScreen) {
             // ダウンロード画面

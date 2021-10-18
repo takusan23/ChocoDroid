@@ -40,7 +40,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
-                miniPlayerState.currentState.value = if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End
+                miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End)
             })
 
             // Snackbar出す

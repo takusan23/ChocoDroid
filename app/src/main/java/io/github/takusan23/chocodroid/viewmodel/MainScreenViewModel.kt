@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.takusan23.chocodroid.database.db.HistoryDB
+import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.htmlparse.html.WatchPageHTML
 import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
 import io.github.takusan23.htmlparse.magic.AlgorithmSerializer
@@ -38,6 +41,9 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     /** ローカルに保持してる解析アルゴリズム。flowで更新されるはず */
     private var localAlgorithmData: Triple<String?, AlgorithmFuncNameData?, List<AlgorithmInvokeData>?>? = null
+
+    /** 履歴DB。 */
+    private val historyDB by lazy { HistoryDB.getInstance(context) }
 
     /** 動画情報データクラスを保持するFlow。外部公開用は受け取りのみ */
     val watchPageResponseDataFlow = _watchPageResponseData as Flow<WatchPageData?>
@@ -86,15 +92,47 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
                 setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON] = AlgorithmSerializer.toJSON(watchPageResponseData.decryptInvokeList)
             }
 
+            // 履歴に追加する
+            insertDBOrWatchCountIncrement(watchPageResponseData)
+
         }
     }
-
 
     /**
      * プレイヤー終了。データクラス保持Flowにnullを入れます
      * */
     fun closePlayer() {
         viewModelScope.launch { _watchPageResponseData.value = null }
+    }
+
+    /**
+     * 視聴履歴へ追加 or 視聴回数のインクリメント をする関数
+     *
+     * @param watchPageData 動画情報
+     * */
+    private suspend fun insertDBOrWatchCountIncrement(watchPageData: WatchPageData) {
+        // 存在するかどうか
+        val watchPageJSONResponseData = watchPageData.watchPageJSONResponseData
+        if (historyDB.historyDao().existsHistoryData(watchPageJSONResponseData.videoDetails.videoId)) {
+            // ある
+            val historyDBEntity = historyDB.historyDao().getHistoryFromVideoId(watchPageJSONResponseData.videoDetails.videoId)
+            val updateData = historyDBEntity.copy(updateDate = System.currentTimeMillis(), localWatchCount = historyDBEntity.localWatchCount + 1)
+            historyDB.historyDao().update(updateData)
+        } else {
+            // ない
+            val entity = HistoryDBEntity(
+                videoId = watchPageJSONResponseData.videoDetails.videoId,
+                duration = TimeFormatTool.videoDurationToFormatText(watchPageJSONResponseData.videoDetails.lengthSeconds.toLong()),
+                title = watchPageJSONResponseData.videoDetails.title,
+                insertDate = System.currentTimeMillis(),
+                localWatchCount = 1,
+                ownerName = watchPageJSONResponseData.videoDetails.author,
+                publishedDate = watchPageJSONResponseData.microformat.playerMicroformatRenderer.publishDate,
+                thumbnailUrl = watchPageJSONResponseData.videoDetails.thumbnail.thumbnails.last().url,
+                updateDate = System.currentTimeMillis(),
+            )
+            historyDB.historyDao().insert(entity)
+        }
     }
 
 }

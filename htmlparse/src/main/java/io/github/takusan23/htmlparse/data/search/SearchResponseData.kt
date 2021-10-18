@@ -66,15 +66,19 @@ data class VideoContent(
     val videoRenderer: VideoRenderer
 )
 
+/**
+ * @param publishedTimeText プレミア公開時はnullになる
+ * @param viewCountText プレミア公開時はnullになる
+ * */
 @Serializable
 data class VideoRenderer(
     val videoId: String,
     val title: Title,
     val thumbnail: Thumbnail,
     val ownerText: OwnerText,
-    val publishedTimeText: PublishedTimeText,
     val lengthText: LengthText,
-    val viewCountText: ViewCountText,
+    val publishedTimeText: PublishedTimeText?=null,
+    val viewCountText: ViewCountText? = null,
 )
 
 @Serializable

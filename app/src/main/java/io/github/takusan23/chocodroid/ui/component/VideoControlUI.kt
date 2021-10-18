@@ -71,7 +71,7 @@ fun VideoControlUI(
                                 scope.launch {
                                     // 操作しない100ms後に実行
                                     delay(100L)
-                                    state.currentState.value = if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) MiniPlayerStateValue.Default else MiniPlayerStateValue.MiniPlayer
+                                    state.setState(if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) MiniPlayerStateValue.Default else MiniPlayerStateValue.MiniPlayer)
                                 }
                             },
                             content = {

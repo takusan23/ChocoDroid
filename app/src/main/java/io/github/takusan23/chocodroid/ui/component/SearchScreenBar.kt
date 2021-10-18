@@ -2,6 +2,8 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.htmlparse.html.SearchAPI
@@ -57,13 +60,19 @@ fun SearchScreenBar(
                     .weight(1f)
             ) {
                 if (searchWord.isEmpty()) {
-                    Text(text = "検索ワード")
+                    Text(
+                        modifier = Modifier.padding(5.dp),
+                        text = "検索ワード"
+                    )
                 }
                 BasicTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .onFocusChanged { isFocusTextField.value = it.isFocused }
                         .padding(5.dp),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(onSearch = { onSearch(searchWord) }),
                     value = searchWord,
                     onValueChange = onSearchWordChange
                 )

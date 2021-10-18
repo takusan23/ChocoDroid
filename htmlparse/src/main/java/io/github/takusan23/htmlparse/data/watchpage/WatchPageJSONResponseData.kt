@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 data class WatchPageJSONResponseData(
     val streamingData: StreamingData,
     val videoDetails: VideoDetails,
+    val microformat: Microformat,
 )
 
 /**
@@ -27,7 +28,6 @@ data class WatchPageJSONResponseData(
  * @param formats
  * */
 @Serializable
-@SerialName("streamingData")
 data class StreamingData(
     val formats: List<StreamingDataFormat>,
     val adaptiveFormats: List<AdaptiveFormat>
@@ -44,6 +44,16 @@ data class StreamingData(
 data class StreamingDataFormat(
     val url: String? = null,
     val signatureCipher: String? = null,
+)
+
+@Serializable
+data class Microformat(
+    val playerMicroformatRenderer: PlayerMicroformatRenderer
+)
+
+@Serializable
+data class PlayerMicroformatRenderer(
+    val publishDate: String,
 )
 
 @Serializable
@@ -65,4 +75,17 @@ data class VideoDetails(
     val shortDescription: String,
     val viewCount: String,
     val author: String,
+    val thumbnail: Thumbnail
+)
+
+@Serializable
+data class Thumbnail(
+    val thumbnails: List<ThumbnailUrl>
+)
+
+@Serializable
+data class ThumbnailUrl(
+    val url: String,
+    val width: Int,
+    val height: Int
 )

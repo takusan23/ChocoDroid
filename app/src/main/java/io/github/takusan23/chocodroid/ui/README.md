@@ -1,2 +1,4 @@
 # ui パッケージ
 Composeのコンポーネントとか画面とか。
+
+ViewModelとのやり取りにはLiveDataではなくMutableStateFlowを使ってます。

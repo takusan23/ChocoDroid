@@ -58,10 +58,6 @@ fun MiniPlayerCompose(
             val offsetX = remember { mutableStateOf(0f) }
             val offsetY = remember { mutableStateOf(0f) }
 
-            LaunchedEffect(key1 = state.currentState.value, block = {
-                println("検知：${state.currentState.value}")
-            })
-
             // 現在ミニプレイヤーかどうか
             val isCurrentMiniPlayer = state.currentState.value == MiniPlayerStateValue.MiniPlayer
             // 現在終了モードか
@@ -198,6 +194,11 @@ class MiniPlayerState(
 
     /** プレイヤーの遷移状態。 */
     val progress = mutableStateOf(0f)
+
+    /** プレイヤーの状態を更新する */
+    fun setState(toState: Int) {
+        currentState.value = toState
+    }
 
     companion object {
 

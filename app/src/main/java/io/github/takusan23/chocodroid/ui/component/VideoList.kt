@@ -74,11 +74,45 @@ fun VideoList(
 @Composable
 fun VideoListItem(
     videoRenderer: VideoRenderer,
-    onClick: (String) -> Unit,
+    onClick: (String) -> Unit
+) = VideoListItem(
+    videoId = videoRenderer.videoId,
+    videoTitle = videoRenderer.title.runs.last().text,
+    duration = videoRenderer.lengthText.simpleText,
+    watchCount = videoRenderer.viewCountText?.simpleText ?: "---",
+    publishDate = videoRenderer.publishedTimeText?.simpleText ?: "---",
+    ownerName = videoRenderer.ownerText.runs.last().text,
+    thumbnailUrl = videoRenderer.thumbnail.thumbnails.last().url,
+    onClick = onClick
+)
+
+/**
+ * データクラスに依存しないリストの各コンポーネント
+ *
+ * @param videoId 動画ID
+ * @param thumbnailUrl サムネイルURL
+ * @param videoTitle タイトル
+ * @param watchCount 視聴回数
+ * @param publishDate 投稿日
+ * @param ownerName 投稿者。変態糞土方
+ * @param duration 動画時間
+ * @param onClick 押したとき。引数は動画ID
+ * */
+@ExperimentalMaterialApi
+@Composable
+fun VideoListItem(
+    videoId: String,
+    videoTitle: String,
+    duration: String,
+    watchCount: String,
+    publishDate: String,
+    ownerName: String,
+    thumbnailUrl: String,
+    onClick: (String) -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { onClick(videoRenderer.videoId) }
+        onClick = { onClick(videoId) }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Glideの代わりにCoilを試す
@@ -91,7 +125,7 @@ fun VideoListItem(
                         .aspectRatio(1.7f)
                         .clip(RoundedCornerShape(10.dp)),
                     painter = rememberImagePainter(
-                        data = videoRenderer.thumbnail.thumbnails.last().url,
+                        data = thumbnailUrl,
                         builder = {
                             crossfade(true)
                         }
@@ -104,25 +138,25 @@ fun VideoListItem(
                         .background(color = Color.Black.copy(0.3f))
                         .align(alignment = Alignment.BottomEnd),
                     color = Color.White,
-                    text = videoRenderer.lengthText.simpleText
+                    text = duration
                 )
             }
             Column(modifier = Modifier.padding(start = 5.dp)) {
                 Text(
                     modifier = Modifier.padding(0.dp),
                     fontSize = 16.sp,
-                    text = videoRenderer.title.runs[0].text,
+                    text = videoTitle,
                     maxLines = 2
                 )
                 Text(
                     modifier = Modifier.padding(0.dp),
                     fontSize = 14.sp,
-                    text = "${videoRenderer.viewCountText.simpleText} / ${videoRenderer.publishedTimeText.simpleText}"
+                    text = "${watchCount} / ${publishDate}"
                 )
                 Text(
                     modifier = Modifier.padding(0.dp),
                     fontSize = 14.sp,
-                    text = videoRenderer.ownerText.runs[0].text
+                    text = ownerName
                 )
             }
         }

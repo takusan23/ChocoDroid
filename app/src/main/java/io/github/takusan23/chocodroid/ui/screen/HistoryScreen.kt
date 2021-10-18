@@ -4,12 +4,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
@@ -40,9 +42,12 @@ fun HistoryScreen(
         scaffoldState = scaffoldState,
         topBar = { ChocoBridgeBar(viewModel = mainViewModel, navHostController = navController) },
         content = {
-            Column(Modifier.padding(it)) {
+            Column(modifier = Modifier.padding(it)) {
                 // 消すボタン
                 Button(
+                    modifier = Modifier
+                        .align(alignment = Alignment.End)
+                        .padding(end = 10.dp),
                     onClick = {
                         SnackbarComposeTool.showSnackbar(
                             scope = scope,
@@ -53,7 +58,9 @@ fun HistoryScreen(
                             onActionPerformed = { historyScreenViewModel.deleteAllDB() }
                         )
                     },
-                    content = { Text(text = "全件削除") }
+                    content = { Text(text = "全件削除") },
+                    elevation = ButtonDefaults.elevation(0.dp),
+                    shape = RoundedCornerShape(20.dp),
                 )
                 // 一覧表示
                 Divider()

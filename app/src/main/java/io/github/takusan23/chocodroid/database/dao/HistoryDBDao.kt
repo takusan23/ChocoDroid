@@ -18,8 +18,8 @@ interface HistoryDBDao {
     @Query("SELECT * FROM history_db")
     suspend fun getAll(): List<HistoryDBEntity>
 
-    /** Flowで全部取得。順番は追加日時順 */
-    @Query("SELECT * FROM history_db ORDER BY insert_date DESC")
+    /** Flowで全部取得。順番は更新日時順 */
+    @Query("SELECT * FROM history_db ORDER BY update_date DESC")
     fun flowGetAll(): Flow<List<HistoryDBEntity>>
 
     /** 追加 */

@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
@@ -15,6 +16,7 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  *
  * @param viewModel ViewModel
  * */
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {

@@ -1,15 +1,18 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.ui.component.videodetail.VideoDetailDescriptionScreen
 import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
 
 /**
@@ -17,15 +20,17 @@ import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
  *
  * @param watchPageData 視聴ページレスポンスデータ
  * */
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 fun VideoDetailUI(watchPageData: WatchPageData) {
     Surface(
-        color = MaterialTheme.colors.background,
+        color = MaterialTheme.colors.primary,
         modifier = Modifier.fillMaxSize()
     ) {
         Row {
             NavigationRail(
+                backgroundColor = MaterialTheme.colors.primary,
                 elevation = 0.dp,
                 content = {
                     NavigationRailItem(
@@ -46,23 +51,12 @@ fun VideoDetailUI(watchPageData: WatchPageData) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f),
+                color = Color.White,
                 shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp),
-                elevation = 10.dp
             ) {
-                Column {
-                    Text(
-                        modifier = Modifier.padding(10.dp),
-                        fontSize = 20.sp,
-                        text = watchPageData.watchPageJSONResponseData.videoDetails.title,
-                    )
-                    Text(
-                        modifier = Modifier.padding(10.dp),
-                        fontSize = 15.sp,
-                        text = watchPageData.watchPageJSONResponseData.videoDetails.shortDescription,
-                    )
-                }
+                VideoDetailDescriptionScreen(watchPageData = watchPageData)
             }
         }
-
     }
 }
+

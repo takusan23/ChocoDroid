@@ -135,7 +135,8 @@ fun VideoListItem(
                 )
                 Text(
                     modifier = Modifier
-                        .background(color = Color.Black.copy(0.3f))
+                        .offset((-5).dp, (-5).dp)
+                        .background(color = Color.Black.copy(0.3f), shape = RoundedCornerShape(2.dp))
                         .align(alignment = Alignment.BottomEnd),
                     color = Color.White,
                     text = duration

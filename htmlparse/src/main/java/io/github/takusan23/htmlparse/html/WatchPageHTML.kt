@@ -2,6 +2,7 @@ package io.github.takusan23.htmlparse.html
 
 import io.github.takusan23.htmlparse.data.watchpage.WatchPageJSONResponseData
 import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
+import io.github.takusan23.htmlparse.data.watchpage.WatchPageJSONInitialData
 import io.github.takusan23.htmlparse.magic.AlgorithmParser
 import io.github.takusan23.htmlparse.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.htmlparse.magic.data.AlgorithmInvokeData
@@ -41,14 +42,22 @@ object WatchPageHTML {
 
         // 成功時。HTMLにあるJSONを取り出す
         val document = Jsoup.parse(responseBody)
-        val elementText = document
+        val ytInitialPlayerResponse = document
             .getElementsByTag("script")
             .find { element -> element.html().contains("ytInitialPlayerResponse") }!!
             .html()
         // なんか後ろにJavaScript付いてるのでオブジェクトだけ取るためのJS
-        val regex = Regex("\\{.*?\\};")
-        val jsonText = regex.find(elementText)!!.value.removeSuffix(";")
-        val watchPageJSONResponseData = SerializationTool.jsonSerialization.decodeFromString<WatchPageJSONResponseData>(jsonText)
+        val regex = Regex("(\\{.*?\\});")
+        val ytInitialPlayerResponseJSON = regex.find(ytInitialPlayerResponse)!!.groupValues[1]
+        val watchPageJSONResponseData = SerializationTool.jsonSerialization.decodeFromString<WatchPageJSONResponseData>(ytInitialPlayerResponseJSON)
+
+        // もう一つのJSONもほしい
+        val ytInitialData = document
+            .getElementsByTag("script")
+            .find { element -> element.html().contains("ytInitialData ") }!!
+            .html()
+        val ytInitialDataJSON = regex.find(ytInitialData)!!.groupValues[1]
+        val watchPageJSONInitialData = SerializationTool.jsonSerialization.decodeFromString<WatchPageJSONInitialData>(ytInitialDataJSON)
 
         // base.jsのURLを取得
         val currentBaseJsUrl = "https://www.youtube.com" + document
@@ -59,14 +68,14 @@ object WatchPageHTML {
         // 比較して、復号アルゴリズムが変化しているか確認する
         if (baseJSURL == currentBaseJsUrl && algorithmFuncNameData != null && algorithmInvokeList != null) {
             // アルゴリズムに変化がないので、引数に入れた復号システムが使えます
-            WatchPageData(watchPageJSONResponseData, currentBaseJsUrl, algorithmFuncNameData, algorithmInvokeList)
+            WatchPageData(watchPageJSONResponseData, watchPageJSONInitialData, currentBaseJsUrl, algorithmFuncNameData, algorithmInvokeList)
         } else {
             // アルゴリズムが変化しました。復号システムを再構築します
             val baseJSCode = SingletonOkHttpClientTool.executeGetRequest(currentBaseJsUrl)
             val funcNameData = AlgorithmParser.funcNameParser(baseJSCode)
             val invokeList = AlgorithmParser.algorithmFuncParser(baseJSCode)
             // 再構築したデータで返す
-            WatchPageData(watchPageJSONResponseData, currentBaseJsUrl, funcNameData, invokeList)
+            WatchPageData(watchPageJSONResponseData, watchPageJSONInitialData, currentBaseJsUrl, funcNameData, invokeList)
         }
     }
 

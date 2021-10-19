@@ -24,13 +24,17 @@ data class WatchPageJSONResponseData(
  * じゃあ[adaptiveFormats]なら快適かと言われたらそうでもない。こっちの方は見る速度と同じ速度で読み込むぐらい帯域幅を節約してる模様。
  * 全然先読みしない。今回は[adaptiveFormats]を読み込んでる。ExoPlayerならMergingMediaSource？で行ける
  *
+ * 生放送の場合 [VideoDetails.isLive] は [hlsManifestUrl] を使ってください。生放送の場合は [formats] が無いと思います。
+ *
  * @param adaptiveFormats
  * @param formats
+ * @param hlsManifestUrl アクセスするとマスターのマニフェストファイルが返ってきます。こっから画質を選んで
  * */
 @Serializable
 data class StreamingData(
-    val formats: List<StreamingDataFormat>,
-    val adaptiveFormats: List<AdaptiveFormat>
+    val formats: List<StreamingDataFormat>? = null,
+    val adaptiveFormats: List<AdaptiveFormat>,
+    val hlsManifestUrl: String? = null,
 )
 
 /**
@@ -75,6 +79,7 @@ data class VideoDetails(
     val shortDescription: String,
     val viewCount: String,
     val author: String,
+    val isLive: Boolean? = false,
     val thumbnail: Thumbnail
 )
 

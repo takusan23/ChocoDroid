@@ -19,9 +19,14 @@ fun VideoPlayerUI(
     controller: ExoPlayerComposeController = rememberExoPlayerComposeController()
 ) {
     LaunchedEffect(key1 = watchPageData, key2 = quality, block = {
-        // 動画URLを読み込む
-        val mediaData = watchPageData.getMediaUrl("360p")
-        controller.setMediaSourceVideoAudioUriSupportVer(mediaData.videoTrackUrl, mediaData.audioTrackUrl)
+        // 生放送と分岐
+        if (watchPageData.isLiveStream()) {
+            controller.setMediaSourceUri(watchPageData.watchPageJSONResponseData.streamingData.hlsManifestUrl!!)
+        } else {
+            // 動画URLを読み込む
+            val mediaData = watchPageData.getMediaUrl("360p")
+            controller.setMediaSourceVideoAudioUriSupportVer(mediaData.videoTrackUrl, mediaData.audioTrackUrl)
+        }
     })
     // SurfaceView設置とリソース開放用意
     ExoPlayerComposeUI(controller = controller)

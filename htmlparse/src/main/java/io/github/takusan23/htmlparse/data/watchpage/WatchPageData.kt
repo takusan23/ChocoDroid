@@ -9,12 +9,14 @@ import java.net.URLDecoder
  * 視聴ページ取得関数の戻り値
  *
  * @param watchPageJSONResponseData 動画情報など
+ * @param watchPageJSONInitialData 投稿者のアイコンURLはここにあります
  * @param baseJsURL 暗号解除のJSコードのURL
  * @param algorithmFuncNameData 暗号解除で使うの文字列操作する関数名を入れたデータクラス
  * @param decryptInvokeList 暗号解除で使う関数を呼ぶ順番に入れた配列
  * */
 data class WatchPageData(
     val watchPageJSONResponseData: WatchPageJSONResponseData,
+    val watchPageJSONInitialData: WatchPageJSONInitialData,
     val baseJsURL: String,
     val algorithmFuncNameData: AlgorithmFuncNameData,
     val decryptInvokeList: List<AlgorithmInvokeData>,
@@ -36,11 +38,16 @@ data class WatchPageData(
     /**
      * URLが署名されているか。署名されている場合は[decryptURL]を使って正規のURLへ変換する必要があります。
      *
-     * @return URLが署名されている場合はtrue
+     * 生放送時は使わないでください。
+     *
+     * @return URLが署名されている場合はtrue。
      * */
     fun isSignatureUrl(): Boolean {
-        return watchPageJSONResponseData.streamingData.formats[0].signatureCipher != null
+        return watchPageJSONResponseData.streamingData.formats?.first()?.signatureCipher != null
     }
+
+    /** 生放送時はtrue */
+    fun isLiveStream() = watchPageJSONResponseData.videoDetails.isLive ?: false
 
     /**
      * 指定した画質の映像トラック、音声トラックを取り出す

@@ -11,27 +11,38 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val watchPageData = WatchPageHTML.getWatchPage("", null, null, null)
-            println(watchPageData)
-            val signatureCipher = watchPageData.watchPageJSONResponseData.streamingData.formats.last().signatureCipher
-            if (signatureCipher != null) {
-                println("復号URL---")
-                println(watchPageData.decryptURL(signatureCipher))
-                println("アダプティブ---")
-                watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
-                    println(it.mimeType)
-                    println(it.qualityLabel ?: "audio")
-                    println(watchPageData.decryptURL(it.signatureCipher!!))
-                }
+            val watchPageData = WatchPageHTML.getWatchPage("https://www.youtube.com/watch?v=041PyRxrA-M", null, null, null)
+
+            if (watchPageData.isLiveStream()) {
+                println("生放送 HLS アドレス")
+                println(watchPageData.watchPageJSONResponseData.streamingData.hlsManifestUrl!!)
             } else {
-                println(watchPageData.watchPageJSONResponseData.streamingData.formats.last().url)
-                println("アダプティブ---")
-                watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
-                    println(it.mimeType)
-                    println(it.qualityLabel ?: "audio")
-                    println(it.url)
+                if (watchPageData.isSignatureUrl()) {
+                    println("復号URL---")
+                    println(watchPageData.decryptURL(watchPageData.watchPageJSONResponseData.streamingData.formats?.last()?.signatureCipher!!))
+                    println("アダプティブ---")
+                    watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
+                        println(it.mimeType)
+                        println(it.qualityLabel ?: "audio")
+                        println(watchPageData.decryptURL(it.signatureCipher!!))
+                    }
+                } else {
+                    println("復号が必要ない")
+                    println(watchPageData.watchPageJSONResponseData.streamingData.formats?.last()?.url!!)
+                    println("アダプティブ---")
+                    watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
+                        println(it.mimeType)
+                        println(it.qualityLabel ?: "audio")
+                        println(it.url)
+                    }
                 }
             }
+
+            println("投稿者。の画像URL")
+            watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.forEach {
+                println(it.url)
+            }
+
             println("アルゴリズム---")
             println(watchPageData.algorithmFuncNameData)
             println(watchPageData.decryptInvokeList)

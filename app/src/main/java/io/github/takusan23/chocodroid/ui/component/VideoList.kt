@@ -78,11 +78,12 @@ fun VideoListItem(
 ) = VideoListItem(
     videoId = videoRenderer.videoId,
     videoTitle = videoRenderer.title.runs.last().text,
-    duration = videoRenderer.lengthText.simpleText,
-    watchCount = videoRenderer.viewCountText?.simpleText ?: "---",
+    duration = videoRenderer.lengthText?.simpleText ?: "生放送です",
+    watchCount = videoRenderer.viewCountText?.simpleText ?: videoRenderer.viewCountText?.runs?.joinToString(separator = " ") { it.text } ?: "",
     publishDate = videoRenderer.publishedTimeText?.simpleText ?: "---",
     ownerName = videoRenderer.ownerText.runs.last().text,
     thumbnailUrl = videoRenderer.thumbnail.thumbnails.last().url,
+    durationTextBackground = if (videoRenderer.lengthText?.simpleText == null) Color.Red.copy(0.5f) else Color.Black.copy(0.5f),
     onClick = onClick
 )
 
@@ -96,6 +97,7 @@ fun VideoListItem(
  * @param publishDate 投稿日
  * @param ownerName 投稿者。変態糞土方
  * @param duration 動画時間
+ * @param durationTextBackground 再生時間の背景色。生放送との分岐でどうぞ
  * @param onClick 押したとき。引数は動画ID
  * */
 @ExperimentalMaterialApi
@@ -108,6 +110,7 @@ fun VideoListItem(
     publishDate: String,
     ownerName: String,
     thumbnailUrl: String,
+    durationTextBackground: Color = Color.Black.copy(0.5f),
     onClick: (String) -> Unit
 ) {
     Surface(
@@ -136,7 +139,7 @@ fun VideoListItem(
                 Text(
                     modifier = Modifier
                         .offset((-5).dp, (-5).dp)
-                        .background(color = Color.Black.copy(0.3f), shape = RoundedCornerShape(2.dp))
+                        .background(color = durationTextBackground, shape = RoundedCornerShape(2.dp))
                         .align(alignment = Alignment.BottomEnd),
                     color = Color.White,
                     text = duration
@@ -152,7 +155,7 @@ fun VideoListItem(
                 Text(
                     modifier = Modifier.padding(0.dp),
                     fontSize = 14.sp,
-                    text = "${watchCount} / ${publishDate}"
+                    text = "$watchCount / $publishDate"
                 )
                 Text(
                     modifier = Modifier.padding(0.dp),

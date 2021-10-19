@@ -10,8 +10,8 @@ class SearchAPITest {
         runBlocking {
             val searchAPI = SearchAPI()
             searchAPI.init()
-            val list = searchAPI.search("さくらんぼキッス", SearchAPI.PARAMS_SORT_UPLOAD_DATE)
-            list?.forEach {
+            val searchResponseData = searchAPI.search("さくらんぼキッス", SearchAPI.PARAMS_SORT_UPLOAD_DATE)
+            searchResponseData.videoContentList?.forEach {
                 println(it)
                 println("---")
             }

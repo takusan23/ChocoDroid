@@ -71,7 +71,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
             VideoList(
                 swipeRefreshState = swipeRefreshState,
                 lazyListState = lazyListState,
-                videoList = videoList.value.map { it.videoRenderer },
+                videoList = videoList.value.mapNotNull { it.videoRenderer }, // なんかニュースって検索するとnullになるので
                 onRefresh = { scope.launch { viewModel.reSearch() } },
                 onClick = onClick
             )

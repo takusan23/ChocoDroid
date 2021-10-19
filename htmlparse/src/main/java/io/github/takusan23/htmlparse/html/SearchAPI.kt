@@ -1,6 +1,7 @@
 package io.github.takusan23.htmlparse.html
 
 import io.github.takusan23.htmlparse.data.search.*
+import io.github.takusan23.htmlparse.exception.HttpStatusCodeException
 import io.github.takusan23.htmlparse.tool.SerializationTool
 import io.github.takusan23.htmlparse.tool.SingletonOkHttpClientTool
 import kotlinx.serialization.decodeFromString
@@ -19,7 +20,7 @@ import kotlinx.serialization.encodeToString
  * - さらいに追加で検索かけるときは追加検索時のレスポンスボデーのtokenをリクエストボデーにつけてPOSTする
  *
  * */
-class SearchAPI {
+class SearchAPI() {
 
     /** ようつべトップURL */
     private val TOP_PAGE_URL = "https://www.youtube.com/"
@@ -49,15 +50,21 @@ class SearchAPI {
 
     /**
      * 検索機能を使う場合はまず最初にこの関数を呼んでください。検索APIのURLを作成します
+     *
+     * @param searchAPIUrl 既に検索APIのURLを知っている場合は入れてください。トップページの解析をスキップします。知らない場合はnullで
      * */
-    suspend fun init() {
-        // とりあえずトップページリクエスト
-        val responseBody = SingletonOkHttpClientTool.executeGetRequest(TOP_PAGE_URL)
-        // 正規表現で検索APIのURLのパラメーターを取得
-        val paramGetRegex = "\"INNERTUBE_API_KEY\":\"(.*?)\"".toRegex()
-        val parameterValue = paramGetRegex.find(responseBody)!!.groupValues[1]
-        // URLを完成させる
-        SEARCH_API_URL = "https://www.youtube.com/youtubei/v1/search?key=$parameterValue"
+    suspend fun init(searchAPIUrl: String? = null) {
+        SEARCH_API_URL = if (searchAPIUrl != null) {
+            searchAPIUrl
+        } else {
+            // とりあえずトップページリクエスト
+            val responseBody = SingletonOkHttpClientTool.executeGetRequest(TOP_PAGE_URL)
+            // 正規表現で検索APIのURLのパラメーターを取得
+            val paramGetRegex = "\"INNERTUBE_API_KEY\":\"(.*?)\"".toRegex()
+            val parameterValue = paramGetRegex.find(responseBody)!!.groupValues[1]
+            // URLを完成させる
+            "https://www.youtube.com/youtubei/v1/search?key=$parameterValue"
+        }
     }
 
     /**
@@ -69,15 +76,28 @@ class SearchAPI {
      * @param sort 並び替え。[SearchRequestData.PARAMS_SORT_RELEVANCE]などを参照してください
      * @return 検索結果
      * */
-    suspend fun search(searchWord: String, sort: String = PARAMS_SORT_RELEVANCE): List<VideoContent>? {
+    suspend fun search(searchWord: String, sort: String = PARAMS_SORT_RELEVANCE): SearchResponseData {
         // リクエストボディー作成
         val requestData = SearchRequestData(context = Context(Client()), query = searchWord, params = sort)
         val requestBody = SerializationTool.jsonSerialization.encodeToString(requestData)
-        val postResponseBody = SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
-        val searchResponseData = SerializationTool.jsonSerialization.decodeFromString<SearchResponseData>(postResponseBody)
+        val postResponseBody = try {
+            SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
+        } catch (e: HttpStatusCodeException) {
+            val errorJSONData = SerializationTool.jsonSerialization.decodeFromString<SearchResponseErrorData>(e.body)
+            if (errorJSONData.error.status == "INVALID_ARGUMENT") {
+                // 多分URL変更
+                init(null)
+                SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
+            } else {
+                // それ以外は知らんからスロー
+                throw e
+            }
+        }
+        val searchResponseJSON = SerializationTool.jsonSerialization.decodeFromString<SearchResponseJSON>(postResponseBody)
         // 次回検索用
         NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
-        return searchResponseData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer?.contents
+        val videoList = searchResponseJSON.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer?.contents
+        return SearchResponseData(SEARCH_API_URL!!, videoList)
     }
 
     /**

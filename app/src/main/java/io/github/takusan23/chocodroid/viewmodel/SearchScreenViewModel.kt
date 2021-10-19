@@ -1,17 +1,16 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
-import android.provider.SimPhonebookContract
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.takusan23.chocodroid.setting.SettingKeyObject
+import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.htmlparse.data.search.VideoContent
-import io.github.takusan23.htmlparse.data.search.VideoRenderer
 import io.github.takusan23.htmlparse.html.SearchAPI
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -57,8 +56,11 @@ class SearchScreenViewModel(application: Application, private val query: String,
 
     init {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            // DataStoreに検索APIのURLが保存されているかも
+            val setting = context.dataStore.data.first()
+            val searchAPIUrl = setting[SettingKeyObject.SEARCH_API_URL]
             // 初期化
-            searchAPI.init()
+            searchAPI.init(searchAPIUrl)
             // 検索する
             search(query, sort)
         }
@@ -81,7 +83,10 @@ class SearchScreenViewModel(application: Application, private val query: String,
      * */
     suspend fun search(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = withContext(errorHandler) {
         _isLoadingFlow.value = true
-        _searchResultListFlow.value = searchAPI.search(query, sort) ?: listOf()
+        val searchRequestData = searchAPI.search(query, sort)
+        _searchResultListFlow.value = searchRequestData.videoContentList ?: listOf()
+        // 検索APIのURL保存
+        context.dataStore.edit { setting -> setting[SettingKeyObject.SEARCH_API_URL] = searchRequestData.searchAPIUrl }
         _isLoadingFlow.value = false
     }
 

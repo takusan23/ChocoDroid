@@ -2,9 +2,21 @@ package io.github.takusan23.htmlparse.data.search
 
 import kotlinx.serialization.Serializable
 
-/** 検索結果のJSONオブジェクト */
+/**
+ * 検索結果のデータクラス
+ *
+ * @param searchAPIUrl URL。２回目以降これをinit関数で指定すると検索APIURL作成作業をスキップします。
+ * @param searchResponseJSON 検索結果JSON
+ * */
 @Serializable
 data class SearchResponseData(
+    val searchAPIUrl: String,
+    val videoContentList: List<VideoContent>?,
+)
+
+/** 検索結果のレスポンスボデー */
+@Serializable
+data class SearchResponseJSON(
     val contents: Contents
 )
 
@@ -61,9 +73,14 @@ data class ItemSectionRenderer(
     val contents: List<VideoContent>
 )
 
+/**
+ * 「ニュース」で検索するとnullになります。のでnullableになってる
+ *
+ * ちなみにテストコードではnonNullでも怒られない。は？
+ * */
 @Serializable
 data class VideoContent(
-    val videoRenderer: VideoRenderer
+    val videoRenderer: VideoRenderer? = null,
 )
 
 /**
@@ -76,14 +93,20 @@ data class VideoRenderer(
     val title: Title,
     val thumbnail: Thumbnail,
     val ownerText: OwnerText,
-    val lengthText: LengthText,
-    val publishedTimeText: PublishedTimeText?=null,
+    val lengthText: LengthText? = null,
+    val publishedTimeText: PublishedTimeText? = null,
     val viewCountText: ViewCountText? = null,
 )
 
 @Serializable
 data class ViewCountText(
-    val simpleText: String
+    val simpleText: String? = null,
+    val runs: List<ViewCountTextRun>? = null
+)
+
+@Serializable
+class ViewCountTextRun(
+    val text: String
 )
 
 @Serializable

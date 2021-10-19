@@ -105,39 +105,42 @@ fun VideoControlUI(
                             )
                         }
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                modifier = Modifier.padding(5.dp),
-                                text = TimeFormatTool.videoDurationToFormatText(controller.currentPosition.value / 1000),
-                            )
-                            if (controller.currentPosition.value > 0 && controller.duration.value > 0) {
-                                val isTouchingSlider = remember { mutableStateOf(false) }
-                                val progressFloat = remember { mutableStateOf(0f) }
-                                // 操作中でなければ
-                                LaunchedEffect(key1 = controller.currentPosition.value, block = {
-                                    if (!isTouchingSlider.value) {
-                                        progressFloat.value = (controller.currentPosition.value / controller.duration.value.toFloat())
-                                    }
-                                })
-                                Slider(
-                                    modifier = Modifier
-                                        .padding(5.dp)
-                                        .weight(1f),
-                                    value = progressFloat.value,
-                                    onValueChange = {
-                                        isTouchingSlider.value = true
-                                        progressFloat.value = it
-                                    },
-                                    onValueChangeFinished = {
-                                        isTouchingSlider.value = false
-                                        controller.seek((progressFloat.value * controller.duration.value).toLong())
-                                    }
+                        // 生放送時はシークバー出さない
+                        if (!watchPageData.isLiveStream()) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    modifier = Modifier.padding(5.dp),
+                                    text = TimeFormatTool.videoDurationToFormatText(controller.currentPosition.value / 1000),
                                 )
-                            } else Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                modifier = Modifier.padding(5.dp),
-                                text = TimeFormatTool.videoDurationToFormatText(controller.duration.value / 1000),
-                            )
+                                if (controller.currentPosition.value > 0 && controller.duration.value > 0) {
+                                    val isTouchingSlider = remember { mutableStateOf(false) }
+                                    val progressFloat = remember { mutableStateOf(0f) }
+                                    // 操作中でなければ
+                                    LaunchedEffect(key1 = controller.currentPosition.value, block = {
+                                        if (!isTouchingSlider.value) {
+                                            progressFloat.value = (controller.currentPosition.value / controller.duration.value.toFloat())
+                                        }
+                                    })
+                                    Slider(
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .weight(1f),
+                                        value = progressFloat.value,
+                                        onValueChange = {
+                                            isTouchingSlider.value = true
+                                            progressFloat.value = it
+                                        },
+                                        onValueChangeFinished = {
+                                            isTouchingSlider.value = false
+                                            controller.seek((progressFloat.value * controller.duration.value).toLong())
+                                        }
+                                    )
+                                } else Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    modifier = Modifier.padding(5.dp),
+                                    text = TimeFormatTool.videoDurationToFormatText(controller.duration.value / 1000),
+                                )
+                            }
                         }
                     }
                 }

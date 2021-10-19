@@ -31,10 +31,11 @@ object SingletonOkHttpClientTool {
             get()
         }.build()
         val response = client.newCall(request).execute()
+        val responseBody = response.body!!.string()
         if (response.isSuccessful) {
-            response.body!!.string()
+            responseBody
         } else {
-            throw HttpStatusCodeException(response.code, response.message)
+            throw HttpStatusCodeException(response.code, responseBody)
         }
     }
 
@@ -54,10 +55,11 @@ object SingletonOkHttpClientTool {
             post(postJSON.toRequestBody())
         }.build()
         val response = client.newCall(request).execute()
+        val responseBody = response.body!!.string()
         if (response.isSuccessful) {
-            response.body!!.string()
+            responseBody
         } else {
-            throw HttpStatusCodeException(response.code, response.message)
+            throw HttpStatusCodeException(response.code, responseBody)
         }
     }
 

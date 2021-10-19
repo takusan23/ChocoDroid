@@ -23,7 +23,6 @@ import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.video.VideoSize
 import io.github.takusan23.htmlparse.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
@@ -63,6 +62,8 @@ fun ExoPlayerComposeUI(controller: ExoPlayerComposeController) {
 
 /**
  * [ExoPlayerComposeUI]操作用クラス
+ *
+ * hlsを再生するならexoplayer-hlsを依存関係に追加しないとだめだよ！（一敗
  * */
 class ExoPlayerComposeController(
     val context: Context,
@@ -120,7 +121,18 @@ class ExoPlayerComposeController(
     }
 
     /**
-     * ExoPlayerに動画と音声をセットする。
+     * ExoPlayerに動画をセットする。主に生放送用
+     *
+     * @param uri URL。HLSも行ける
+     * */
+    fun setMediaSourceUri(uri: String) {
+        val mediaItem = MediaItem.fromUri(uri.toUri())
+        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
+    }
+
+    /**
+     * ExoPlayerに映像と音声をセットする。
      *
      * ビデオトラックとオーディオトラックが別のURLの場合に使ってね。
      * */

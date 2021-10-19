@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">ChocoDroid</string>
+    <string name="choco_bridge_bar_title">Video ID / URL / Search</string>
+    <string name="favourite">Favorite</string>
+    <string name="download">Download</string>
+    <string name="history">History</string>
+    <string name="delete_all">Delete all</string>
+    <string name="history_empty">No history.</string>
+    <string name="search">Search</string>
+    <string name="play_video_id">Play video ID</string>
+    <string name="paste_from_clipboard">Paste from clipboard</string>
+    <string name="video_info">Video info</string>
+    <string name="video_menu">Menu</string>
+    <string name="download_alt">Save</string>
+    <string name="watch_count">Views</string>
+    <string name="publish_date">Post date</string>
+    <string name="publish_name">Contributor</string>
+    <string name="delete_all_message">Do you really want to delete this?</string>
+    <string name="delete">Delete</string>
 </resources>

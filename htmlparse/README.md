@@ -3,8 +3,6 @@
 
 今回はappモジュールがクソデカにならないように、**通信部分だけ**取り出しました。Android非依存なので他環境に持っていけるかもしれない。
 
-~~without youtube official api~~
-
 ## 視聴ページ取得関数
 
 `WatchPageHTML#getWatchPage()`

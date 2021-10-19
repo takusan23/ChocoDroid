@@ -11,9 +11,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.HistoryVideoList
 import io.github.takusan23.chocodroid.ui.component.tool.SnackbarComposeTool
@@ -32,11 +36,12 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 fun HistoryScreen(
     mainViewModel: MainScreenViewModel,
     historyScreenViewModel: HistoryScreenViewModel = viewModel(),
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val historyList = historyScreenViewModel.historyDBDataListFlow.collectAsState(initial = listOf())
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -53,12 +58,12 @@ fun HistoryScreen(
                             scope = scope,
                             snackbarDuration = SnackbarDuration.Long,
                             snackbarHostState = scaffoldState.snackbarHostState,
-                            snackbarMessage = "本当に削除しますか？",
-                            actionLabel = "削除",
+                            snackbarMessage = context.getString(R.string.delete_all_message),
+                            actionLabel = context.getString(R.string.delete),
                             onActionPerformed = { historyScreenViewModel.deleteAllDB() }
                         )
                     },
-                    content = { Text(text = "全件削除") },
+                    content = { Text(text = stringResource(id = R.string.delete_all)) },
                     elevation = ButtonDefaults.elevation(0.dp),
                     shape = RoundedCornerShape(20.dp),
                 )
@@ -74,7 +79,7 @@ fun HistoryScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "履歴はありません。これからに期待！")
+                        Text(text = stringResource(id = R.string.history_empty))
                     }
                 }
             }

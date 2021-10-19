@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -123,7 +124,7 @@ fun ChocoBridgeBar(
                 ) {
                     if (textValue.isEmpty() && !isFocusTextBox.value) {
                         // ヒント代わり
-                        Text(text = "動画のID / URL を入力")
+                        Text(text = stringResource(id = R.string.choco_bridge_bar_title))
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BasicTextField(
@@ -153,10 +154,10 @@ fun ChocoBridgeBar(
 
             // ここにクリップボード貼り付けなどを入れる
             if (isFocusTextBox.value) {
-                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_search_24, text = "検索", onClick = { onSearchClick?.invoke(textValue) })
-                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_play_arrow_24, text = "動画IDを再生", onClick = { onPlayClick?.invoke(textValue) })
+                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_search_24, text = stringResource(id = R.string.search), onClick = { onSearchClick?.invoke(textValue) })
+                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_play_arrow_24, text = stringResource(id = R.string.play_video_id), onClick = { onPlayClick?.invoke(textValue) })
                 Divider(Modifier.padding(start = 10.dp, end = 10.dp))
-                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_content_paste_go_24, text = "クリップボードから貼り付け", onClick = { onClipboardClick?.invoke() })
+                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_content_paste_go_24, text = stringResource(id = R.string.paste_from_clipboard), onClick = { onClipboardClick?.invoke() })
                 Spacer(modifier = Modifier.padding(bottom = 10.dp))
             }
         }

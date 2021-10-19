@@ -3,8 +3,10 @@ package io.github.takusan23.chocodroid.ui.component
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.navOptions
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
 
@@ -22,21 +24,21 @@ fun HomeScreenBottomNavigation(navHostController: NavHostController) {
     ) {
         BottomNavigationItem(
             selected = false,
-            onClick = { navHostController.navigate(NavigationLinkList.FavouriteScreen) },
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = "お気に入り") },
-            label = { Text(text = "お気に入り") }
+            onClick = { navHostController.navigate(NavigationLinkList.FavouriteScreen, navOptions { popUpTo(NavigationLinkList.FavouriteScreen) }) },
+            icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null) },
+            label = { Text(text = stringResource(id = R.string.favourite)) }
         )
         BottomNavigationItem(
             selected = false,
-            onClick = { navHostController.navigate(NavigationLinkList.DownloadScreen) },
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = "ダウンロード") },
-            label = { Text(text = "ダウンロード") }
+            onClick = { navHostController.navigate(NavigationLinkList.DownloadScreen, navOptions { popUpTo(NavigationLinkList.FavouriteScreen) }) },
+            icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null) },
+            label = { Text(text = stringResource(id = R.string.download)) }
         )
         BottomNavigationItem(
             selected = false,
-            onClick = { navHostController.navigate(NavigationLinkList.HistoryScreen) },
-            icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_history_24), contentDescription = "履歴") },
-            label = { Text(text = "履歴") }
+            onClick = { navHostController.navigate(NavigationLinkList.HistoryScreen, navOptions { popUpTo(NavigationLinkList.FavouriteScreen) }) },
+            icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_history_24), contentDescription = null) },
+            label = { Text(text = stringResource(id = R.string.history)) }
         )
     }
 }

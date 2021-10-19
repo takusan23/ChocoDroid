@@ -1,2 +1,4 @@
 # database パッケージ
 AndroidのRoomのコンポーネントがあります。
+
+Kotlin CoroutinesのFlowのおかげでデータベースに変更があったらFlowに流してくれます。リアルタイムGJ

@@ -25,5 +25,7 @@ class MainActivity : ComponentActivity() {
             val viewModel by viewModels<MainScreenViewModel>()
             ChocoDroidMainScreen(viewModel)
         }
+
     }
+
 }

@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
@@ -44,7 +45,7 @@ fun VideoDetailDescriptionScreen(watchPageData: WatchPageData) {
                     .padding(5.dp)
                     .weight(1f),
                 mainText = videoDetails.viewCount,
-                subText = "再生回数",
+                subText = stringResource(id = R.string.watch_count),
                 iconPainter = painterResource(id = R.drawable.ic_outline_play_arrow_24),
                 onClick = { }
             )
@@ -53,7 +54,7 @@ fun VideoDetailDescriptionScreen(watchPageData: WatchPageData) {
                     .padding(5.dp)
                     .weight(1f),
                 mainText = watchPageData.watchPageJSONResponseData.microformat.playerMicroformatRenderer.publishDate,
-                subText = "投稿日時",
+                subText = stringResource(id = R.string.publish_date),
                 iconPainter = painterResource(id = R.drawable.ic_outline_today_24),
                 onClick = { }
             )
@@ -64,7 +65,7 @@ fun VideoDetailDescriptionScreen(watchPageData: WatchPageData) {
                 .padding(5.dp)
                 .fillMaxWidth(),
             mainText = videoDetails.author,
-            subText = "投稿者",
+            subText = stringResource(id = R.string.publish_name),
             iconPainter = rememberImagePainter(
                 data = iconUrl,
                 builder = { crossfade(true) }

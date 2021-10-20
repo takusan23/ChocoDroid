@@ -74,7 +74,7 @@ fun VideoList(
 @Composable
 fun VideoListItem(
     videoRenderer: VideoRenderer,
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
 ) = VideoListItem(
     videoId = videoRenderer.videoId,
     videoTitle = videoRenderer.title.runs.last().text,
@@ -111,7 +111,7 @@ fun VideoListItem(
     ownerName: String,
     thumbnailUrl: String,
     durationTextBackground: Color = Color.Black.copy(0.5f),
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -119,9 +119,7 @@ fun VideoListItem(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Glideの代わりにCoilを試す
-            Box(
-                modifier = Modifier.padding(5.dp)
-            ) {
+            Box(modifier = Modifier.padding(5.dp)) {
                 Image(
                     modifier = Modifier
                         .width(150.dp)

@@ -73,7 +73,13 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 },
                 detailContent = {
                     // 動画情報
-                    watchPageResponseData.value?.apply { VideoDetailUI(this) }
+                    watchPageResponseData.value?.apply {
+                        VideoDetailUI(
+                            watchPageData = this,
+                            miniPlayerState = miniPlayerState,
+                            mainViewModel = viewModel
+                        )
+                    }
                 },
                 content = {
                     // 画面遷移。別コンポーネントへ

@@ -27,3 +27,7 @@ val searchResponseData = searchAPI.search("バックレカラオケ", SearchAPI.
 ```
 
 `searchResponseData`には、検索APIのURLも入っているので、二回目以降検索をする際はinit関数の引数に入れることでURL取得作業をスキップできます。
+
+## テストコード
+testsパッケージ内の@Testアノテーションを付けた関数はAndroid Studioを利用して開発環境のJava VMで実行できます。
+`SearchAPITest`、`WatchPageHTMLTest`参照。

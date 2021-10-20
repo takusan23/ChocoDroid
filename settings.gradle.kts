@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "ChocoDroid"
 include(":app")
 include(":htmlparse")
+include(":downloadpocket")

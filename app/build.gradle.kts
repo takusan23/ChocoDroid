@@ -59,8 +59,10 @@ android {
 }
 
 dependencies {
-    // マルチモジュール
+    // API叩くやつ
     implementation(project(":htmlparse"))
+    // 分割ダウンロード
+    implementation(project(":downloadpocket"))
 
     // Android
     implementation("androidx.core:core-ktx:1.6.0")

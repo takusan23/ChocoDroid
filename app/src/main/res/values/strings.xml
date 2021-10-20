@@ -17,4 +17,5 @@
     <string name="publish_name">Contributor</string>
     <string name="delete_all_message">Do you really want to delete this?</string>
     <string name="delete">Delete</string>
+    <string name="related_videos">Related Videos</string>
 </resources>

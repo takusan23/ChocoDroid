@@ -11,7 +11,7 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val watchPageData = WatchPageHTML.getWatchPage("https://www.youtube.com/watch?v=041PyRxrA-M", null, null, null)
+            val watchPageData = WatchPageHTML.getWatchPage("https://www.youtube.com/watch?v=Ng_fZau-olQ", null, null, null)
 
             if (watchPageData.isLiveStream()) {
                 println("生放送 HLS アドレス")
@@ -42,6 +42,12 @@ class WatchPageHTMLTest {
             watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.forEach {
                 println(it.url)
             }
+
+            println("関連動画")
+            watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results.mapNotNull { it.compactVideoRenderer }.forEach {
+                println(it)
+            }
+
 
             println("アルゴリズム---")
             println(watchPageData.algorithmFuncNameData)

@@ -17,4 +17,5 @@
     <string name="publish_name">投稿者</string>
     <string name="delete">削除</string>
     <string name="delete_all_message">本当に削除しますか？</string>
+    <string name="related_videos">関連動画</string>
 </resources>

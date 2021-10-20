@@ -8,6 +8,9 @@ object VideoDetailNavigationLinkList {
     /** メニュー */
     const val VideoDetailMenuScreen = "menu"
 
+    /** 関連動画 */
+    const val VideoDetailRelatedVideos = "related"
+
     /** ダウンロード */
     const val VideoDetailDownloadScreen = "download"
 

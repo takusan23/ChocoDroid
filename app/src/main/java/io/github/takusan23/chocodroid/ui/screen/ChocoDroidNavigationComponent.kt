@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
-import io.github.takusan23.htmlparse.html.SearchAPI
+import io.github.takusan23.htmlparse.api.SearchAPI
 
 /**
  * ナビゲーション。画面遷移。

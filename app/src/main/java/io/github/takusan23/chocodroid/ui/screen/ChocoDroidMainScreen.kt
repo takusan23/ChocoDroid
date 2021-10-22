@@ -16,8 +16,8 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  *
  * @param viewModel ViewModel
  * */
-@ExperimentalFoundationApi
 @ExperimentalMaterialApi
+@ExperimentalFoundationApi
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {

@@ -5,34 +5,34 @@ import kotlinx.serialization.Serializable
 /**
  * 検索結果のデータクラス
  *
- * @param searchAPIUrl URL。２回目以降これをinit関数で指定すると検索APIURL作成作業をスキップします。
- * @param searchResponseJSON 検索結果JSON
+ * @param apiKey APIキー。２回目以降これをinit関数で指定するとAPIキーを見つける作業をスキップします。
+ * @param videoContentList 動画の配列
  * */
 @Serializable
 data class SearchResponseData(
-    val searchAPIUrl: String,
+    @Deprecated("YTAPICall#apiKeyFlow()を使ってください。") val apiKey: String,
     val videoContentList: List<VideoContent>?,
 )
 
 /** 検索結果のレスポンスボデー */
 @Serializable
 data class SearchResponseJSON(
-    val contents: Contents
+    val contents: Contents,
 )
 
 @Serializable
 data class Contents(
-    val twoColumnSearchResultsRenderer: TwoColumnSearchResultsRenderer
+    val twoColumnSearchResultsRenderer: TwoColumnSearchResultsRenderer,
 )
 
 @Serializable
 data class TwoColumnSearchResultsRenderer(
-    val primaryContents: PrimaryContents
+    val primaryContents: PrimaryContents,
 )
 
 @Serializable
 data class PrimaryContents(
-    val sectionListRenderer: SectionListRenderer
+    val sectionListRenderer: SectionListRenderer,
 )
 
 @Serializable
@@ -45,7 +45,7 @@ data class SectionListRenderer(
  * */
 @Serializable
 data class MoreSearchResponseData(
-    val onResponseReceivedCommands: List<OnResponseReceivedCommands>
+    val onResponseReceivedCommands: List<OnResponseReceivedCommands>,
 )
 
 @Serializable
@@ -55,7 +55,7 @@ data class OnResponseReceivedCommands(
 
 @Serializable
 data class AppendContinuationItemsAction(
-    val continuationItems: List<ContinuationItem>
+    val continuationItems: List<ContinuationItem>,
 )
 
 @Serializable
@@ -70,7 +70,7 @@ data class SelectionListContents(
 
 @Serializable
 data class ItemSectionRenderer(
-    val contents: List<VideoContent>
+    val contents: List<VideoContent>,
 )
 
 /**
@@ -101,63 +101,63 @@ data class VideoRenderer(
 @Serializable
 data class ViewCountText(
     val simpleText: String? = null,
-    val runs: List<ViewCountTextRun>? = null
+    val runs: List<ViewCountTextRun>? = null,
 )
 
 @Serializable
 class ViewCountTextRun(
-    val text: String
+    val text: String,
 )
 
 @Serializable
 data class LengthText(
-    val simpleText: String
+    val simpleText: String,
 )
 
 @Serializable
 data class PublishedTimeText(
-    val simpleText: String
+    val simpleText: String,
 )
 
 @Serializable
 data class OwnerText(
-    val runs: List<OwnerData>
+    val runs: List<OwnerData>,
 )
 
 @Serializable
 data class OwnerData(
     val text: String,
-    val navigationEndpoint: NavigationEndpoint
+    val navigationEndpoint: NavigationEndpoint,
 )
 
 @Serializable
 data class NavigationEndpoint(
-    val browseEndpoint: BrowseEndpoint
+    val browseEndpoint: BrowseEndpoint,
 )
 
 @Serializable
 data class BrowseEndpoint(
-    val browseId: String
+    val browseId: String,
 )
 
 @Serializable
 data class Thumbnail(
-    val thumbnails: List<ThumbnailUrl>
+    val thumbnails: List<ThumbnailUrl>,
 )
 
 @Serializable
 data class ThumbnailUrl(
     val url: String,
     val width: Int,
-    val height: Int
+    val height: Int,
 )
 
 @Serializable
 data class Title(
-    val runs: List<TitleText>
+    val runs: List<TitleText>,
 )
 
 @Serializable
 data class TitleText(
-    val text: String
+    val text: String,
 )

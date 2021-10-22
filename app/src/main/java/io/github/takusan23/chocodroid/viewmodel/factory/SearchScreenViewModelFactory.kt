@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
-import io.github.takusan23.htmlparse.html.SearchAPI
+import io.github.takusan23.htmlparse.api.SearchAPI
 
 /**
  * SearchScreenViewModelへ引数を渡すためのクラス

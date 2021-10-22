@@ -18,6 +18,6 @@ object SettingKeyObject {
     /** base.jsで関数を呼ぶ順番の配列を保存してるJSON */
     val WATCH_PAGE_JS_INVOKE_LIST_JSON = stringPreferencesKey("watchpage_js_invoke_list_json")
 
-    /** 検索APIのURL */
-    val SEARCH_API_URL = stringPreferencesKey("search_api_url")
+    /** 動画検索や、チャンネルの投稿動画取得で使うAPIキーを保存しておく */
+    val API_KEY = stringPreferencesKey("api_key")
 }

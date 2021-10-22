@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
  * 検索APIで失敗したときに出るメッセージ
  * */
 @Serializable
-data class SearchResponseErrorData(
+data class YTAPIResponseErrorData(
     val error: Error,
 )
 

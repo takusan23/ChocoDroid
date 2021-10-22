@@ -1,9 +1,7 @@
-package io.github.takusan23.htmlparse.html
+package io.github.takusan23.htmlparse.api
 
 import io.github.takusan23.htmlparse.data.search.*
-import io.github.takusan23.htmlparse.exception.HttpStatusCodeException
 import io.github.takusan23.htmlparse.tool.SerializationTool
-import io.github.takusan23.htmlparse.tool.SingletonOkHttpClientTool
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
@@ -20,13 +18,13 @@ import kotlinx.serialization.encodeToString
  * - さらいに追加で検索かけるときは追加検索時のレスポンスボデーのtokenをリクエストボデーにつけてPOSTする
  *
  * */
-class SearchAPI() {
+class SearchAPI {
 
-    /** ようつべトップURL */
-    private val TOP_PAGE_URL = "https://www.youtube.com/"
+    /** API叩くやつ */
+    private val ytAPICall = YTAPICall()
 
     /** 検索URL */
-    private var SEARCH_API_URL: String? = null
+    private val SEARCH_API_BASE_URL = "https://www.youtube.com/youtubei/v1/search"
 
     /** 次検索用 */
     private var NEXT_PAGE_CONTINUATION: String? = null
@@ -49,22 +47,12 @@ class SearchAPI() {
     }
 
     /**
-     * 検索機能を使う場合はまず最初にこの関数を呼んでください。検索APIのURLを作成します
+     * 検索機能を使う場合はまず最初にこの関数を呼んでください。検索APIで使うAPIキーを取得します。
      *
-     * @param searchAPIUrl 既に検索APIのURLを知っている場合は入れてください。トップページの解析をスキップします。知らない場合はnullで
+     * @param apiKey 検索APIのURLにつけるAPIKeyを入れてください。初回検索時、APIキー変更時はnullにしてください。
      * */
-    suspend fun init(searchAPIUrl: String? = null) {
-        SEARCH_API_URL = if (searchAPIUrl != null) {
-            searchAPIUrl
-        } else {
-            // とりあえずトップページリクエスト
-            val responseBody = SingletonOkHttpClientTool.executeGetRequest(TOP_PAGE_URL)
-            // 正規表現で検索APIのURLのパラメーターを取得
-            val paramGetRegex = "\"INNERTUBE_API_KEY\":\"(.*?)\"".toRegex()
-            val parameterValue = paramGetRegex.find(responseBody)!!.groupValues[1]
-            // URLを完成させる
-            "https://www.youtube.com/youtubei/v1/search?key=$parameterValue"
-        }
+    suspend fun init(apiKey: String? = null) {
+        ytAPICall.initAPIKey(apiKey)
     }
 
     /**
@@ -80,24 +68,13 @@ class SearchAPI() {
         // リクエストボディー作成
         val requestData = SearchRequestData(context = Context(Client()), query = searchWord, params = sort)
         val requestBody = SerializationTool.jsonSerialization.encodeToString(requestData)
-        val postResponseBody = try {
-            SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
-        } catch (e: HttpStatusCodeException) {
-            val errorJSONData = SerializationTool.jsonSerialization.decodeFromString<SearchResponseErrorData>(e.body)
-            if (errorJSONData.error.status == "INVALID_ARGUMENT") {
-                // 多分URL変更
-                init(null)
-                SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
-            } else {
-                // それ以外は知らんからスロー
-                throw e
-            }
-        }
+        // APIキー変更に対応した関数
+        val postResponseBody = ytAPICall.executeYTAPIPostRequest(SEARCH_API_BASE_URL, requestBody)
         val searchResponseJSON = SerializationTool.jsonSerialization.decodeFromString<SearchResponseJSON>(postResponseBody)
         // 次回検索用
         NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
         val videoList = searchResponseJSON.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer?.contents
-        return SearchResponseData(SEARCH_API_URL!!, videoList)
+        return SearchResponseData(ytAPICall.apiKeyFlow.value!!, videoList)
     }
 
     /**
@@ -113,7 +90,7 @@ class SearchAPI() {
         // リクエストボディー作成
         val requestData = MoreSearchRequestData(context = Context(Client()), continuation = NEXT_PAGE_CONTINUATION!!)
         val requestBody = SerializationTool.jsonSerialization.encodeToString(requestData)
-        val postResponseBody = SingletonOkHttpClientTool.executePostRequest(SEARCH_API_URL!!, requestBody)
+        val postResponseBody = ytAPICall.executeYTAPIPostRequest(SEARCH_API_BASE_URL, requestBody)
         // 追加検索では検索結果JSONが若干違う
         val moreSearchResponseData = SerializationTool.jsonSerialization.decodeFromString<MoreSearchResponseData>(postResponseBody)
         // 次回検索用

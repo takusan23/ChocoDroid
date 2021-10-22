@@ -1,6 +1,6 @@
 package io.github.takusan23.htmlparse.data.search
 
-import io.github.takusan23.htmlparse.html.SearchAPI
+import io.github.takusan23.htmlparse.api.SearchAPI
 import kotlinx.serialization.Serializable
 
 /**

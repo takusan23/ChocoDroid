@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.htmlparse.data.search.VideoContent
-import io.github.takusan23.htmlparse.html.SearchAPI
+import io.github.takusan23.htmlparse.api.SearchAPI
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -58,9 +58,9 @@ class SearchScreenViewModel(application: Application, private val query: String,
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             // DataStoreに検索APIのURLが保存されているかも
             val setting = context.dataStore.data.first()
-            val searchAPIUrl = setting[SettingKeyObject.SEARCH_API_URL]
+            val apiKey = setting[SettingKeyObject.API_KEY]
             // 初期化
-            searchAPI.init(searchAPIUrl)
+            searchAPI.init(apiKey)
             // 検索する
             search(query, sort)
         }
@@ -86,7 +86,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
         val searchRequestData = searchAPI.search(query, sort)
         _searchResultListFlow.value = searchRequestData.videoContentList ?: listOf()
         // 検索APIのURL保存
-        context.dataStore.edit { setting -> setting[SettingKeyObject.SEARCH_API_URL] = searchRequestData.searchAPIUrl }
+        context.dataStore.edit { setting -> setting[SettingKeyObject.API_KEY] = searchRequestData.apiKey }
         _isLoadingFlow.value = false
     }
 

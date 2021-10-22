@@ -1,5 +1,5 @@
-val kotlinVersion: String by project
-val composeVersion: String by project
+val kotlinVersion: String by rootProject.extra
+val composeVersion: String by rootProject.extra
 
 plugins {
     id("com.android.application")

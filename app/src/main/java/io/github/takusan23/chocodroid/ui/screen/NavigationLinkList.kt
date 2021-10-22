@@ -1,6 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import io.github.takusan23.htmlparse.html.SearchAPI
+import io.github.takusan23.htmlparse.api.SearchAPI
 
 /**
  * 遷移先一覧

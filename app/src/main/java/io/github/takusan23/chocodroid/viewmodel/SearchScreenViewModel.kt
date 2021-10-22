@@ -6,8 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.htmlparse.data.search.VideoContent
-import io.github.takusan23.htmlparse.api.SearchAPI
+import io.github.takusan23.internet.data.search.VideoContent
+import io.github.takusan23.internet.api.SearchAPI
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -56,13 +56,21 @@ class SearchScreenViewModel(application: Application, private val query: String,
 
     init {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
-            // DataStoreに検索APIのURLが保存されているかも
+            // DataStoreにAPIキーが保存されているかも
             val setting = context.dataStore.data.first()
             val apiKey = setting[SettingKeyObject.API_KEY]
             // 初期化
             searchAPI.init(apiKey)
             // 検索する
             search(query, sort)
+        }
+        // APIキーを保存しておく
+        viewModelScope.launch {
+            searchAPI.apiKeyFlow.collect { apiKey ->
+                if (apiKey != null) {
+                    context.dataStore.edit { setting -> setting[SettingKeyObject.API_KEY] = apiKey }
+                }
+            }
         }
     }
 
@@ -81,12 +89,9 @@ class SearchScreenViewModel(application: Application, private val query: String,
      * @param query 検索ワード
      * @param sort ソート。[SearchAPI.PARAMS_SORT_RELEVANCE]など
      * */
-    suspend fun search(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = withContext(errorHandler) {
+    private suspend fun search(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = withContext(errorHandler) {
         _isLoadingFlow.value = true
-        val searchRequestData = searchAPI.search(query, sort)
-        _searchResultListFlow.value = searchRequestData.videoContentList ?: listOf()
-        // 検索APIのURL保存
-        context.dataStore.edit { setting -> setting[SettingKeyObject.API_KEY] = searchRequestData.apiKey }
+        _searchResultListFlow.value = searchAPI.search(query, sort) ?: listOf()
         _isLoadingFlow.value = false
     }
 

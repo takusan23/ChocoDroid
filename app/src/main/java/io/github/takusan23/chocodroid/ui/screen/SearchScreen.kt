@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.SearchScreenBar
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
@@ -27,6 +29,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     val query = viewModel.queryFlow.collectAsState()
     val sort = viewModel.sortFlow.collectAsState()
 
+    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val lazyListState = rememberLazyListState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading.value)
@@ -36,7 +39,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     LaunchedEffect(key1 = errorMessage.value, block = {
         if (errorMessage.value != null) {
             val snackbarHostState = scaffoldState.snackbarHostState
-            val result = snackbarHostState.showSnackbar(errorMessage.value!!, "閉じる", SnackbarDuration.Indefinite)
+            val result = snackbarHostState.showSnackbar(errorMessage.value!!, context.getString(R.string.close), SnackbarDuration.Indefinite)
             if (result == SnackbarResult.ActionPerformed) {
                 snackbarHostState.currentSnackbarData?.dismiss()
             }

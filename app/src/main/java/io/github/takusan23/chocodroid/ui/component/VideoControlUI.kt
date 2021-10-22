@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
-import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
+import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

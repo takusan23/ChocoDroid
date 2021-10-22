@@ -59,8 +59,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":internet"))
     // API叩くやつ
-    implementation(project(":htmlparse"))
     // 分割ダウンロード
     implementation(project(":downloadpocket"))
 

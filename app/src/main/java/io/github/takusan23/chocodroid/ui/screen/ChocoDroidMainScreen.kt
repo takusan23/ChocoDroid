@@ -77,7 +77,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                         VideoDetailUI(
                             watchPageData = this,
                             miniPlayerState = miniPlayerState,
-                            mainViewModel = viewModel
+                            mainViewModel = viewModel,
+                            mainNavHostController = navController,
                         )
                     }
                 },

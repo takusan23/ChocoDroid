@@ -10,8 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
+import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
-import io.github.takusan23.htmlparse.api.SearchAPI
+import io.github.takusan23.internet.api.SearchAPI
 
 /**
  * ナビゲーション。画面遷移。
@@ -23,7 +24,10 @@ import io.github.takusan23.htmlparse.api.SearchAPI
  * */
 @ExperimentalMaterialApi
 @Composable
-fun ChocoDroidNavigationComponent(mainScreenViewModel: MainScreenViewModel, navController: NavHostController = rememberNavController()) {
+fun ChocoDroidNavigationComponent(
+    mainScreenViewModel: MainScreenViewModel,
+    navController: NavHostController = rememberNavController(),
+) {
 
     // 画面遷移
     NavHost(navController = navController, startDestination = NavigationLinkList.FavouriteScreen) {
@@ -49,6 +53,15 @@ fun ChocoDroidNavigationComponent(mainScreenViewModel: MainScreenViewModel, navC
         composable(NavigationLinkList.DownloadScreen) {
             // ダウンロード画面
             DownloadScreen(viewModel = mainScreenViewModel, navController = navController)
+        }
+        composable("${NavigationLinkList.ChannelScreen}?channel_id={channel_id}") {
+            // チャンネル画面
+            val channelId = it.arguments?.getString("channel_id")!!
+            val application = (LocalContext.current as ComponentActivity).application
+            ChannelScreen(
+                channelScreenViewModel = viewModel(factory = ChannelScreenViewModelFactory(application, channelId)),
+                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) }
+            )
         }
     }
 

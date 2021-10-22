@@ -22,7 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.videodetail.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
-import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
+import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * 動画説明部分のUI
@@ -30,7 +30,8 @@ import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
  * @param watchPageData 視聴ページレスポンスデータ
  * @param mainViewModel メイン画面ViewModel
  * @param miniPlayerState ミニプレイヤー操作用
- * @param navHostController 動画状とかメニュー切り替えよう
+ * @param navHostController 動画詳細とかメニュー切り替え
+ * @param mainNavHostController メイン画面のNavController
  * */
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
@@ -40,6 +41,7 @@ fun VideoDetailUI(
     mainViewModel: MainScreenViewModel,
     miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
     navHostController: NavHostController = rememberNavController(),
+    mainNavHostController: NavHostController = rememberNavController(),
 ) {
     // 戻るキーでミニプレイヤーにできるように
     SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
@@ -61,7 +63,13 @@ fun VideoDetailUI(
                 NavHost(navController = navHostController, startDestination = VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) {
                     // 動画説明
                     composable(VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) {
-                        VideoDetailDescriptionScreen(watchPageData = watchPageData)
+                        VideoDetailDescriptionScreen(
+                            watchPageData = watchPageData,
+                            onNavigation = {
+                                miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
+                                mainNavHostController.navigate(it)
+                            }
+                        )
                     }
                     // メニュー画面
                     composable(VideoDetailNavigationLinkList.VideoDetailMenuScreen) {

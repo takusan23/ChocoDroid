@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import io.github.takusan23.htmlparse.api.SearchAPI
+import androidx.navigation.navOptions
+import io.github.takusan23.internet.api.SearchAPI
 
 /**
  * 遷移先一覧
@@ -23,6 +24,16 @@ object NavigationLinkList {
     const val HistoryScreen = "history"
 
     /** ダウンロード画面 */
-    const val DownloadScreen = "cache"
+    const val DownloadScreen = "download"
+
+    /**
+     * チャンネル画面。channel_idパラメーターにチャンネルIDを入れてください
+     *
+     * 例："${ChannelScreen}?channel_id=チャンネルID"
+     * */
+    const val ChannelScreen = "channel"
+
+    /** 戻るキーを押したときに戻す画面 */
+    val NavOptions = navOptions { popUpTo(FavouriteScreen) }
 
 }

@@ -1,7 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component.videodetail
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
+import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * ダウンロード画面

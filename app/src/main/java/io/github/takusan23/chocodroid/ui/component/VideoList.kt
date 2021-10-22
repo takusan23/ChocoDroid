@@ -24,7 +24,7 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import io.github.takusan23.htmlparse.data.search.VideoRenderer
+import io.github.takusan23.internet.data.search.VideoRenderer
 
 
 /**

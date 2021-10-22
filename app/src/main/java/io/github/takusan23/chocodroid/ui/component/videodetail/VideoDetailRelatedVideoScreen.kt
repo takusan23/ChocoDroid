@@ -3,7 +3,7 @@ package io.github.takusan23.chocodroid.ui.component.videodetail
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import io.github.takusan23.chocodroid.ui.component.RelatedVideoList
-import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
+import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * 関連動画表示画面

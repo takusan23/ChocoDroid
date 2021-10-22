@@ -18,4 +18,7 @@
     <string name="delete">削除</string>
     <string name="delete_all_message">本当に削除しますか？</string>
     <string name="related_videos">関連動画</string>
+    <string name="close">閉じる</string>
+    <string name="open_browser">ブラウザで開く</string>
+    <string name="add_favourite_list">お気に入りに追加</string>
 </resources>

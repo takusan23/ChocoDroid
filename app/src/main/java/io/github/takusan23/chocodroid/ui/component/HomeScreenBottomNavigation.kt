@@ -27,19 +27,19 @@ fun HomeScreenBottomNavigation(navHostController: NavHostController) {
     ) {
         BottomNavigationItem(
             selected = currentNavRoute == NavigationLinkList.FavouriteScreen,
-            onClick = { navHostController.navigate(NavigationLinkList.FavouriteScreen, navOptions { popUpTo(NavigationLinkList.FavouriteScreen) }) },
+            onClick = { navHostController.navigate(NavigationLinkList.FavouriteScreen, NavigationLinkList.NavOptions) },
             icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null) },
             label = { Text(text = stringResource(id = R.string.favourite)) }
         )
         BottomNavigationItem(
             selected = currentNavRoute == NavigationLinkList.DownloadScreen,
-            onClick = { navHostController.navigate(NavigationLinkList.DownloadScreen, navOptions { popUpTo(NavigationLinkList.FavouriteScreen) }) },
+            onClick = { navHostController.navigate(NavigationLinkList.DownloadScreen, NavigationLinkList.NavOptions) },
             icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null) },
             label = { Text(text = stringResource(id = R.string.download)) }
         )
         BottomNavigationItem(
             selected = currentNavRoute == NavigationLinkList.HistoryScreen,
-            onClick = { navHostController.navigate(NavigationLinkList.HistoryScreen, navOptions { popUpTo(NavigationLinkList.FavouriteScreen) }) },
+            onClick = { navHostController.navigate(NavigationLinkList.HistoryScreen, NavigationLinkList.NavOptions) },
             icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_history_24), contentDescription = null) },
             label = { Text(text = stringResource(id = R.string.history)) }
         )

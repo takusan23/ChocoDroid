@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import io.github.takusan23.htmlparse.data.watchpage.CompactVideoRenderer
+import io.github.takusan23.internet.data.watchpage.CompactVideoRenderer
 
 /**
  * 関連動画一覧

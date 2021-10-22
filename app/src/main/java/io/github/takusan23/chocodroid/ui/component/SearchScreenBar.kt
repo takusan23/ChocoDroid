@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.htmlparse.api.SearchAPI
+import io.github.takusan23.internet.api.SearchAPI
 
 /**
  * 検索バー。検索ボックスとか並び替えとかある

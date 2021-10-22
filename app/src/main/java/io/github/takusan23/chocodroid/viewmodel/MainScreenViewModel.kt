@@ -9,11 +9,11 @@ import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
-import io.github.takusan23.htmlparse.html.WatchPageHTML
-import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
-import io.github.takusan23.htmlparse.magic.AlgorithmSerializer
-import io.github.takusan23.htmlparse.magic.data.AlgorithmFuncNameData
-import io.github.takusan23.htmlparse.magic.data.AlgorithmInvokeData
+import io.github.takusan23.internet.html.WatchPageHTML
+import io.github.takusan23.internet.data.watchpage.WatchPageData
+import io.github.takusan23.internet.magic.AlgorithmSerializer
+import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
+import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

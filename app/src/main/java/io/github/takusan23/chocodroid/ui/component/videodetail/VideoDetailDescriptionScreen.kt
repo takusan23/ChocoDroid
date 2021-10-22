@@ -18,17 +18,22 @@ import coil.compose.rememberImagePainter
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.RoundedIconButton
 import io.github.takusan23.chocodroid.ui.component.RoundedImageButton
-import io.github.takusan23.htmlparse.data.watchpage.WatchPageData
+import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
+import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * 動画説明文。再生回数やタイトルなど
  *
  * @param watchPageData 視聴ページレスポンスデータ
+ * @param onNavigation 今の所チャンネル画面に遷移する目的以外では使ってない
  * */
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @Composable
-fun VideoDetailDescriptionScreen(watchPageData: WatchPageData) {
+fun VideoDetailDescriptionScreen(
+    watchPageData: WatchPageData,
+    onNavigation: (String) -> Unit,
+) {
     val videoDetails = watchPageData.watchPageJSONResponseData.videoDetails
     val iconUrl = watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.last()?.url
 
@@ -70,7 +75,7 @@ fun VideoDetailDescriptionScreen(watchPageData: WatchPageData) {
                 data = iconUrl,
                 builder = { crossfade(true) }
             ),
-            onClick = { }
+            onClick = { onNavigation("${NavigationLinkList.ChannelScreen}?channel_id=${watchPageData.watchPageJSONResponseData.videoDetails.channelId}") }
         )
 
         Divider()

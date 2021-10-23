@@ -21,4 +21,7 @@
     <string name="close">Close</string>
     <string name="open_browser">Open browser</string>
     <string name="add_favourite_list">Add favorite</string>
+    <string name="download_service_channel_name">Download service</string>
+    <string name="download_service_notification_title">Download service is running</string>
+    <string name="cancel">Cancel</string>
 </resources>

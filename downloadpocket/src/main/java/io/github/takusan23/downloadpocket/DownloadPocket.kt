@@ -12,12 +12,19 @@ import java.io.File
 /**
  * 分割ダウンロード（並列ダウンロード？）
  *
+ * @param url ダウンロードURL
  * @param headers [Pair]の配列。一個目がヘッダー名、二個目がヘッダーに入れる中身。MapだとKeyがかぶると上書きされるので
  * @param splitCount 並列ダウンロードを同時に何個するか
  * @param splitFileFolder 一時的にファイルを保存しておくフォルダー。後に削除される
  * @param resultVideoFile 最終的にできる動画ファイル
  * */
-class DownloadPocket(private val url: String, private val splitFileFolder: File, private val resultVideoFile: File, private val splitCount: Int = 4, private val headers: ArrayList<Pair<String, String>>? = null) {
+class DownloadPocket(
+    private val url: String,
+    private val splitFileFolder: File,
+    private val resultVideoFile: File,
+    private val splitCount: Int = 4,
+    private val headers: ArrayList<Pair<String, String>>? = null,
+) {
 
     /** シングルトンなOkHttpClient */
     private val okHttpClient = OkHttpClient()

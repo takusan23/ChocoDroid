@@ -39,7 +39,7 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 fun ChocoBridgeBar(
     modifier: Modifier = Modifier,
     viewModel: MainScreenViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     val context = LocalContext.current
     val textValue = remember { mutableStateOf("") }
@@ -55,7 +55,7 @@ fun ChocoBridgeBar(
         },
         onSearchClick = {
             if (it.isNotEmpty()) {
-                navHostController.navigate("${NavigationLinkList.SearchScreen}?query=${it}")
+                navHostController.navigate(NavigationLinkList.getSearchScreenLink(it))
             }
         },
         onClipboardClick = { textValue.value = ClipboardTool.getClipboardText(context) ?: "" }

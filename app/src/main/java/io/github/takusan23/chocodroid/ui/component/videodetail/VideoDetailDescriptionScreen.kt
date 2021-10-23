@@ -75,7 +75,7 @@ fun VideoDetailDescriptionScreen(
                 data = iconUrl,
                 builder = { crossfade(true) }
             ),
-            onClick = { onNavigation("${NavigationLinkList.ChannelScreen}?channel_id=${watchPageData.watchPageJSONResponseData.videoDetails.channelId}") }
+            onClick = { onNavigation(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageJSONResponseData.videoDetails.channelId)) }
         )
 
         Divider()

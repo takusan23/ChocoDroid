@@ -13,12 +13,16 @@ object NavigationLinkList {
     /** お気に入り画面 */
     const val FavouriteScreen = "favourite"
 
+    /** 検索画面 */
+    private const val SearchScreen = "search"
+
     /**
-     * 検索画面。queryパラメーターに検索ワードを、sortには並び順です。[SearchAPI.PARAMS_SORT_RELEVANCE]を参照して
+     * 検索画面。
      *
-     * 例："${NavigationLinkList.SearchScreen}?query=エロゲソングメドレー?sort=${PARAMS_SORT_RELEVANCE}"
+     * @param query 検索ワードを
+     * @param sort 並び順。[SearchAPI.PARAMS_SORT_RELEVANCE]を参照して
      * */
-    const val SearchScreen = "search"
+    fun getSearchScreenLink(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = "$SearchScreen?query=${query}&sort=${sort}"
 
     /** 履歴画面 */
     const val HistoryScreen = "history"
@@ -26,12 +30,15 @@ object NavigationLinkList {
     /** ダウンロード画面 */
     const val DownloadScreen = "download"
 
+    /** チャンネル画面。*/
+    private const val ChannelScreen = "channel"
+
     /**
-     * チャンネル画面。channel_idパラメーターにチャンネルIDを入れてください
+     * チャンネル画面。
      *
-     * 例："${ChannelScreen}?channel_id=チャンネルID"
+     * @param channelId チャンネルID。
      * */
-    const val ChannelScreen = "channel"
+    fun getChannelScreenLink(channelId: String) = "$ChannelScreen?channel_id=$channelId"
 
     /** 戻るキーを押したときに戻す画面 */
     val NavOptions = navOptions { popUpTo(FavouriteScreen) }

@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.github.takusan23.chocodroid.service.ContentDownloadService
 import io.github.takusan23.chocodroid.ui.component.videodetail.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -43,6 +44,8 @@ fun VideoDetailUI(
     navHostController: NavHostController = rememberNavController(),
     mainNavHostController: NavHostController = rememberNavController(),
 ) {
+    val context = LocalContext.current
+
     // 戻るキーでミニプレイヤーにできるように
     SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
 
@@ -81,7 +84,10 @@ fun VideoDetailUI(
                     }
                     // ダウンロード
                     composable(VideoDetailNavigationLinkList.VideoDetailDownloadScreen) {
-                        VideoDetailDownloadScreen(watchPageData = watchPageData)
+                        VideoDetailDownloadScreen(
+                            watchPageData = watchPageData,
+                            onDownloadClick = { data -> ContentDownloadService.startDownloadService(context, data) }
+                        )
                     }
                 }
             }

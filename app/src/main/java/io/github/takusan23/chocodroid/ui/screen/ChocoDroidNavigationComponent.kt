@@ -31,7 +31,7 @@ fun ChocoDroidNavigationComponent(
 
     // 画面遷移
     NavHost(navController = navController, startDestination = NavigationLinkList.FavouriteScreen) {
-        composable("${NavigationLinkList.SearchScreen}?query={query}&sort={sort}") {
+        composable(NavigationLinkList.getSearchScreenLink("{query}","{sort}")) {
             // 検索画面
             val searchQuery = it.arguments?.getString("query")!!
             val sort = it.arguments?.getString("sort") ?: SearchAPI.PARAMS_SORT_RELEVANCE
@@ -54,7 +54,7 @@ fun ChocoDroidNavigationComponent(
             // ダウンロード画面
             DownloadScreen(viewModel = mainScreenViewModel, navController = navController)
         }
-        composable("${NavigationLinkList.ChannelScreen}?channel_id={channel_id}") {
+        composable(NavigationLinkList.getChannelScreenLink("{channel_id}")) {
             // チャンネル画面
             val channelId = it.arguments?.getString("channel_id")!!
             val application = (LocalContext.current as ComponentActivity).application

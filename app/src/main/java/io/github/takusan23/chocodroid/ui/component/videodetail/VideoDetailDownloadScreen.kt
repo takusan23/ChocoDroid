@@ -17,13 +17,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * ダウンロード画面
+ *
+ * @param watchPageData 動画情報
+ * @param onDownloadClick 動画ダウンロードボタンを押したときに呼ばれる。渡されるデータは画質の指定など
  * */
 @Composable
-fun VideoDetailDownloadScreen(watchPageData: WatchPageData) {
+fun VideoDetailDownloadScreen(
+    watchPageData: WatchPageData,
+    onDownloadClick: (DownloadRequestData) -> Unit = {},
+) {
     val context = LocalContext.current
 
     Column(
@@ -45,7 +52,7 @@ fun VideoDetailDownloadScreen(watchPageData: WatchPageData) {
             elevation = ButtonDefaults.elevation(0.dp),
             shape = RoundedCornerShape(50),
             onClick = {
-                Toast.makeText(context, "未実装。", Toast.LENGTH_SHORT).show()
+                onDownloadClick(DownloadRequestData(watchPageData.watchPageJSONResponseData.videoDetails.videoId))
             },
             content = {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null)

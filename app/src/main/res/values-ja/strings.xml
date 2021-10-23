@@ -21,4 +21,7 @@
     <string name="close">閉じる</string>
     <string name="open_browser">ブラウザで開く</string>
     <string name="add_favourite_list">お気に入りに追加</string>
+    <string name="download_service_channel_name">ダウンロードサービス</string>
+    <string name="download_service_notification_title">ダウンロードサービス起動中</string>
+    <string name="cancel">キャンセル</string>
 </resources>

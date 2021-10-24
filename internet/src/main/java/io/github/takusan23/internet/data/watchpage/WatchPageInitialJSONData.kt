@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
  * 今の所アイコンの画像URL取得のためにパースしてる
  * */
 @Serializable
-data class WatchPageJSONInitialData(
+data class WatchPageInitialJSONData(
     val contents: Contents,
 )
 

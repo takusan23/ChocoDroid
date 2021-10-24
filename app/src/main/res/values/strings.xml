@@ -32,4 +32,5 @@
     <string name="download_service_progress_video">Downloading video file</string>
     <string name="download_service_mix_notification">Combining video and audio</string>
     <string name="download_service_mix_notification_description">Please wait for a little while</string>
+    <string name="download_service_progress_thumbnail">Downloading thumbnail file</string>
 </resources>

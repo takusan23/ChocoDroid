@@ -30,17 +30,17 @@ object DownloadVideoMuxer {
     /**
      * 新しく動画ファイルを作成して、映像トラックと音声トラックを付けて一つの動画にする
      *
-     * @param mixTrackList 映像パスと音声パスを入れてください。
+     * @param mixMediaPathList 映像パスと音声パスを入れてください。
      * @param resultFilePath 最終的にできるファイル
      * */
     @SuppressLint("WrongConstant")
-    suspend fun startMixer(mixTrackList: List<String>, resultFilePath: String) = withContext(Dispatchers.Default) {
+    suspend fun startMixer(mixMediaPathList: List<String>, resultFilePath: String) = withContext(Dispatchers.Default) {
 
         // 映像トラックと音声トラックを追加して一つの動画にする。そのために使うのがMediaMuxer
         val mediaMuxer = MediaMuxer(resultFilePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
 
         // 映像、音声ファイルからフォーマットとデータを取り出す準備をする
-        val trackIndexToExtractorPairList = mixTrackList
+        val trackIndexToExtractorPairList = mixMediaPathList
             .map { path ->
                 // トラックを取り出して、フォーマットを取得
                 val mediaExtractor = MediaExtractor()

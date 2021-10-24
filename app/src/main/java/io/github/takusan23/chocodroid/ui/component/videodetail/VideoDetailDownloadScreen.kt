@@ -1,6 +1,5 @@
 package io.github.takusan23.chocodroid.ui.component.videodetail
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,7 +51,7 @@ fun VideoDetailDownloadScreen(
             elevation = ButtonDefaults.elevation(0.dp),
             shape = RoundedCornerShape(50),
             onClick = {
-                onDownloadClick(DownloadRequestData(watchPageData.watchPageJSONResponseData.videoDetails.videoId))
+                onDownloadClick(DownloadRequestData(watchPageData.watchPageResponseJSONData.videoDetails.videoId))
             },
             content = {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null)

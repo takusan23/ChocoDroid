@@ -17,7 +17,7 @@ import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.chocodroid.tool.DownloadVideoMuxer
+import io.github.takusan23.chocodroid.tool.DownloadContentManager
 import io.github.takusan23.downloadpocket.DownloadPocket
 import io.github.takusan23.internet.html.WatchPageHTML
 import io.github.takusan23.internet.magic.AlgorithmSerializer
@@ -68,11 +68,11 @@ class ContentDownloadService : Service() {
     /** まとめて終了するためにコルーチンスコープ */
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    /** 分割ダウンロード時に一時的に使うフォルダを作成するフォルダ */
-    private val tempFolderRootFolder by lazy { externalCacheDir!! }
+    /** ダウンロード関係のクラス */
+    private val downloadContentManager by lazy { DownloadContentManager(this) }
 
-    /** ダウンロードしたデータ保存先 */
-    private val downloadFolderRootFolder by lazy { File(getExternalFilesDir(null), "download").apply { mkdir() } }
+    /** ダウンロード時のファイル分割数 */
+    private val downloadSplitCount = 5
 
     /** ダウンロード中動画を数えてる */
     private val downloadingItemList = arrayListOf<DownloadRequestData>()
@@ -84,6 +84,8 @@ class ContentDownloadService : Service() {
                 "service_stop" -> {
                     // Service強制終了
                     stopSelf()
+                    // ダウンロード中のコンテンツは削除する。もしくはレジュームするって手もあるけど
+                    downloadingItemList.forEach { downloadContentManager.deleteContent(it.videoId) }
                 }
             }
         }
@@ -116,30 +118,52 @@ class ContentDownloadService : Service() {
             val funcNameData = AlgorithmSerializer.toData<AlgorithmFuncNameData?>(setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON])
             val funcInvokeDataList = AlgorithmSerializer.toData<List<AlgorithmInvokeData>>(setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON])
             // リクエスト
-            val watchPage = WatchPageHTML.getWatchPage(downloadRequestData.videoId, baseJsURL, funcNameData, funcInvokeDataList)
-            val videoId = watchPage.watchPageJSONResponseData.videoDetails.videoId
-            val videoTitle = watchPage.watchPageJSONResponseData.videoDetails.title
-            val mediaUrlData = watchPage.getMediaUrl()
-
-            val awaitList = arrayListOf(async { startDownload(mediaUrlData.audioTrackUrl, videoId, "${getString(R.string.download_service_progress_audio)} : $videoTitle", true) })
-            // 動画もダウンロードする場合
+            val watchPageData = WatchPageHTML.getWatchPage(downloadRequestData.videoId, baseJsURL, funcNameData, funcInvokeDataList)
+            val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
+            val videoTitle = watchPageData.watchPageResponseJSONData.videoDetails.title
+            // 非同期待機リスト
+            val awaitList = arrayListOf<Deferred<Pair<File, DownloadPocket>>>()
+            // サムネイル
+            awaitList += async {
+                downloadContentManager.downloadThumbnailFile(watchPageData).apply {
+                    showDownloadNotificationFromFlow(second.progressFlow, "${getString(R.string.download_service_progress_thumbnail)} : $videoTitle")
+                    second.start()
+                }
+            }
+            // 音声
+            awaitList += async {
+                downloadContentManager.downloadAudioFile(watchPageData, downloadRequestData.quality, downloadSplitCount).apply {
+                    showDownloadNotificationFromFlow(second.progressFlow, "${getString(R.string.download_service_progress_audio)} : $videoTitle")
+                    second.start()
+                }
+            }
+            // 映像もダウンロードする場合は
             if (!downloadRequestData.isAudioOnly) {
-                awaitList.add(async { startDownload(mediaUrlData.videoTrackUrl, videoId, "${getString(R.string.download_service_progress_video)} : $videoTitle", false) })
+                awaitList += async {
+                    downloadContentManager.downloadVideoFile(watchPageData, downloadRequestData.quality, downloadSplitCount).apply {
+                        showDownloadNotificationFromFlow(second.progressFlow, "${getString(R.string.download_service_progress_video)} : $videoTitle")
+                        second.start()
+                    }
+                }
             }
             // 全部待つ。コルーチン便利すぎる
-            val pathList = awaitList.map { it.await() }.map { it.path }
+            val pathList = awaitList.map { it.await() }.map { it.first.path }
 
-            // 映像ファイルと音声ファイルを合成する場合
-            if (!downloadRequestData.isAudioOnly) {
-                val videoFileFolder = File(downloadFolderRootFolder, videoId).apply { mkdir() }
-                val resultPath = File(videoFileFolder, "${videoId}_mix.mp4")
+            val contentPath = if (!downloadRequestData.isAudioOnly) {
+                // 映像ファイルと音声ファイルを合成する場合
                 // 通知出す
                 val notificationId = showVideoMuxerNotification("${getString(R.string.download_service_mix_notification)} : $videoTitle")
-                // 合成開始
-                DownloadVideoMuxer.startMixer(pathList, resultPath.path)
+                // 合成開始。サムネのasyncがあるのでdrop(1)する
+                val file = downloadContentManager.downloadVideoMix(pathList.drop(1), videoId)
                 // 通知消す
                 notificationManagerCompat.cancel(notificationId)
+                file.path
+            } else {
+                pathList.last()
             }
+
+            // データベースに追加
+            downloadContentManager.insertDownloadContentDB(watchPageData, pathList.first(), contentPath, downloadRequestData.isAudioOnly)
 
             // 他になければ終了？
             downloadingItemList.remove(downloadRequestData)
@@ -156,49 +180,25 @@ class ContentDownloadService : Service() {
     }
 
     /**
-     * ダウンロードする関数
+     * ダウンロード進捗Flowから通知を作成して出す。
      *
-     * @param fileName ファイル名
-     * @param isAudio 音声ファイルの場合はtrue
-     * @param notificationTitle 通知に表示する名前。動画タイトルなど。"音声"と"映像"の文字はこちらで追加します。
-     * @param url ダウンロードするファイルのURL
-     * @return ダウンロードしたファイル保存先
+     * @param progressFlow Intを流すFlow
+     * @param notificationTitle 通知タイトル
      * */
-    private suspend fun startDownload(url: String, fileName: String, notificationTitle: String, isAudio: Boolean) = withContext(Dispatchers.IO) {
-        // ファイル名
-        val splitFolderName = if (isAudio) "${fileName}_audio" else "${fileName}_video"
-        val resultFileName = if (isAudio) "${fileName}.aac" else "${fileName}.mp4"
-        // 通知IDを確保
-        val notificationId = downloadProgressNotificationId++
-        // 分割ファイル保存先
-        val splitFileFolder = File(tempFolderRootFolder, splitFolderName).apply { mkdir() }
-        // 最終的なファイル
-        val videoFileFolder = File(downloadFolderRootFolder, fileName).apply { mkdir() }
-        val resultContentFile = File(videoFileFolder, resultFileName).apply { createNewFile() }
-        // とりあえずリクエスト
-        val downloadPocket = DownloadPocket(
-            url = url,
-            splitFileFolder = splitFileFolder,
-            resultVideoFile = resultContentFile,
-            splitCount = 5
-        )
-        launch {
-            downloadPocket.progressFlow
-                .onEach { progress ->
-                    println("${if (isAudio) "音声DL" else "映像DL"} = $progress")
+    private fun showDownloadNotificationFromFlow(progressFlow: StateFlow<Int>, notificationTitle: String) {
+        coroutineScope.launch {
+            // 通知IDを確保
+            val notificationId = downloadProgressNotificationId++
+            progressFlow.onEach { progress ->
+                if (progress == 100) {
+                    cancel() // ちゃんと終了させてあげないと多分メモリに残り続ける上に一生一時停止し続ける
+                    notificationManagerCompat.cancel(notificationId)
+                } else {
+                    println("$notificationTitle = $progress")
                     showDownloadProgressNotification(notificationId, notificationTitle, progress)
                 }
-                .onEach {
-                    if (it == 100) {
-                        cancel() // ちゃんと終了させてあげないと多分メモリに残り続ける上に一生一時停止し続ける
-                        notificationManagerCompat.cancel(notificationId)
-                    }
-                }
-                .collect()
+            }.collect()
         }
-        // ダウンロード終了まで一時停止
-        downloadPocket.start()
-        return@withContext resultContentFile
     }
 
     /** フォアグラウンドサービス起動 */
@@ -271,7 +271,7 @@ class ContentDownloadService : Service() {
     private fun showVideoMuxerNotification(notificationTitle: String): Int {
         val notificationId = downloadProgressNotificationId++
         val mixNotification = NotificationCompat.Builder(this@ContentDownloadService, NOTIFICATION_CHANNEL_ID).apply {
-            setSmallIcon(R.drawable.chocodroid_download)
+            setSmallIcon(R.drawable.chocodroid_mix)
             setContentTitle(notificationTitle)
             setContentText(getString(R.string.download_service_mix_notification_description))
             setGroup(DOWNLOAD_PROGRESS_NOTIFICATION_GROUP)

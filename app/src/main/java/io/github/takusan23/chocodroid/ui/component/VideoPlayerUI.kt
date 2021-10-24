@@ -21,7 +21,7 @@ fun VideoPlayerUI(
     LaunchedEffect(key1 = watchPageData, key2 = quality, block = {
         // 生放送と分岐
         if (watchPageData.isLiveStream()) {
-            controller.setMediaSourceUri(watchPageData.watchPageJSONResponseData.streamingData.hlsManifestUrl!!)
+            controller.setMediaSourceUri(watchPageData.watchPageResponseJSONData.streamingData.hlsManifestUrl!!)
         } else {
             // 動画URLを読み込む
             val mediaData = watchPageData.getMediaUrl("360p")

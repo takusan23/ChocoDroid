@@ -18,14 +18,15 @@ class DownloadPocketTest {
     fun splitDownloadTest() {
         runBlocking {
             val url = """
+                
 
-            """.trimIndent()
+""".trimIndent()
             // とりあえずテスト環境のダウンロードフォルダに
             val downloadFolderPath = """${System.getProperty("user.home")}\Downloads"""
             val downloadFile = """$downloadFolderPath\result.mp4"""
             // 一時保存フォルダ
             val tempFolderPath = """$downloadFolderPath\temp"""
-            val downloadPocket = DownloadPocket(url, File(tempFolderPath).apply { mkdir() }, File(downloadFile).apply { createNewFile() }, 5)
+            val downloadPocket = DownloadPocket(url, File(tempFolderPath).apply { mkdir() }, File(downloadFile).apply { createNewFile() }, 10)
 
             launch {
                 downloadPocket.progressFlow

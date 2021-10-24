@@ -18,6 +18,6 @@ fun VideoDetailRelatedVideoScreen(
     onClick: (String) -> Unit,
 ) {
     // 関連動画
-    val relatedVideoList = watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results.mapNotNull { it.compactVideoRenderer }
+    val relatedVideoList = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results.mapNotNull { it.compactVideoRenderer }
     RelatedVideoList(list = relatedVideoList, onClick = onClick)
 }

@@ -112,7 +112,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
      * */
     private suspend fun insertDBOrWatchCountIncrement(watchPageData: WatchPageData) {
         // 存在するかどうか
-        val watchPageJSONResponseData = watchPageData.watchPageJSONResponseData
+        val watchPageJSONResponseData = watchPageData.watchPageResponseJSONData
         if (historyDB.historyDao().existsHistoryData(watchPageJSONResponseData.videoDetails.videoId)) {
             // ある
             val historyDBEntity = historyDB.historyDao().getHistoryFromVideoId(watchPageJSONResponseData.videoDetails.videoId)
@@ -124,12 +124,9 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
                 videoId = watchPageJSONResponseData.videoDetails.videoId,
                 duration = TimeFormatTool.videoDurationToFormatText(watchPageJSONResponseData.videoDetails.lengthSeconds.toLong()),
                 title = watchPageJSONResponseData.videoDetails.title,
-                insertDate = System.currentTimeMillis(),
-                localWatchCount = 1,
                 ownerName = watchPageJSONResponseData.videoDetails.author,
                 publishedDate = watchPageJSONResponseData.microformat.playerMicroformatRenderer.publishDate,
                 thumbnailUrl = watchPageJSONResponseData.videoDetails.thumbnail.thumbnails.last().url,
-                updateDate = System.currentTimeMillis(),
             )
             historyDB.historyDao().insert(entity)
         }

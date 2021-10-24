@@ -15,22 +15,22 @@ class WatchPageHTMLTest {
 
             if (watchPageData.isLiveStream()) {
                 println("生放送 HLS アドレス")
-                println(watchPageData.watchPageJSONResponseData.streamingData.hlsManifestUrl!!)
+                println(watchPageData.watchPageResponseJSONData.streamingData.hlsManifestUrl!!)
             } else {
                 if (watchPageData.isSignatureUrl()) {
                     println("復号URL---")
-                    println(watchPageData.decryptURL(watchPageData.watchPageJSONResponseData.streamingData.formats?.last()?.signatureCipher!!))
+                    println(watchPageData.decryptURL(watchPageData.watchPageResponseJSONData.streamingData.formats?.last()?.signatureCipher!!))
                     println("アダプティブ---")
-                    watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
+                    watchPageData.watchPageResponseJSONData.streamingData.adaptiveFormats.forEach {
                         println(it.mimeType)
                         println(it.qualityLabel ?: "audio")
                         println(watchPageData.decryptURL(it.signatureCipher!!))
                     }
                 } else {
                     println("復号が必要ない")
-                    println(watchPageData.watchPageJSONResponseData.streamingData.formats?.last()?.url!!)
+                    println(watchPageData.watchPageResponseJSONData.streamingData.formats?.last()?.url!!)
                     println("アダプティブ---")
-                    watchPageData.watchPageJSONResponseData.streamingData.adaptiveFormats.forEach {
+                    watchPageData.watchPageResponseJSONData.streamingData.adaptiveFormats.forEach {
                         println(it.mimeType)
                         println(it.qualityLabel ?: "audio")
                         println(it.url)
@@ -39,12 +39,12 @@ class WatchPageHTMLTest {
             }
 
             println("投稿者。の画像URL")
-            watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.forEach {
+            watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.forEach {
                 println(it.url)
             }
 
             println("関連動画")
-            watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results.mapNotNull { it.compactVideoRenderer }.forEach {
+            watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results.mapNotNull { it.compactVideoRenderer }.forEach {
                 println(it)
             }
 

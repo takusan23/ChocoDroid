@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * HTML内にあるJSON。動画情報とかURLとか
  * */
 @Serializable
-data class WatchPageJSONResponseData(
+data class WatchPageResponseJSONData(
     val streamingData: StreamingData,
     val videoDetails: VideoDetails,
     val microformat: Microformat,

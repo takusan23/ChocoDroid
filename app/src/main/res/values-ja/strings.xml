@@ -32,4 +32,5 @@
     <string name="download_service_progress_video">動画ファイルDL中</string>
     <string name="download_service_mix_notification">映像と音声を合成中</string>
     <string name="download_service_mix_notification_description">しばらくお待ち下さい</string>
+    <string name="download_service_progress_thumbnail">サムネイル画像DL中</string>
 </resources>

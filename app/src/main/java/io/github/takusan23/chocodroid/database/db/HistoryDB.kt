@@ -20,13 +20,14 @@ abstract class HistoryDB : RoomDatabase() {
 
         /**
          * データベースのインスタンスはシングルトンにする必要があるため
-         * @param
+         * @param context Context
+         * @return
          * */
         fun getInstance(context: Context): HistoryDB {
             if (historyDB == null) {
                 historyDB = Room.databaseBuilder(context, HistoryDB::class.java, "history_db.db").build()
             }
-            return historyDB as HistoryDB
+            return historyDB!!
         }
 
     }

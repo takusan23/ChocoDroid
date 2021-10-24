@@ -34,8 +34,8 @@ fun VideoDetailDescriptionScreen(
     watchPageData: WatchPageData,
     onNavigation: (String) -> Unit,
 ) {
-    val videoDetails = watchPageData.watchPageJSONResponseData.videoDetails
-    val iconUrl = watchPageData.watchPageJSONInitialData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.last()?.url
+    val videoDetails = watchPageData.watchPageResponseJSONData.videoDetails
+    val iconUrl = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.last()?.url
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text(
@@ -58,7 +58,7 @@ fun VideoDetailDescriptionScreen(
                 modifier = Modifier
                     .padding(5.dp)
                     .weight(1f),
-                mainText = watchPageData.watchPageJSONResponseData.microformat.playerMicroformatRenderer.publishDate,
+                mainText = watchPageData.watchPageResponseJSONData.microformat.playerMicroformatRenderer.publishDate,
                 subText = stringResource(id = R.string.publish_date),
                 iconPainter = painterResource(id = R.drawable.ic_outline_today_24),
                 onClick = { }
@@ -75,14 +75,14 @@ fun VideoDetailDescriptionScreen(
                 data = iconUrl,
                 builder = { crossfade(true) }
             ),
-            onClick = { onNavigation(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageJSONResponseData.videoDetails.channelId)) }
+            onClick = { onNavigation(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageResponseJSONData.videoDetails.channelId)) }
         )
 
         Divider()
         Text(
             modifier = Modifier.padding(10.dp),
             fontSize = 15.sp,
-            text = watchPageData.watchPageJSONResponseData.videoDetails.shortDescription,
+            text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
         )
     }
 }

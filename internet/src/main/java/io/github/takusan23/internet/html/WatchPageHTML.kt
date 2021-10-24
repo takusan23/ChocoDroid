@@ -1,8 +1,8 @@
 package io.github.takusan23.internet.html
 
-import io.github.takusan23.internet.data.watchpage.WatchPageJSONResponseData
+import io.github.takusan23.internet.data.watchpage.WatchPageResponseJSONData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
-import io.github.takusan23.internet.data.watchpage.WatchPageJSONInitialData
+import io.github.takusan23.internet.data.watchpage.WatchPageInitialJSONData
 import io.github.takusan23.internet.magic.AlgorithmParser
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
@@ -49,7 +49,7 @@ object WatchPageHTML {
         // なんか後ろにJavaScript付いてるのでオブジェクトだけ取るためのJS
         val regex = Regex("(\\{.*?\\});")
         val ytInitialPlayerResponseJSON = regex.find(ytInitialPlayerResponse)!!.groupValues[1]
-        val watchPageJSONResponseData = SerializationTool.jsonSerialization.decodeFromString<WatchPageJSONResponseData>(ytInitialPlayerResponseJSON)
+        val watchPageJSONResponseData = SerializationTool.jsonSerialization.decodeFromString<WatchPageResponseJSONData>(ytInitialPlayerResponseJSON)
 
         // もう一つのJSONもほしい
         val ytInitialData = document
@@ -57,7 +57,7 @@ object WatchPageHTML {
             .find { element -> element.html().contains("ytInitialData ") }!!
             .html()
         val ytInitialDataJSON = regex.find(ytInitialData)!!.groupValues[1]
-        val watchPageJSONInitialData = SerializationTool.jsonSerialization.decodeFromString<WatchPageJSONInitialData>(ytInitialDataJSON)
+        val watchPageJSONInitialData = SerializationTool.jsonSerialization.decodeFromString<WatchPageInitialJSONData>(ytInitialDataJSON)
 
         // base.jsのURLを取得
         val currentBaseJsUrl = "https://www.youtube.com" + document

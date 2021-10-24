@@ -24,4 +24,12 @@
     <string name="download_service_channel_name">ダウンロードサービス</string>
     <string name="download_service_notification_title">ダウンロードサービス起動中</string>
     <string name="cancel">キャンセル</string>
+    <string name="download_service_complete_toast">すべてのダウンロードが完了しました。</string>
+    <string name="download_service_progress_notification">ダウンロード進捗通知</string>
+    <string name="download_service_progress">進捗</string>
+    <string name="download_service_progress_notification_description">ダウンロード進捗通知をまとめています。詳しくは通知を展開してください。</string>
+    <string name="download_service_progress_audio">音声ファイルDL中</string>
+    <string name="download_service_progress_video">動画ファイルDL中</string>
+    <string name="download_service_mix_notification">映像と音声を合成中</string>
+    <string name="download_service_mix_notification_description">しばらくお待ち下さい</string>
 </resources>

@@ -1,6 +1,8 @@
 package io.github.takusan23.downloadpocket
 
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -24,6 +26,13 @@ class DownloadPocketTest {
             // 一時保存フォルダ
             val tempFolderPath = """$downloadFolderPath\temp"""
             val downloadPocket = DownloadPocket(url, File(tempFolderPath).apply { mkdir() }, File(downloadFile).apply { createNewFile() }, 5)
+
+            launch {
+                downloadPocket.progressFlow
+                    .onEach { println("ダウンロード進捗 = $it") }
+                    .onEach { if (it == 100) cancel() }
+                    .collect()
+            }
 
             downloadPocket.start()
         }

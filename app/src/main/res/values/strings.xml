@@ -24,4 +24,12 @@
     <string name="download_service_channel_name">Download service</string>
     <string name="download_service_notification_title">Download service is running</string>
     <string name="cancel">Cancel</string>
+    <string name="download_service_complete_toast">All downloads are complete.</string>
+    <string name="download_service_progress_notification">Download progress notification</string>
+    <string name="download_service_progress">Progress</string>
+    <string name="download_service_progress_notification_description">This is a summary of download progress notifications. Expand the notification for more information.</string>
+    <string name="download_service_progress_audio">Downloading audio file</string>
+    <string name="download_service_progress_video">Downloading video file</string>
+    <string name="download_service_mix_notification">Combining video and audio</string>
+    <string name="download_service_mix_notification_description">Please wait for a little while</string>
 </resources>

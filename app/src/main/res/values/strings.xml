@@ -15,7 +15,7 @@
     <string name="watch_count">Views</string>
     <string name="publish_date">Post date</string>
     <string name="publish_name">Contributor</string>
-    <string name="delete_all_message">Do you really want to delete this?</string>
+    <string name="delete_message">Do you really want to delete this?</string>
     <string name="delete">Delete</string>
     <string name="related_videos">Related Videos</string>
     <string name="close">Close</string>
@@ -33,4 +33,6 @@
     <string name="download_service_mix_notification">Combining video and audio</string>
     <string name="download_service_mix_notification_description">Please wait for a little while</string>
     <string name="download_service_progress_thumbnail">Downloading thumbnail file</string>
+    <string name="quality">Quality</string>
+    <string name="download_split_count">Division number</string>
 </resources>

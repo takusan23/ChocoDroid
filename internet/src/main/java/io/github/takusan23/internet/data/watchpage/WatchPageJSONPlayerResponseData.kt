@@ -52,7 +52,7 @@ data class StreamingDataFormat(
 
 @Serializable
 data class Microformat(
-    val playerMicroformatRenderer: PlayerMicroformatRenderer
+    val playerMicroformatRenderer: PlayerMicroformatRenderer,
 )
 
 @Serializable
@@ -80,17 +80,17 @@ data class VideoDetails(
     val viewCount: String,
     val author: String,
     val isLive: Boolean? = false,
-    val thumbnail: Thumbnail
+    val thumbnail: Thumbnail,
 )
 
 @Serializable
 data class Thumbnail(
-    val thumbnails: List<ThumbnailUrl>
+    val thumbnails: List<ThumbnailUrl>,
 )
 
 @Serializable
 data class ThumbnailUrl(
     val url: String,
     val width: Int,
-    val height: Int
+    val height: Int,
 )

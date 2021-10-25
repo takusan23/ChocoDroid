@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.MutableState
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import io.github.takusan23.chocodroid.database.db.HistoryDB
 import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.chocodroid.tool.DownloadContentManager
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -32,10 +34,11 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     private val context = application.applicationContext
 
-    private val _watchPageResponseData = MutableStateFlow<WatchPageData?>(null)
+    private val _watchPageData = MutableStateFlow<WatchPageData?>(null)
     private val _mediaUrlDataFlow = MutableStateFlow<MediaUrlData?>(null)
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
+    private val _isPlayingContentFromInternet = MutableStateFlow(true)
 
     /** コルーチン起動時の引数に指定してね。例外を捕まえ、Flowに流します */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
@@ -50,8 +53,11 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     /** 履歴DB。 */
     private val historyDB by lazy { HistoryDB.getInstance(context) }
 
+    /** ダウンロードコンテンツマネージャー */
+    private val downloadContentManager by lazy { DownloadContentManager(context) }
+
     /** 動画情報データクラスを保持するFlow。外部公開用は受け取りのみ */
-    val watchPageResponseDataFlow = _watchPageResponseData as StateFlow<WatchPageData?> // 初期値nullだけどnull流したくないので
+    val watchPageResponseDataFlow = _watchPageData as StateFlow<WatchPageData?> // 初期値nullだけどnull流したくないので
 
     /** 動画パス、生放送HLSアドレス等を入れたデータクラス流すFlow */
     val mediaUrlDataFlow = _mediaUrlDataFlow as StateFlow<MediaUrlData?>
@@ -61,6 +67,9 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     /** エラーメッセージ送信用Flow */
     val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
+
+    /** オンライン再生かどうか。ダウンロード済みコンテンツ再生中はfalseになる */
+    val isPlayingContentFromInternet = _isPlayingContentFromInternet as StateFlow<Boolean>
 
     init {
         viewModelScope.launch {
@@ -87,12 +96,13 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             _isLoadingFlow.value = true
 
             // HTML解析とURL（復号処理含めて）取得
-            val (watchPageResponseData, decryptData) = WatchPageHTML.getWatchPage(videoId, localAlgorithmData?.first, localAlgorithmData?.second, localAlgorithmData?.third)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage(videoId, localAlgorithmData?.first, localAlgorithmData?.second, localAlgorithmData?.third)
 
             // View（Compose）にデータを渡す
-            _watchPageResponseData.value = watchPageResponseData
+            _watchPageData.value = watchPageData
             getMediaUrl()
             _isLoadingFlow.value = false
+            _isPlayingContentFromInternet.value = true
 
             // 2回目以降のアルゴリズムの解析をスキップするために解読情報を永続化する
             context.dataStore.edit { setting ->
@@ -102,8 +112,27 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             // 履歴に追加する
-            insertDBOrWatchCountIncrement(watchPageResponseData)
+            insertDBOrWatchCountIncrement(watchPageData)
+        }
+    }
 
+    /**
+     * ダウンロード済み動画を読み込む。DBから動画情報を、ストレージから動画(音声)とサムネを読み出す
+     *
+     * Flowに値を流します
+     *
+     * @param videoId 動画ID
+     * */
+    fun loadWatchPageFromLocal(videoId: String) {
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            // データを読み出す
+            val watchPageData = downloadContentManager.getWatchPageData(videoId)
+            // Composeへデータを流す
+            _watchPageData.value = watchPageData
+            _mediaUrlDataFlow.value = _watchPageData.value?.contentUrlList?.first()
+            _isPlayingContentFromInternet.value = false
+            // 視聴履歴インクリメント
+            downloadContentManager.incrementLocalWatchCount(videoId)
         }
     }
 
@@ -115,14 +144,14 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
      * @param quality 画質
      * */
     fun getMediaUrl(quality: String = "360p") {
-        _mediaUrlDataFlow.value = _watchPageResponseData.value?.getMediaUrlDataFromQuality(quality)
+        _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(quality)
     }
 
     /**
      * プレイヤー終了。データクラス保持Flowにnullを入れます
      * */
     fun closePlayer() {
-        viewModelScope.launch { _watchPageResponseData.value = null }
+        viewModelScope.launch { _watchPageData.value = null }
     }
 
     /**
@@ -149,6 +178,21 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
                 thumbnailUrl = watchPageJSONResponseData.videoDetails.thumbnail.thumbnails.last().url,
             )
             historyDB.historyDao().insert(entity)
+        }
+    }
+
+    /**
+     * ダウンロードしたコンテンツを削除する
+     *
+     * @param videoId 動画ID
+     * */
+    fun deleteDownloadContent(videoId: String) {
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            downloadContentManager.deleteContent(videoId)
+            // 再生中なら消す
+            if (videoId == watchPageResponseDataFlow.value?.watchPageResponseJSONData?.videoDetails?.videoId) {
+                closePlayer()
+            }
         }
     }
 

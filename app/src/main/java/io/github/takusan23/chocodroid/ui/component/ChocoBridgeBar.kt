@@ -6,9 +6,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.*
@@ -21,9 +19,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.database.db.DownloadContentDB
+import io.github.takusan23.chocodroid.database.db.HistoryDB
 import io.github.takusan23.chocodroid.tool.ClipboardTool
 import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
+import io.github.takusan23.internet.data.CommonVideoData
+import kotlinx.coroutines.flow.map
 
 /**
  * 引数多いのでViewModel/NavControllerへ直接指定するバージョン。
@@ -66,6 +68,8 @@ fun ChocoBridgeBar(
 /**
  * 検索 URL直打ち 動画ID などを一つにまとめて！
  *
+ * @param suggestDownloadList 部分一致したダウンロードコンテンツ配列
+ * @param suggestHistoryList 部分一致した履歴動画配列
  * @param textValue テキストボックスの中身
  * @param onTextChange テキストボックスの中身が変わったら呼ばれる
  * @param onSearchClick 検索押したら
@@ -166,24 +170,39 @@ fun ChocoBridgeBar(
 
 /**
  * 検索押したときに出るあのメニュー
+ *
+ * @param onClick 押したとき
+ * @param resIconId アイコンリソースID
+ * @param text テキスト
  * */
 @ExperimentalMaterialApi
 @Composable
-fun ChocoNavMenuItem(resIconId: Int, text: String, onClick: () -> Unit) {
+private fun ChocoNavMenuItem(resIconId: Int, text: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         color = Color.Transparent
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = Modifier.padding(10.dp),
-                painter = painterResource(id = resIconId), contentDescription = null
-            )
-            Text(
-                modifier = Modifier.padding(10.dp),
-                text = text
-            )
-        }
+        ChocoNavMenuTitle(resIconId, text)
+    }
+}
+
+/**
+ * 文字とアイコンだけ
+ *
+ * @param resIconId アイコンリソースID
+ * @param text テキスト
+ * */
+@Composable
+private fun ChocoNavMenuTitle(resIconId: Int, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            modifier = Modifier.padding(10.dp),
+            painter = painterResource(id = resIconId), contentDescription = null
+        )
+        Text(
+            modifier = Modifier.padding(10.dp),
+            text = text
+        )
     }
 }

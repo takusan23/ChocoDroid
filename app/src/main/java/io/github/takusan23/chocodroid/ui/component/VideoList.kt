@@ -20,12 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.LocalImageLoader
 import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.internet.data.CommonVideoData
-import io.github.takusan23.internet.data.search.VideoRenderer
 
 
 /**
@@ -37,6 +37,7 @@ import io.github.takusan23.internet.data.search.VideoRenderer
  * @param lazyListState スクロール制御など
  * @param videoList 動画一覧
  * @param onClick 押したら呼ばれる
+ * @param isSwipeEnabled 引っ張るやつ無効にする場合はtrue
  * @param onRefresh 引っ張って更新で引っ張ったら呼ばれる
  * */
 @ExperimentalMaterialApi
@@ -46,9 +47,11 @@ fun VideoList(
     swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(false),
     videoList: List<CommonVideoData>,
     onClick: (String) -> Unit,
+    isSwipeEnabled: Boolean = true,
     onRefresh: (() -> Unit)? = null,
 ) {
     SwipeRefresh(
+        swipeEnabled = isSwipeEnabled,
         state = swipeRefreshState,
         onRefresh = { onRefresh?.invoke() },
         content = {
@@ -57,7 +60,7 @@ fun VideoList(
                 content = {
                     items(videoList) { item ->
                         VideoListItem(commonVideoData = item, onClick = onClick)
-                        Divider()
+                        // Divider()
                     }
                 }
             )

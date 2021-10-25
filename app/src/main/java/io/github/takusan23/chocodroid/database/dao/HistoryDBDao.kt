@@ -46,9 +46,10 @@ interface HistoryDBDao {
      * */
     @Query(
         value = """
-        SELECT * FROM history_db WHERE title LIKE '%' || :search || '%' 
-        ORDER BY update_date DESC
-        LIMIT :limit
+        SELECT * FROM history_db 
+            WHERE title LIKE '%' || :search || '%' 
+            ORDER BY update_date DESC
+            LIMIT :limit
         """
     )
     fun flowTitleSearch(search: String, limit: Int = 5): Flow<List<HistoryDBEntity>>

@@ -3,6 +3,8 @@ package io.github.takusan23.internet.data
 import io.github.takusan23.internet.data.channel.GridVideoRenderer
 import io.github.takusan23.internet.data.search.VideoRenderer
 import io.github.takusan23.internet.data.watchpage.WatchPageResponseJSONData
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * 検索、チャンネル投稿動画、、、等動画情報のデータクラスがバラバラなので、
@@ -55,11 +57,23 @@ open class CommonVideoData(
     constructor(watchPageResponseJSONData: WatchPageResponseJSONData) : this(
         videoId = watchPageResponseJSONData.videoDetails.videoId,
         videoTitle = watchPageResponseJSONData.videoDetails.title,
-        duration = watchPageResponseJSONData.videoDetails.shortDescription,
+        duration = SimpleDateFormat("mm:ss", Locale.getDefault()).format(watchPageResponseJSONData.videoDetails.lengthSeconds * 1000),
         watchCount = watchPageResponseJSONData.videoDetails.viewCount,
         publishDate = watchPageResponseJSONData.microformat.playerMicroformatRenderer.publishDate,
         ownerName = watchPageResponseJSONData.videoDetails.author,
         thumbnailUrl = watchPageResponseJSONData.videoDetails.thumbnail.thumbnails.last().url,
     )
+
+    /** 継承可能と引き換えにデータクラスのcopyが使えなくなったので */
+    fun copy(
+        videoId: String = this.videoId,
+        videoTitle: String = this.videoTitle,
+        duration: String? = this.duration,
+        watchCount: String = this.watchCount,
+        publishDate: String? = this.publishDate,
+        ownerName: String = this.ownerName,
+        thumbnailUrl: String = this.thumbnailUrl,
+    ) = CommonVideoData(videoId, videoTitle, duration, watchCount, publishDate, ownerName, thumbnailUrl)
+
 
 }

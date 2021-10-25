@@ -4,10 +4,13 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.database.db.HistoryDB
 import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
+import io.github.takusan23.internet.data.CommonVideoData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /** 履歴画面で使うViewModel */
@@ -18,7 +21,19 @@ class HistoryScreenViewModel(application: Application) : AndroidViewModel(applic
     private val historyDB by lazy { HistoryDB.getInstance(context) }
 
     /** 履歴一覧 */
-    val historyDBDataListFlow = historyDB.historyDao().flowGetAll()
+    val historyDBDataListFlow = historyDB.historyDao().flowGetAll().map {
+        it.map { historyDBEntity ->
+            CommonVideoData(
+                videoId = historyDBEntity.videoId,
+                videoTitle = historyDBEntity.title,
+                duration = historyDBEntity.duration,
+                watchCount = "${context.getString(R.string.watch_count)} : ${historyDBEntity.localWatchCount}",
+                publishDate = historyDBEntity.publishedDate,
+                ownerName = historyDBEntity.ownerName,
+                thumbnailUrl = historyDBEntity.thumbnailUrl,
+            )
+        }
+    }
 
     /** 履歴を全部消す */
     fun deleteAllDB() {

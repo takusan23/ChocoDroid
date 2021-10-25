@@ -1,6 +1,7 @@
 package io.github.takusan23.internet.data.watchpage
 
 import io.github.takusan23.internet.tool.SerializationTool
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
 /**
@@ -37,5 +38,19 @@ data class WatchPageData(
      * @param quality 画質
      * */
     fun getMediaUrlDataFromQuality(quality: String = "360p") = contentUrlList.find { it.quality == quality }!!
+
+    companion object {
+
+        /** 文字列から[WatchPageInitialJSONData]を作成する */
+        fun decodeWatchPageInitialDataFromString(initialJSONString: String): WatchPageInitialJSONData {
+            return SerializationTool.jsonSerialization.decodeFromString(initialJSONString)
+        }
+
+        /** 文字列から[WatchPageResponseJSONData]を作成する */
+        fun decodeWatchPageResponseDataFromString(responseJSONString: String): WatchPageResponseJSONData {
+            return SerializationTool.jsonSerialization.decodeFromString(responseJSONString)
+        }
+
+    }
 
 }

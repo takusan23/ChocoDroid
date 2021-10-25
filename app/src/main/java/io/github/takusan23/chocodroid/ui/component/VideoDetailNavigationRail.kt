@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.ui.component.videodetail.VideoDetailNavigationLinkList
+import io.github.takusan23.chocodroid.ui.screen.videodetail.VideoDetailNavigationLinkList
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**

@@ -40,4 +40,18 @@ interface DownloadContentDBDao {
     @Query("DELETE FROM download_content_db WHERE video_id = :videoId")
     suspend fun deleteFromVideoId(videoId: String)
 
+    /**
+     * 動画タイトル部分一致検索して配列を返す
+     *
+     * @param search 検索ワード
+     * @param limit 上限
+     * */
+    @Query("""
+        SELECT * FROM download_content_db
+            WHERE video_title LIKE '%' || :search || '%' 
+            ORDER BY update_date DESC
+            LIMIT :limit
+    """)
+    fun flowTitleSearch(search: String, limit: Int = 5): Flow<List<DownloadContentDBEntity>>
+
 }

@@ -15,6 +15,6 @@ class DownloadScreenVideModel(application: Application) : AndroidViewModel(appli
     private val downloadContentManager by lazy { DownloadContentManager(context) }
 
     /** ダウンロード済みコンテンツを送るFlow */
-    private val downloadContentFlow by lazy {  }
+    val downloadContentFlow by lazy { downloadContentManager.collectDownloadContentToWatchPageData() }
 
 }

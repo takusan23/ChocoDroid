@@ -11,6 +11,7 @@ import androidx.room.PrimaryKey
  *
  * @param id 主キー
  * @param videoId 動画ID
+ * @param videoTitle 動画タイトル
  * @param watchPageInitialJSON 動画情報JSONです
  * @param watchPageResponseJSON 動画情報JSONその2です
  * @param contentPath 音声だけなら音声ファイルパス、動画あるなら動画のパスです
@@ -25,6 +26,7 @@ import androidx.room.PrimaryKey
 data class DownloadContentDBEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "video_id") val videoId: String,
+    @ColumnInfo(name = "video_title") val videoTitle: String,
     @ColumnInfo(name = "watch_page_initial_json") val watchPageInitialJSON: String,
     @ColumnInfo(name = "watch_page_response_json") val watchPageResponseJSON: String,
     @ColumnInfo(name = "thumbnail_path") val thumbnailPath: String,
@@ -33,5 +35,5 @@ data class DownloadContentDBEntity(
     @ColumnInfo(name = "insert_date") val insertDate: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "update_date") val updateDate: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "last_watch_pos") val lastWatchPos: Long = 0,
-    @ColumnInfo(name = "local_watch_count") val localWatchCount: Int = 1,
+    @ColumnInfo(name = "local_watch_count") val localWatchCount: Int = 0,
 )

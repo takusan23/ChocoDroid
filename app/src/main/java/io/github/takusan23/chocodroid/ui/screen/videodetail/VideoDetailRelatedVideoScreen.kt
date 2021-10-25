@@ -1,4 +1,4 @@
-package io.github.takusan23.chocodroid.ui.component.videodetail
+package io.github.takusan23.chocodroid.ui.screen.videodetail
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable

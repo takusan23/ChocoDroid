@@ -1,4 +1,4 @@
-package io.github.takusan23.chocodroid.ui.component.videodetail
+package io.github.takusan23.chocodroid.ui.screen.videodetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

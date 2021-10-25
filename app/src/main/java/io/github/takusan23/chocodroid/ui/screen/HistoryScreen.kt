@@ -14,12 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
-import io.github.takusan23.chocodroid.ui.component.HistoryVideoList
+import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.component.tool.SnackbarComposeTool
 import io.github.takusan23.chocodroid.viewmodel.HistoryScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
@@ -58,7 +57,7 @@ fun HistoryScreen(
                             scope = scope,
                             snackbarDuration = SnackbarDuration.Long,
                             snackbarHostState = scaffoldState.snackbarHostState,
-                            snackbarMessage = context.getString(R.string.delete_all_message),
+                            snackbarMessage = context.getString(R.string.delete_message),
                             actionLabel = context.getString(R.string.delete),
                             onActionPerformed = { historyScreenViewModel.deleteAllDB() }
                         )
@@ -70,8 +69,9 @@ fun HistoryScreen(
                 // 一覧表示
                 Divider()
                 if (historyList.value.isNotEmpty()) {
-                    HistoryVideoList(
-                        historyDBEntityList = historyList.value,
+                    VideoList(
+                        isSwipeEnabled = false,
+                        videoList = historyList.value,
                         onClick = { mainViewModel.loadWatchPage(it) }
                     )
                 } else {

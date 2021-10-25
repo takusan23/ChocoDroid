@@ -1,18 +1,22 @@
 package io.github.takusan23.chocodroid.tool
 
 import android.content.Context
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.database.db.DownloadContentDB
 import io.github.takusan23.chocodroid.database.entity.DownloadContentDBEntity
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.downloadpocket.DownloadPocket
+import io.github.takusan23.internet.data.CommonVideoData
+import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * ダウンロード機能に関する関数がある
+ * ダウンロード機能に関する関数がある。こいつのおかげでデータベースのDAOへ直接触れることはないはず
  *
  * 映像と音声を合成するコードは[DownloadVideoMuxer]が担当しています。
  *
@@ -21,7 +25,7 @@ import java.io.File
  *
  * @param context Context ファイル読み書きするので
  * */
-class DownloadContentManager(context: Context) {
+class DownloadContentManager(private val context: Context) {
 
     /** 分割ダウンロード時に一時的に使うフォルダを作成するフォルダ */
     private val tempFolderRootFolder by lazy { context.externalCacheDir!! }
@@ -46,10 +50,59 @@ class DownloadContentManager(context: Context) {
         downloadContentDB.downloadContentDao().deleteFromVideoId(videoId)
     }
 
-    /** データベース内のデータを[_WatchPageData]の形式にして送る */
-    fun collectDownloadContentToWatchPageData(): Flow<List<DownloadContentDBEntity>> {
+    /** データベース内のデータを[CommonVideoData]の配列にして送る */
+    fun collectDownloadContentToWatchPageData(): Flow<List<CommonVideoData>> {
         return downloadContentDB.downloadContentDao()
             .flowGetAll()
+            .map { list ->
+                list.map { dbItem ->
+                    val responseJSONData = WatchPageData.decodeWatchPageResponseDataFromString(dbItem.watchPageResponseJSON)
+                    CommonVideoData(responseJSONData).copy(
+                        watchCount = "${context.getString(R.string.watch_count)} : ${dbItem.localWatchCount}",
+                        thumbnailUrl = "file://${dbItem.thumbnailPath}",
+                    )
+                }
+            }
+    }
+
+    /**
+     * データベース内の視聴履歴をインクリメントする
+     *
+     * @param videoId 動画ID
+     * */
+    suspend fun incrementLocalWatchCount(videoId: String) {
+        val dbItem = downloadContentDB.downloadContentDao().getDownloadContentDataFromVideoId(videoId)
+        val afterDBItem = dbItem.copy(localWatchCount = dbItem.localWatchCount + 1, updateDate = System.currentTimeMillis())
+        // 更新
+        downloadContentDB.downloadContentDao().update(afterDBItem)
+    }
+
+    /**
+     * ダウンロード済みかどうかを返す
+     *
+     * @param videoId 動画ID
+     * @return 存在すればtrue
+     * */
+    suspend fun existsDataFromVideoId(videoId: String) = downloadContentDB.downloadContentDao().existsDataFromDownloadContentDB(videoId)
+
+    /**
+     * [WatchPageData]の形でデータを返す
+     *
+     * 動画パスは[WatchPageData.contentUrlList]の最初に入っています。[MediaUrlData.mixTrackUrl]がそうです。
+     *
+     * @param videoId 動画ID
+     * @return [WatchPageData]
+     * */
+    suspend fun getWatchPageData(videoId: String): WatchPageData {
+        val dbItem = downloadContentDB.downloadContentDao().getDownloadContentDataFromVideoId(videoId)
+        val responseJSONData = WatchPageData.decodeWatchPageResponseDataFromString(dbItem.watchPageResponseJSON)
+        val initialJSONData = WatchPageData.decodeWatchPageInitialDataFromString(dbItem.watchPageInitialJSON)
+
+        return WatchPageData(
+            watchPageInitialJSONData = initialJSONData,
+            watchPageResponseJSONData = responseJSONData,
+            contentUrlList = listOf(MediaUrlData(mixTrackUrl = dbItem.contentPath))
+        )
     }
 
     /**
@@ -123,6 +176,7 @@ class DownloadContentManager(context: Context) {
     suspend fun insertDownloadContentDB(watchPageData: WatchPageData, thumbnailPath: String, contentUrl: String, isAudio: Boolean) {
         val entity = DownloadContentDBEntity(
             videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId,
+            videoTitle = watchPageData.watchPageResponseJSONData.videoDetails.title,
             isAudio = isAudio,
             contentPath = contentUrl,
             watchPageInitialJSON = watchPageData.encodeWatchPageInitialDataToString(),

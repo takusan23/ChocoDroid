@@ -1,5 +1,6 @@
 package io.github.takusan23.internet.api
 
+import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.channel.*
 import io.github.takusan23.internet.tool.SerializationTool
 import kotlinx.serialization.decodeFromString
@@ -64,7 +65,7 @@ class ChannelAPI {
      *
      * @return 動画配列
      * */
-    suspend fun moreChannelUploadVideo(): List<GridVideoRenderer> {
+    suspend fun moreChannelUploadVideo(): List<CommonVideoData> {
         if (NEXT_PAGE_CONTINUATION == null) return emptyList()
         // POSTする中身
         val postData = MoreChannelRequestData(context = Context(Client()), continuation = NEXT_PAGE_CONTINUATION!!)
@@ -74,7 +75,7 @@ class ChannelAPI {
         val moreChannelResponseData = SerializationTool.jsonSerialization.decodeFromString<MoreChannelResponseData>(responseBody)
         // 追加読み込み用。nullになったということはこれ以上ないってこと
         NEXT_PAGE_CONTINUATION = tokenGetRegex.find(responseBody)?.groupValues?.get(1)
-        return moreChannelResponseData.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems.mapNotNull { it.gridVideoRenderer }
+        return moreChannelResponseData.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems.mapNotNull { it.gridVideoRenderer }.map { CommonVideoData(it) }
     }
 
 }

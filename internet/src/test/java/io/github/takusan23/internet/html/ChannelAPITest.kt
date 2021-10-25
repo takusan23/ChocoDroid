@@ -18,15 +18,15 @@ class ChannelAPITest {
             println("投稿動画")
             uploadVideo.getVideoList()?.forEach {
                 println(it.videoId)
-                println(it.title.runs[0].text)
-                println(it.thumbnailOverlays[0].thumbnailOverlayTimeStatusRenderer!!.text.simpleText)
+                println(it.videoTitle)
+                println(it.thumbnailUrl)
                 println("---")
             }
             // 追加読み込み
             val moreUploadVideoList = channelAPI.moreChannelUploadVideo()
             println("追加読み込み")
             moreUploadVideoList.forEach {
-                println(it.title)
+                println(it.videoTitle)
             }
         }
     }

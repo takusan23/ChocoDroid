@@ -9,14 +9,18 @@ import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
-import io.github.takusan23.internet.html.WatchPageHTML
+import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
+import io.github.takusan23.internet.html.WatchPageHTML
 import io.github.takusan23.internet.magic.AlgorithmSerializer
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
@@ -29,6 +33,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val context = application.applicationContext
 
     private val _watchPageResponseData = MutableStateFlow<WatchPageData?>(null)
+    private val _mediaUrlDataFlow = MutableStateFlow<MediaUrlData?>(null)
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
 
@@ -46,13 +51,16 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val historyDB by lazy { HistoryDB.getInstance(context) }
 
     /** 動画情報データクラスを保持するFlow。外部公開用は受け取りのみ */
-    val watchPageResponseDataFlow = _watchPageResponseData as Flow<WatchPageData?>
+    val watchPageResponseDataFlow = _watchPageResponseData as StateFlow<WatchPageData?> // 初期値nullだけどnull流したくないので
+
+    /** 動画パス、生放送HLSアドレス等を入れたデータクラス流すFlow */
+    val mediaUrlDataFlow = _mediaUrlDataFlow as StateFlow<MediaUrlData?>
 
     /** 読み込み中？ */
     val isLoadingFlow = _isLoadingFlow as Flow<Boolean>
 
     /** エラーメッセージ送信用Flow */
-    val errorMessageFlow = _errorMessageFlow as Flow<String?>
+    val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
 
     init {
         viewModelScope.launch {
@@ -79,23 +87,35 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             _isLoadingFlow.value = true
 
             // HTML解析とURL（復号処理含めて）取得
-            val watchPageResponseData = WatchPageHTML.getWatchPage(videoId, localAlgorithmData?.first, localAlgorithmData?.second, localAlgorithmData?.third)
+            val (watchPageResponseData, decryptData) = WatchPageHTML.getWatchPage(videoId, localAlgorithmData?.first, localAlgorithmData?.second, localAlgorithmData?.third)
 
             // View（Compose）にデータを渡す
             _watchPageResponseData.value = watchPageResponseData
+            getMediaUrl()
             _isLoadingFlow.value = false
 
             // 2回目以降のアルゴリズムの解析をスキップするために解読情報を永続化する
             context.dataStore.edit { setting ->
-                setting[SettingKeyObject.WATCH_PAGE_BASE_JS_URL] = watchPageResponseData.baseJsURL
-                setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON] = AlgorithmSerializer.toJSON(watchPageResponseData.algorithmFuncNameData)
-                setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON] = AlgorithmSerializer.toJSON(watchPageResponseData.decryptInvokeList)
+                setting[SettingKeyObject.WATCH_PAGE_BASE_JS_URL] = decryptData.baseJsURL
+                setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON] = AlgorithmSerializer.toJSON(decryptData.algorithmFuncNameData)
+                setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON] = AlgorithmSerializer.toJSON(decryptData.decryptInvokeList)
             }
 
             // 履歴に追加する
             insertDBOrWatchCountIncrement(watchPageResponseData)
 
         }
+    }
+
+    /**
+     * 映像、音声URLを取得する
+     *
+     * 取得した値はFlowで流します
+     *
+     * @param quality 画質
+     * */
+    fun getMediaUrl(quality: String = "360p") {
+        _mediaUrlDataFlow.value = _watchPageResponseData.value?.getMediaUrlDataFromQuality(quality)
     }
 
     /**

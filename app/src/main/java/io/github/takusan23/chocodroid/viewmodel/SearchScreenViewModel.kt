@@ -8,6 +8,7 @@ import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.internet.data.search.VideoContent
 import io.github.takusan23.internet.api.SearchAPI
+import io.github.takusan23.internet.data.CommonVideoData
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -23,7 +24,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
     /** 非公式検索APIを叩く */
     private val searchAPI = SearchAPI()
 
-    private val _searchResultListFlow = MutableStateFlow<List<VideoContent>>(listOf())
+    private val _searchResultListFlow = MutableStateFlow<List<CommonVideoData>>(listOf())
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
     private val _queryFlow = MutableStateFlow(query)
@@ -40,7 +41,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
     }
 
     /** 検索結果 */
-    val searchResultListFlow = _searchResultListFlow as StateFlow<List<VideoContent>>
+    val searchResultListFlow = _searchResultListFlow as StateFlow<List<CommonVideoData>>
 
     /** 読み込み中？ */
     val isLoadingFlow = _isLoadingFlow as StateFlow<Boolean>

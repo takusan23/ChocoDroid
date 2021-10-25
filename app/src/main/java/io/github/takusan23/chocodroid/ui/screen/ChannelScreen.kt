@@ -14,7 +14,7 @@ import androidx.core.net.toUri
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChannelHeader
-import io.github.takusan23.chocodroid.ui.component.ChannelUploadVideoList
+import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.viewmodel.ChannelScreenViewModel
 
 /**
@@ -71,7 +71,7 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
                 }
                 Divider()
                 // 動画配列
-                ChannelUploadVideoList(
+                VideoList(
                     lazyListState = lazyListState,
                     swipeRefreshState = swipeRefreshState,
                     videoList = uploadVideoList.value,

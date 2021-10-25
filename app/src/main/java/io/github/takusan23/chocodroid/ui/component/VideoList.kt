@@ -24,6 +24,7 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.search.VideoRenderer
 
 
@@ -43,7 +44,7 @@ import io.github.takusan23.internet.data.search.VideoRenderer
 fun VideoList(
     lazyListState: LazyListState = rememberLazyListState(),
     swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(false),
-    videoList: List<VideoRenderer>,
+    videoList: List<CommonVideoData>,
     onClick: (String) -> Unit,
     onRefresh: (() -> Unit)? = null,
 ) {
@@ -55,7 +56,7 @@ fun VideoList(
                 state = lazyListState,
                 content = {
                     items(videoList) { item ->
-                        VideoListItem(videoRenderer = item, onClick = onClick)
+                        VideoListItem(commonVideoData = item, onClick = onClick)
                         Divider()
                     }
                 }
@@ -73,17 +74,17 @@ fun VideoList(
 @ExperimentalMaterialApi
 @Composable
 fun VideoListItem(
-    videoRenderer: VideoRenderer,
+    commonVideoData: CommonVideoData,
     onClick: (String) -> Unit,
 ) = VideoListItem(
-    videoId = videoRenderer.videoId,
-    videoTitle = videoRenderer.title.runs.last().text,
-    duration = videoRenderer.lengthText?.simpleText ?: "生放送です",
-    watchCount = videoRenderer.viewCountText?.simpleText ?: videoRenderer.viewCountText?.runs?.joinToString(separator = " ") { it.text } ?: "",
-    publishDate = videoRenderer.publishedTimeText?.simpleText ?: "---",
-    ownerName = videoRenderer.ownerText.runs.last().text,
-    thumbnailUrl = videoRenderer.thumbnail.thumbnails.last().url,
-    durationTextBackground = if (videoRenderer.lengthText?.simpleText == null) Color.Red.copy(0.5f) else Color.Black.copy(0.5f),
+    videoId = commonVideoData.videoId,
+    videoTitle = commonVideoData.videoTitle,
+    duration = commonVideoData.duration ?: "生放送です",
+    watchCount = commonVideoData.watchCount,
+    publishDate = commonVideoData.publishDate ?: "---",
+    ownerName = commonVideoData.ownerName,
+    thumbnailUrl = commonVideoData.thumbnailUrl,
+    durationTextBackground = if (commonVideoData.duration == null) Color.Red.copy(0.5f) else Color.Black.copy(0.5f),
     onClick = onClick
 )
 

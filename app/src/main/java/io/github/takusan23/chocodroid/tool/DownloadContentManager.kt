@@ -3,9 +3,11 @@ package io.github.takusan23.chocodroid.tool
 import android.content.Context
 import io.github.takusan23.chocodroid.database.db.DownloadContentDB
 import io.github.takusan23.chocodroid.database.entity.DownloadContentDBEntity
+import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.downloadpocket.DownloadPocket
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -30,13 +32,24 @@ class DownloadContentManager(context: Context) {
     /** ダウンロードコンテンツ収納データベース */
     private val downloadContentDB by lazy { DownloadContentDB.getInstance(context) }
 
+    /** 設定読み取り */
+    private val dataStore by lazy { context.dataStore }
+
     /**
-     * 指定したコンテンツの動画IDを削除する
+     * 指定したコンテンツの動画IDを削除する。DB操作が絡むのでサスペンド関数
      *
      * @param videoId 動画ID
      * */
-    fun deleteContent(videoId: String) {
+    suspend fun deleteContent(videoId: String) {
         File(downloadFolderRootFolder, videoId).deleteRecursively()
+        // データベースからも消す
+        downloadContentDB.downloadContentDao().deleteFromVideoId(videoId)
+    }
+
+    /** データベース内のデータを[_WatchPageData]の形式にして送る */
+    fun collectDownloadContentToWatchPageData(): Flow<List<DownloadContentDBEntity>> {
+        return downloadContentDB.downloadContentDao()
+            .flowGetAll()
     }
 
     /**
@@ -61,10 +74,10 @@ class DownloadContentManager(context: Context) {
      * */
     suspend fun downloadAudioFile(watchPageData: WatchPageData, quality: String = "360p", splitCount: Int = 5): Pair<File, DownloadPocket> {
         val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
-        val audioFileUrl = watchPageData.getMediaUrl(quality).audioTrackUrl
+        val audioFileUrl = watchPageData.getMediaUrlDataFromQuality(quality).audioTrackUrl
         val splitFolderName = "${videoId}_audio"
         val resultFileName = "${videoId}.aac"
-        return downloadContent(audioFileUrl, splitFolderName, videoId, resultFileName, splitCount)
+        return downloadContent(audioFileUrl!!, splitFolderName, videoId, resultFileName, splitCount)
     }
 
     /**
@@ -76,10 +89,10 @@ class DownloadContentManager(context: Context) {
      * */
     suspend fun downloadVideoFile(watchPageData: WatchPageData, quality: String = "360p", splitCount: Int = 5): Pair<File, DownloadPocket> {
         val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
-        val videoFileUrl = watchPageData.getMediaUrl(quality).videoTrackUrl
+        val videoFileUrl = watchPageData.getMediaUrlDataFromQuality(quality).videoTrackUrl
         val splitFolderName = "${videoId}_video"
         val resultFileName = "${videoId}.mp4"
-        return downloadContent(videoFileUrl, splitFolderName, videoId, resultFileName, splitCount)
+        return downloadContent(videoFileUrl!!, splitFolderName, videoId, resultFileName, splitCount)
     }
 
     /**

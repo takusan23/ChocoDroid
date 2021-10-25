@@ -42,7 +42,7 @@ data class StreamingData(
  * 本来は音声と映像が別々になったファイルを読み込むべき
  *
  * @param url 動画URL。[signatureCipher]がnullの場合はそのまま再生できます
- * @param signatureCipher [url]がnullの場合は[WatchPageData.decryptURL]を呼んで復号化したURLを取得してください。
+ * @param signatureCipher [url]がnullの場合は[DecryptData.decryptURL]を呼んで復号化したURLを取得してください。
  * */
 @Serializable
 data class StreamingDataFormat(

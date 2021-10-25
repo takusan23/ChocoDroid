@@ -11,30 +11,18 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val watchPageData = WatchPageHTML.getWatchPage("", null, null, null)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("", null, null, null)
 
             if (watchPageData.isLiveStream()) {
                 println("生放送 HLS アドレス")
-                println(watchPageData.watchPageResponseJSONData.streamingData.hlsManifestUrl!!)
+                println(watchPageData.contentUrlList.first().mixTrackUrl)
             } else {
-                if (watchPageData.isSignatureUrl()) {
-                    println("復号URL---")
-                    println(watchPageData.decryptURL(watchPageData.watchPageResponseJSONData.streamingData.formats?.last()?.signatureCipher!!))
-                    println("アダプティブ---")
-                    watchPageData.watchPageResponseJSONData.streamingData.adaptiveFormats.forEach {
-                        println(it.mimeType)
-                        println(it.qualityLabel ?: "audio")
-                        println(watchPageData.decryptURL(it.signatureCipher!!))
-                    }
-                } else {
-                    println("復号が必要ない")
-                    println(watchPageData.watchPageResponseJSONData.streamingData.formats?.last()?.url!!)
-                    println("アダプティブ---")
-                    watchPageData.watchPageResponseJSONData.streamingData.adaptiveFormats.forEach {
-                        println(it.mimeType)
-                        println(it.qualityLabel ?: "audio")
-                        println(it.url)
-                    }
+                println("動画URL")
+                watchPageData.contentUrlList.forEach { mediaUrlData ->
+                    println(mediaUrlData.quality)
+                    println(mediaUrlData.videoTrackUrl)
+                    println(mediaUrlData.audioTrackUrl)
+                    println("----")
                 }
             }
 
@@ -48,10 +36,10 @@ class WatchPageHTMLTest {
                 println(it)
             }
 
-
             println("アルゴリズム---")
-            println(watchPageData.algorithmFuncNameData)
-            println(watchPageData.decryptInvokeList)
+            println(decryptData.baseJsURL)
+            println(decryptData.algorithmFuncNameData)
+            println(decryptData.decryptInvokeList)
         }
     }
 }

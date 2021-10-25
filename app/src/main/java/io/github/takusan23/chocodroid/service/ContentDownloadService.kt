@@ -82,10 +82,12 @@ class ContentDownloadService : Service() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 "service_stop" -> {
-                    // Service強制終了
-                    stopSelf()
-                    // ダウンロード中のコンテンツは削除する。もしくはレジュームするって手もあるけど
-                    downloadingItemList.forEach { downloadContentManager.deleteContent(it.videoId) }
+                    coroutineScope.launch {
+                        // ダウンロード中のコンテンツは削除する。もしくはレジュームするって手もあるけど
+                        downloadingItemList.forEach { downloadContentManager.deleteContent(it.videoId) }
+                        // Service終了
+                        stopSelf()
+                    }
                 }
             }
         }
@@ -118,7 +120,7 @@ class ContentDownloadService : Service() {
             val funcNameData = AlgorithmSerializer.toData<AlgorithmFuncNameData?>(setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON])
             val funcInvokeDataList = AlgorithmSerializer.toData<List<AlgorithmInvokeData>>(setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON])
             // リクエスト
-            val watchPageData = WatchPageHTML.getWatchPage(downloadRequestData.videoId, baseJsURL, funcNameData, funcInvokeDataList)
+            val (watchPageData) = WatchPageHTML.getWatchPage(downloadRequestData.videoId, baseJsURL, funcNameData, funcInvokeDataList)
             val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
             val videoTitle = watchPageData.watchPageResponseJSONData.videoDetails.title
             // 非同期待機リスト

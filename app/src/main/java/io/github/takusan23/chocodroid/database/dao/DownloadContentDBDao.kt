@@ -36,4 +36,8 @@ interface DownloadContentDBDao {
     @Query("SELECT EXISTS (SELECT * FROM download_content_db WHERE video_id = :videoId)")
     suspend fun existsDataFromDownloadContentDB(videoId: String): Boolean
 
+    /** 動画IDを利用してデータベースから項目を削除 */
+    @Query("DELETE FROM download_content_db WHERE video_id = :videoId")
+    suspend fun deleteFromVideoId(videoId: String)
+
 }

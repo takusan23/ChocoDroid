@@ -1,5 +1,6 @@
 package io.github.takusan23.internet.data.channel
 
+import io.github.takusan23.internet.data.CommonVideoData
 import kotlinx.serialization.Serializable
 
 /**
@@ -15,8 +16,19 @@ data class ChannelResponseData(
 ) {
 
     /** アップロード動画一覧を返す。階層が深すぎるので使ってください。 */
-    fun getVideoList(): List<GridVideoRenderer>? {
-        return contents.twoColumnBrowseResultsRenderer.tabs.find { it.tabRenderer?.content != null }!!.tabRenderer?.content?.sectionListRenderer?.contents?.get(0)?.itemSectionRenderer?.contents?.get(0)?.gridRenderer?.items?.mapNotNull { it.gridVideoRenderer }
+    fun getVideoList(): List<CommonVideoData>? {
+        return contents.twoColumnBrowseResultsRenderer.tabs.find { it.tabRenderer?.content != null }!!
+            .tabRenderer
+            ?.content
+            ?.sectionListRenderer
+            ?.contents
+            ?.get(0)?.itemSectionRenderer
+            ?.contents
+            ?.get(0)
+            ?.gridRenderer
+            ?.items
+            ?.mapNotNull { it.gridVideoRenderer }
+            ?.map { CommonVideoData(it) }
     }
 
 }

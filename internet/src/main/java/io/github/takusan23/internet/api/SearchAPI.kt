@@ -1,5 +1,6 @@
 package io.github.takusan23.internet.api
 
+import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.search.*
 import io.github.takusan23.internet.tool.SerializationTool
 import kotlinx.serialization.decodeFromString
@@ -67,7 +68,7 @@ class SearchAPI {
      * @param sort 並び替え。[SearchRequestData.PARAMS_SORT_RELEVANCE]などを参照してください
      * @return 検索結果
      * */
-    suspend fun search(searchWord: String, sort: String = PARAMS_SORT_RELEVANCE): List<VideoContent>? {
+    suspend fun search(searchWord: String, sort: String = PARAMS_SORT_RELEVANCE): List<CommonVideoData>? {
         // リクエストボディー作成
         val requestData = SearchRequestData(context = Context(Client()), query = searchWord, params = sort)
         val requestBody = SerializationTool.jsonSerialization.encodeToString(requestData)
@@ -77,7 +78,7 @@ class SearchAPI {
         // 次回検索用
         NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
         val videoList = searchResponseJSON.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer?.contents
-        return videoList
+        return videoList?.mapNotNull { it.videoRenderer }?.map { CommonVideoData(it) }
     }
 
     /**
@@ -87,9 +88,9 @@ class SearchAPI {
      *
      * それ以外に通信に失敗すればIOException/HttpStatusCodeExceptionを吐きます。
      *
-     * @return 検索結果。なんか前回検索した内容が入ってるっぽい？
+     * @return 検索結果
      * */
-    suspend fun moreSearch(): List<VideoContent>? {
+    suspend fun moreSearch(): List<CommonVideoData>? {
         // リクエストボディー作成
         val requestData = MoreSearchRequestData(context = Context(Client()), continuation = NEXT_PAGE_CONTINUATION!!)
         val requestBody = SerializationTool.jsonSerialization.encodeToString(requestData)
@@ -98,7 +99,8 @@ class SearchAPI {
         val moreSearchResponseData = SerializationTool.jsonSerialization.decodeFromString<MoreSearchResponseData>(postResponseBody)
         // 次回検索用
         NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
-        return moreSearchResponseData.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[0].itemSectionRenderer?.contents
+        val videoList = moreSearchResponseData.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[0].itemSectionRenderer?.contents
+        return videoList?.mapNotNull { it.videoRenderer }?.map { CommonVideoData(it) }
     }
 
 }

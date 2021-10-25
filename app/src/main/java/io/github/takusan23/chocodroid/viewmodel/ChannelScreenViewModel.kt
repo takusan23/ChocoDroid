@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.internet.api.ChannelAPI
+import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.channel.ChannelResponseData
 import io.github.takusan23.internet.data.channel.GridVideoRenderer
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -26,7 +27,7 @@ class ChannelScreenViewModel(application: Application, private val channelId: St
 
     private val context = application.applicationContext
 
-    private val _uploadVideoListFlow = MutableStateFlow<List<GridVideoRenderer>>(emptyList())
+    private val _uploadVideoListFlow = MutableStateFlow<List<CommonVideoData>>(emptyList())
     private val _channelResponseData = MutableStateFlow<ChannelResponseData?>(null)
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
@@ -48,7 +49,7 @@ class ChannelScreenViewModel(application: Application, private val channelId: St
     val channelResponseDataFlow = _channelResponseData as StateFlow<ChannelResponseData?>
 
     /** 投稿動画 */
-    val uploadVideoListFlow = _uploadVideoListFlow as StateFlow<List<GridVideoRenderer>>
+    val uploadVideoListFlow = _uploadVideoListFlow as StateFlow<List<CommonVideoData>>
 
     /** 読み込み中？ */
     val isLoadingFlow = _isLoadingFlow as StateFlow<Boolean>

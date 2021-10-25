@@ -80,7 +80,10 @@ fun VideoDetailUI(
                     }
                     // 関連動画
                     composable(VideoDetailNavigationLinkList.VideoDetailRelatedVideos) {
-                        VideoDetailRelatedVideoScreen(watchPageData = watchPageData, onClick = { mainViewModel.loadWatchPage(it) })
+                        VideoDetailRelatedVideoScreen(
+                            watchPageData = watchPageData,
+                            onClick = { mainViewModel.loadWatchPage(it) }
+                        )
                     }
                     // ダウンロード
                     composable(VideoDetailNavigationLinkList.VideoDetailDownloadScreen) {

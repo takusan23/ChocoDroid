@@ -46,6 +46,7 @@ class DownloadContentManager(private val context: Context) {
      * */
     suspend fun deleteContent(videoId: String) {
         File(downloadFolderRootFolder, videoId).deleteRecursively()
+        File(tempFolderRootFolder, videoId).deleteRecursively()
         // データベースからも消す
         downloadContentDB.downloadContentDao().deleteFromVideoId(videoId)
     }
@@ -101,7 +102,8 @@ class DownloadContentManager(private val context: Context) {
         return WatchPageData(
             watchPageInitialJSONData = initialJSONData,
             watchPageResponseJSONData = responseJSONData,
-            contentUrlList = listOf(MediaUrlData(mixTrackUrl = dbItem.contentPath))
+            contentUrlList = listOf(MediaUrlData(mixTrackUrl = dbItem.contentPath)),
+            type = "download"
         )
     }
 

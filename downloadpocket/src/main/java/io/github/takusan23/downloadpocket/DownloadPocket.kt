@@ -45,6 +45,7 @@ class DownloadPocket(
     suspend fun start() = withContext(Dispatchers.Default) {
         // HEADリクエストを飛ばす
         val headRequest = getVideoBytesContentLength()
+        if (!headRequest.isSuccessful) throw DownloadErrorException("返ってきたステータスコードが200以外でした。ダウンロード出来ません。")
         // 対応してるよね？
         if (headRequest.headers["Accept-Ranges"] != "bytes") return@withContext
         // 分割する
@@ -142,7 +143,7 @@ class DownloadPocket(
         val splitFile = File(splitFileFolder, "pocket.${count}").apply { createNewFile() }
         val splitFileOutputStream = splitFile.outputStream()
         // 書き込む
-        val buffer = ByteArray(1024 * 1024)
+        val buffer = ByteArray(1024 * 4096)
         while (true) {
             val read = inputStream?.read(buffer)
             if (read == -1 || read == null) {
@@ -166,7 +167,7 @@ class DownloadPocket(
         // 書き込み先ファイルのOutputStream
         fileList.forEach { file ->
             val inputStream = file.inputStream()
-            val byteArray = ByteArray(1024 * 1024)
+            val byteArray = ByteArray(1024 * 4096)
             // KotlinのreadBytes()使ったらOOM吐いたので古典的な方法で
             while (true) {
                 val read = inputStream.read(byteArray)

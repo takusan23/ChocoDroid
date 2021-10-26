@@ -1,13 +1,14 @@
 package io.github.takusan23.chocodroid.ui.screen.videodetail
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,7 +29,6 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
  * @param onNavigation 今の所チャンネル画面に遷移する目的以外では使ってない
  * */
 @ExperimentalMaterialApi
-@ExperimentalFoundationApi
 @Composable
 fun VideoDetailDescriptionScreen(
     watchPageData: WatchPageData,

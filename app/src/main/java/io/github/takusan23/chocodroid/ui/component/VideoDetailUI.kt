@@ -2,12 +2,13 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +23,6 @@ import io.github.takusan23.chocodroid.service.ContentDownloadService
 import io.github.takusan23.chocodroid.ui.screen.videodetail.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
-import kotlinx.coroutines.launch
 
 /**
  * 動画説明部分のUI
@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
  * @param navHostController 動画詳細とかメニュー切り替え
  * @param mainNavHostController メイン画面のNavController
  * */
-@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
 fun VideoDetailUI(
@@ -88,7 +87,6 @@ fun VideoDetailUI(
                     // ダウンロード
                     composable(VideoDetailNavigationLinkList.VideoDetailDownloadScreen) {
                         VideoDetailDownloadScreen(
-                            isOnlineContent = mainViewModel.isPlayingContentFromInternet.collectAsState().value,
                             watchPageData = watchPageData,
                             onDownloadClick = { data -> ContentDownloadService.startDownloadService(context, data) },
                             onDeleteClick = { mainViewModel.deleteDownloadContent(it) }

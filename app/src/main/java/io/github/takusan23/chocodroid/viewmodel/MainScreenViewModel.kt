@@ -38,7 +38,6 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val _mediaUrlDataFlow = MutableStateFlow<MediaUrlData?>(null)
     private val _isLoadingFlow = MutableStateFlow(false)
     private val _errorMessageFlow = MutableStateFlow<String?>(null)
-    private val _isPlayingContentFromInternet = MutableStateFlow(true)
 
     /** コルーチン起動時の引数に指定してね。例外を捕まえ、Flowに流します */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
@@ -67,9 +66,6 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     /** エラーメッセージ送信用Flow */
     val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
-
-    /** オンライン再生かどうか。ダウンロード済みコンテンツ再生中はfalseになる */
-    val isPlayingContentFromInternet = _isPlayingContentFromInternet as StateFlow<Boolean>
 
     init {
         viewModelScope.launch {
@@ -102,7 +98,6 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             _watchPageData.value = watchPageData
             getMediaUrl()
             _isLoadingFlow.value = false
-            _isPlayingContentFromInternet.value = true
 
             // 2回目以降のアルゴリズムの解析をスキップするために解読情報を永続化する
             context.dataStore.edit { setting ->
@@ -130,7 +125,6 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             // Composeへデータを流す
             _watchPageData.value = watchPageData
             _mediaUrlDataFlow.value = _watchPageData.value?.contentUrlList?.first()
-            _isPlayingContentFromInternet.value = false
             // 視聴履歴インクリメント
             downloadContentManager.incrementLocalWatchCount(videoId)
         }

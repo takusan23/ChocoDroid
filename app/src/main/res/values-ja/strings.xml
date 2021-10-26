@@ -35,4 +35,7 @@
     <string name="download_service_progress_thumbnail">サムネイル画像DL中</string>
     <string name="quality">画質</string>
     <string name="download_split_count">分割数</string>
+    <string name="download_audio_only">音声のみダウンロードする</string>
+    <string name="error">問題が発生しました。</string>
+    <string name="download_error_quality">DL出来ませんでした。他の画質を試してみてください。</string>
 </resources>

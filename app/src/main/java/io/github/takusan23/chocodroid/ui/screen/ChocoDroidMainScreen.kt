@@ -1,8 +1,9 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.component.tool.SetActivitySleepComposeApp
@@ -16,8 +17,7 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  *
  * @param viewModel ViewModel
  * */
-@ExperimentalMaterialApi
-@ExperimentalFoundationApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {

@@ -20,10 +20,12 @@ class DownloadPocketTest {
             val url = """
                 
 
+
 """.trimIndent()
             // とりあえずテスト環境のダウンロードフォルダに
             val downloadFolderPath = """${System.getProperty("user.home")}\Downloads"""
             val downloadFile = """$downloadFolderPath\result.mp4"""
+            File(downloadFile).apply { if (exists()) delete() }
             // 一時保存フォルダ
             val tempFolderPath = """$downloadFolderPath\temp"""
             val downloadPocket = DownloadPocket(url, File(tempFolderPath).apply { mkdir() }, File(downloadFile).apply { createNewFile() }, 10)

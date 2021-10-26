@@ -29,7 +29,8 @@ searchAPI.init()
 val searchResponseData = searchAPI.search("バックレカラオケ", SearchAPI.PARAMS_SORT_UPLOAD_DATE)
 ```
 
-`searchResponseData`には、APIキーが含まれていて、二回目以降検索をする際はinit関数の引数に入れることでAPIキー取得作業をスキップできます。
+APIキーは`apiKeyFlow`を使ってFlowで流れてきますので、ViewModelあたりで拾ってローカルに保存しておいてください。
+保存したAPIキーを`init`関数の引数につっこめばAPIキー取得作業をパスできます。
 
 ## テストコード
 testsパッケージ内の@Testアノテーションを付けた関数はAndroid Studioを利用して開発環境のJava VMで実行できます。

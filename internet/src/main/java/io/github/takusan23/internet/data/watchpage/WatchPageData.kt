@@ -12,11 +12,13 @@ import kotlinx.serialization.encodeToString
  * @param watchPageResponseJSONData 動画情報など
  * @param watchPageInitialJSONData 投稿者のアイコンURLはここにあります
  * @param contentUrlList 映像と音声のデータクラスの配列です。復号化済みであら簡単
+ * @param type videoかlive。あとダウンロード済みの場合は"download"とか？。
  * */
 data class WatchPageData(
     val watchPageResponseJSONData: WatchPageResponseJSONData,
     val watchPageInitialJSONData: WatchPageInitialJSONData,
     val contentUrlList: List<MediaUrlData>,
+    val type: String = if (watchPageResponseJSONData.videoDetails.isLive == true) "live" else "video",
 ) {
 
     /** [watchPageInitialJSONData]を文字列にする */
@@ -40,6 +42,15 @@ data class WatchPageData(
     fun getMediaUrlDataFromQuality(quality: String = "360p") = contentUrlList.find { it.quality == quality }!!
 
     companion object {
+
+        /** [WatchPageData.type]が動画 */
+        const val WATCH_PAGE_DATA_TYPE_VIDEO = "video"
+
+        /** [WatchPageData.type]が生放送 */
+        const val WATCH_PAGE_DATA_TYPE_LIVE = "live"
+
+        /** [WatchPageData.type]がダウンロード済み動画。 */
+        const val WATCH_PAGE_DATA_TYPE_DOWNLOAD = "video"
 
         /** 文字列から[WatchPageInitialJSONData]を作成する */
         fun decodeWatchPageInitialDataFromString(initialJSONString: String): WatchPageInitialJSONData {

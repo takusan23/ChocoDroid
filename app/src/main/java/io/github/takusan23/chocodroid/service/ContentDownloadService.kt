@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -65,14 +67,11 @@ class ContentDownloadService : Service() {
     /** ダウンロード予定動画 */
     private val downloadList = arrayListOf<DownloadRequestData>()
 
-    /** まとめて終了するためにコルーチンスコープ */
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    /** まとめて終了するためにコルーチンスコープ。実は[SupervisorJob]を足すとasync{ }の例外を予想通りにキャッチできるようになる */
+    private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     /** ダウンロード関係のクラス */
     private val downloadContentManager by lazy { DownloadContentManager(this) }
-
-    /** ダウンロード時のファイル分割数 */
-    private val downloadSplitCount = 5
 
     /** ダウンロード中動画を数えてる */
     private val downloadingItemList = arrayListOf<DownloadRequestData>()
@@ -109,11 +108,23 @@ class ContentDownloadService : Service() {
 
         val downloadRequestData = intent?.getSerializableExtra("request")!! as DownloadRequestData
         downloadingItemList.add(downloadRequestData)
+        val downloadSplitCount = downloadRequestData.splitCount
         // 通知出し直す
         showNotification()
 
+        val errorHandler = CoroutineExceptionHandler { _, throwable ->
+            throwable.printStackTrace()
+            coroutineScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ContentDownloadService, getString(R.string.download_error_quality), Toast.LENGTH_SHORT).show()
+                }
+                completedCode(downloadRequestData.videoId)
+                downloadContentManager.deleteContent(downloadRequestData.videoId)
+            }
+        }
+
         // データリクエスト。とりあえず動画と音声のURL
-        coroutineScope.launch {
+        coroutineScope.launch(errorHandler) {
             // 動画URL復号化アルゴリズム情報を取得
             val setting = dataStore.data.first()
             val baseJsURL = setting[SettingKeyObject.WATCH_PAGE_BASE_JS_URL]
@@ -125,6 +136,7 @@ class ContentDownloadService : Service() {
             val videoTitle = watchPageData.watchPageResponseJSONData.videoDetails.title
             // 非同期待機リスト
             val awaitList = arrayListOf<Deferred<Pair<File, DownloadPocket>>>()
+
             // サムネイル
             awaitList += async {
                 downloadContentManager.downloadThumbnailFile(watchPageData).apply {
@@ -148,6 +160,7 @@ class ContentDownloadService : Service() {
                     }
                 }
             }
+
             // 全部待つ。コルーチン便利すぎる
             val pathList = awaitList.map { it.await() }.map { it.first.path }
 
@@ -168,17 +181,26 @@ class ContentDownloadService : Service() {
             downloadContentManager.insertDownloadContentDB(watchPageData, pathList.first(), contentPath, downloadRequestData.isAudioOnly)
 
             // 他になければ終了？
-            downloadingItemList.remove(downloadRequestData)
-            if (downloadingItemList.isEmpty()) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@ContentDownloadService, getString(R.string.download_service_complete_toast), Toast.LENGTH_SHORT).show()
-                    showNotification()
-                }
-                stopSelf()
-            }
+            completedCode(videoId)
         }
 
         return START_NOT_STICKY
+    }
+
+    /**
+     * 終了時の処理。通信失敗時とかでも使う。
+     * @param videoId ダウンロードが終了した動画ID
+     * */
+    private suspend fun completedCode(videoId: String) {
+        // 他になければ終了？
+        downloadingItemList.remove(downloadingItemList.find { it.videoId == videoId })
+        if (downloadingItemList.isEmpty()) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@ContentDownloadService, getString(R.string.download_service_complete_toast), Toast.LENGTH_SHORT).show()
+                showNotification()
+                stopSelf()
+            }
+        }
     }
 
     /**
@@ -196,7 +218,7 @@ class ContentDownloadService : Service() {
                     cancel() // ちゃんと終了させてあげないと多分メモリに残り続ける上に一生一時停止し続ける
                     notificationManagerCompat.cancel(notificationId)
                 } else {
-                    println("$notificationTitle = $progress")
+                    // println("$notificationTitle = $progress")
                     showDownloadProgressNotification(notificationId, notificationTitle, progress)
                 }
             }.collect()

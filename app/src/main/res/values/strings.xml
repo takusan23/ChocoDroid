@@ -35,4 +35,7 @@
     <string name="download_service_progress_thumbnail">Downloading thumbnail file</string>
     <string name="quality">Quality</string>
     <string name="download_split_count">Division number</string>
+    <string name="download_audio_only">Download audio only</string>
+    <string name="error">Error</string>
+    <string name="download_error_quality">I couldn\'t DL. Try other image quality.</string>
 </resources>

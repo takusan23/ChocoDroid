@@ -17,6 +17,8 @@ class WatchPageHTMLTest {
                 println("生放送 HLS アドレス")
                 println(watchPageData.contentUrlList.first().mixTrackUrl)
             } else {
+                println("MPEG-DASH アドレス")
+                println(watchPageData.watchPageResponseJSONData.streamingData.dashManifestUrl)
                 println("動画URL")
                 watchPageData.contentUrlList.forEach { mediaUrlData ->
                     println(mediaUrlData.quality)
@@ -24,6 +26,12 @@ class WatchPageHTMLTest {
                     println(mediaUrlData.audioTrackUrl)
                     println("----")
                 }
+            }
+
+            watchPageData.watchPageResponseJSONData.streamingData.adaptiveFormats.forEach {
+                println(it.qualityLabel)
+                println(it.url)
+                println("---")
             }
 
             println("投稿者。の画像URL")

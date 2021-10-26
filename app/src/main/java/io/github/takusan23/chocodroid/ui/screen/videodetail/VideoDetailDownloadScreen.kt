@@ -1,9 +1,10 @@
 package io.github.takusan23.chocodroid.ui.screen.videodetail
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -16,13 +17,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
+import io.github.takusan23.chocodroid.ui.component.AndroidSnowConeSwitch
 import io.github.takusan23.chocodroid.ui.component.tool.SnackbarComposeTool
 import io.github.takusan23.internet.data.watchpage.WatchPageData
+import kotlin.math.roundToInt
 
 /**
  * 動画詳細のダウンロード画面
@@ -34,7 +37,6 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
  * */
 @Composable
 fun VideoDetailDownloadScreen(
-    isOnlineContent: Boolean,
     watchPageData: WatchPageData,
     onDownloadClick: (DownloadRequestData) -> Unit = {},
     onDeleteClick: (String) -> Unit = {},
@@ -42,10 +44,6 @@ fun VideoDetailDownloadScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
-    // 画質一覧
-    val qualityList = remember { watchPageData.contentUrlList.mapNotNull { it.quality } }
-    // 画質
-    val quality = remember { mutableStateOf(qualityList.first()) }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -65,12 +63,36 @@ fun VideoDetailDownloadScreen(
                     text = stringResource(id = R.string.download),
                 )
 
-                if (isOnlineContent) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        QualitySelectInput(
-                            currentQuality = quality.value,
-                            qualityList = qualityList,
-                            onQualitySelect = { quality.value = it }
+                if (watchPageData.type == WatchPageData.WATCH_PAGE_DATA_TYPE_VIDEO) {
+
+                    // 画質一覧
+                    val qualityList = remember { watchPageData.contentUrlList.mapNotNull { it.quality } }
+                    // 画質
+                    val quality = remember { mutableStateOf(qualityList.first()) }
+                    // 分割数
+                    val splitCount = remember { mutableStateOf(10) }
+                    // 音声のみ
+                    val isAudioOnly = remember { mutableStateOf(false) }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp, end = 10.dp)
+                    ) {
+                        if (!isAudioOnly.value) {
+                            QualitySelectInput(
+                                currentQuality = quality.value,
+                                qualityList = qualityList,
+                                onQualitySelect = { quality.value = it }
+                            )
+                        }
+                        DownloadSplitSlider(
+                            value = splitCount.value,
+                            onValueChange = { splitCount.value = it }
+                        )
+                        AudioOnlySwitch(
+                            isEnable = isAudioOnly.value,
+                            onValueChange = { isAudioOnly.value = it }
                         )
                     }
                     Divider()
@@ -83,7 +105,9 @@ fun VideoDetailDownloadScreen(
                         onClick = {
                             onDownloadClick(DownloadRequestData(
                                 videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId,
-                                quality = quality.value
+                                quality = quality.value,
+                                splitCount = splitCount.value,
+                                isAudioOnly = isAudioOnly.value,
                             ))
                         },
                         content = {
@@ -133,7 +157,7 @@ private fun QualitySelectInput(currentQuality: String, qualityList: List<String>
     Box {
         OutlinedButton(
             modifier = Modifier
-                .padding(10.dp),
+                .padding(top = 10.dp, bottom = 10.dp),
             onClick = { isShowDropdown.value = !isShowDropdown.value },
             content = {
                 Column(modifier = Modifier.weight(1f)) {
@@ -160,6 +184,68 @@ private fun QualitySelectInput(currentQuality: String, qualityList: List<String>
                     )
                 }
             }
+        )
+    }
+}
+
+/**
+ * ダウンロード分割数
+ *
+ * @param value 分割数
+ * @param onValueChange 分割数が変更したら
+ * */
+@Composable
+private fun DownloadSplitSlider(value: Int, onValueChange: (Int) -> Unit) {
+    Column {
+        Text(
+            text = stringResource(id = R.string.download_split_count),
+            modifier = Modifier
+                .padding(top = 10.dp, bottom = 5.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 5.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Slider(
+                modifier = Modifier.weight(1f),
+                value = value.toFloat(),
+                valueRange = 1f..10f,
+                onValueChange = { onValueChange(it.roundToInt()) }
+            )
+            Text(
+                modifier = Modifier.padding(10.dp),
+                text = value.toString()
+            )
+        }
+    }
+}
+
+/**
+ * 音声のみダウンロードスイッチ
+ *
+ * @param isEnable ON / OFF
+ * @param onValueChange 値変更時に呼ばれる
+ * */
+@Composable
+private fun AudioOnlySwitch(
+    isEnable: Boolean,
+    onValueChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = stringResource(id = R.string.download_audio_only)
+        )
+        AndroidSnowConeSwitch(
+            isEnable = isEnable,
+            onValueChange = onValueChange
         )
     }
 }

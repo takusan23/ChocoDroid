@@ -26,14 +26,21 @@ data class WatchPageResponseJSONData(
  *
  * 生放送の場合 [VideoDetails.isLive] は [hlsManifestUrl] を使ってください。生放送の場合は [formats] が無いと思います。
  *
- * @param adaptiveFormats
+ * [dashManifestUrl]について ---
+ *
+ * [adaptiveFormats]に記載されているURLで、一部の画質以外 404 を返す場合、[dashManifestUrl]から再生するとうまくいくかもしれません。
+ *
+ *
+ * @param adaptiveFormats 音声と映像が別のURLで配信されてます
  * @param formats
+ * @param dashManifestUrl MPEG-DASH？HLSの代替手段みたいなやつ。なんか[adaptiveFormats]の画質で404を返すときはこっちを再生するといい？
  * @param hlsManifestUrl アクセスするとマスターのマニフェストファイルが返ってきます。こっから画質を選んで
  * */
 @Serializable
 data class StreamingData(
     val formats: List<StreamingDataFormat>? = null,
     val adaptiveFormats: List<AdaptiveFormat>,
+    val dashManifestUrl: String? = null,
     val hlsManifestUrl: String? = null,
 )
 

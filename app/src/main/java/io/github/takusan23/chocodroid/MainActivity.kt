@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material.ExperimentalMaterialApi
 import io.github.takusan23.chocodroid.ui.screen.ChocoDroidMainScreen
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -16,8 +14,6 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  * */
 class MainActivity : ComponentActivity() {
 
-    @ExperimentalFoundationApi
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import androidx.datastore.preferences.core.edit
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -24,8 +25,12 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.video.VideoSize
+import io.github.takusan23.chocodroid.setting.SettingKeyObject
+import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.internet.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 
 /**
  * SurfaceViewとExoPlayer
@@ -82,6 +87,9 @@ class ExoPlayerComposeController(
     /** 動画時間（ミリ秒）*/
     val duration = mutableStateOf(0L)
 
+    /** 繰り返し再生する場合はtrue */
+    val isRepeatEnable = mutableStateOf(false)
+
     /** コルーチンスコープ。終了時にキャンセルするため */
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -118,6 +126,11 @@ class ExoPlayerComposeController(
                 currentPosition.value = exoPlayer.currentPosition
             }
         }
+        // リピートモード等設定読み出し
+        coroutineScope.launch {
+            val setting = context.dataStore.data.first()
+            setRepeatMode(setting[SettingKeyObject.PLAYER_REPEAT_PLAY] ?: false)
+        }
     }
 
     /**
@@ -151,6 +164,18 @@ class ExoPlayerComposeController(
      * */
     fun seek(position: Long) {
         exoPlayer.seekTo(position)
+    }
+
+    /**
+     * リピート再生を有効、無効にする
+     * @param isRepeat リピート再生ならtrue
+     * */
+    fun setRepeatMode(isRepeat: Boolean = true) {
+        exoPlayer.repeatMode = if (isRepeat) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
+        this.isRepeatEnable.value = isRepeat
+        coroutineScope.launch {
+            context.dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_PLAY] = isRepeat }
+        }
     }
 
     /** 終了時に呼んでください */

@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.setting
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
 /**
@@ -20,4 +21,7 @@ object SettingKeyObject {
 
     /** 動画検索や、チャンネルの投稿動画取得で使うAPIキーを保存しておく */
     val API_KEY = stringPreferencesKey("api_key")
+
+    /** リピート再生有効かどうか */
+    val PLAYER_REPEAT_PLAY = booleanPreferencesKey("player_repeat_play")
 }

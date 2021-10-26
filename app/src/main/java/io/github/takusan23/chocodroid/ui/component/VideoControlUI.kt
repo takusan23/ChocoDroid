@@ -12,9 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.delay
@@ -33,9 +35,10 @@ fun VideoControlUI(
     controller: ExoPlayerComposeController,
     state: MiniPlayerState,
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     // プレイヤー押したらプレイヤーUIを非表示にしたいので
     val isShowPlayerUI = remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
 
     // 一定時間後にfalseにする
     LaunchedEffect(key1 = isShowPlayerUI.value, block = {
@@ -89,6 +92,18 @@ fun VideoControlUI(
                     }
                     // ミニプレイヤー時はこれ以降表示しない
                     if (state.progress.value < 0.5f) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 10.dp),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RepeatButton(
+                                isEnableRepeat = controller.isRepeatEnable.value,
+                                onRepeatChange = { controller.setRepeatMode(it) }
+                            )
+                        }
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

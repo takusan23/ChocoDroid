@@ -19,35 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * 設定画面のタイトル部分
- *
- * @param icon アイコンを表示させる場合は
- * @param title タイトル
- * */
-@Composable
-fun SettingTitle(
-    title: String,
-    icon: Painter? = null,
-) {
-    Column(modifier = Modifier.padding(start = 10.dp, top = 50.dp, end = 10.dp, bottom = 10.dp)) {
-        if (icon != null) {
-            Image(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-                    .padding(bottom = 10.dp)
-            )
-        }
-        Text(
-            text = title,
-            fontSize = 40.sp
-        )
-        Divider()
-    }
-}
-
-/**
  * 設定の各項目
  *
  * @param title タイトル

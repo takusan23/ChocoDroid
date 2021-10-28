@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.*
+import io.github.takusan23.chocodroid.ui.component.tool.CalcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.component.tool.SetActivitySleepComposeApp
 import io.github.takusan23.chocodroid.ui.component.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
@@ -53,8 +55,13 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
-            // ナビゲーションバーの色
-            SetNavigationBarColor(color = MaterialTheme.colorScheme.surface)
+            // ナビゲーションバーの色。BottomNavigationの色に合わせている
+            val bottomNavColor = CalcM3ElevationColor(
+                colorScheme = MaterialTheme.colorScheme,
+                color = MaterialTheme.colorScheme.surface,
+                elevation = 3.dp
+            )
+            SetNavigationBarColor(color = bottomNavColor)
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
                 miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End)

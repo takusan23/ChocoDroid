@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.service.ContentDownloadService
+import io.github.takusan23.chocodroid.ui.component.tool.CalcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.screen.videodetail.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -50,9 +51,15 @@ fun VideoDetailScreen(
 
     // 戻るキーでミニプレイヤーにできるように
     SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
+    // BottomNavの色を出す
+    val bottomNavColor = CalcM3ElevationColor(
+        colorScheme = MaterialTheme.colorScheme,
+        color = MaterialTheme.colorScheme.surface,
+        elevation = 3.dp
+    )
 
     Surface(
-        color = MaterialTheme.colorScheme.primary,
+        color = bottomNavColor,
         modifier = Modifier.fillMaxSize()
     ) {
         Row {

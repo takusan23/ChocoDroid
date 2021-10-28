@@ -39,4 +39,10 @@
     <string name="error">問題が発生しました。</string>
     <string name="download_error_quality">DL出来ませんでした。他の画質を試してみてください。</string>
     <string name="setting">設定</string>
+    <string name="setting_enable_dynamic_color_title">ダイナミックカラー（動的テーマ）を利用する</string>
+    <string name="setting_enable_dynamic_color_description">Android 12以降でのみ動作します。あの噂のMaterial Youです。</string>
+    <string name="setting_kono_app_title">このアプリについて</string>
+    <string name="setting_kono_app_description">自己紹介</string>
+    <string name="setting_license_title">ライセンス</string>
+    <string name="setting_license_description">thx !</string>
 </resources>

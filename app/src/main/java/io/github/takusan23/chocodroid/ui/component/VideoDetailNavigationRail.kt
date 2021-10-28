@@ -4,14 +4,18 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.ui.component.tool.CalcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.screen.videodetail.VideoDetailNavigationLinkList
 import io.github.takusan23.internet.data.watchpage.WatchPageData
+import kotlin.math.ln
 
 /**
  * 動画詳細画面で使ってるナビゲーションレール
@@ -24,8 +28,14 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
 fun VideoDetailNavigationRail(navHostController: NavHostController, watchPageData: WatchPageData) {
     // 現在表示されてる画面のルート名
     val currentNavRoute = navHostController.currentBackStackEntryAsState().value?.destination?.route
+    // BottomNavigationの色を取得する
+    val calcColor = CalcM3ElevationColor(
+        colorScheme = MaterialTheme.colorScheme,
+        color = MaterialTheme.colorScheme.surface,
+        elevation = 3.dp
+    )
 
-    NavigationRail(containerColor = MaterialTheme.colorScheme.primary) {
+    NavigationRail(containerColor = calcColor) {
         NavigationRailItem(
             selected = currentNavRoute == VideoDetailNavigationLinkList.VideoDetailDescriptionScreen,
             icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_info_24), contentDescription = null) },

@@ -14,7 +14,6 @@ import io.github.takusan23.internet.data.watchpage.CompactVideoRenderer
  * @param state スクロールなど
  * @param list 関連動画
  * */
-@ExperimentalMaterialApi
 @Composable
 fun RelatedVideoList(
     state: LazyListState = rememberLazyListState(),
@@ -40,7 +39,6 @@ fun RelatedVideoList(
  * @param state スクロールなど
  * @param list 関連動画
  * */
-@ExperimentalMaterialApi
 @Composable
 private fun RelatedVideoListItem(
     compactVideoRenderer: CompactVideoRenderer,

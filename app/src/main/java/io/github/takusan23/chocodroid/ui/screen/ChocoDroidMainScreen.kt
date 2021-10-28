@@ -1,10 +1,15 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.material.*
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.component.tool.SetActivitySleepComposeApp
@@ -15,11 +20,13 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 /**
  * MainActivityに置くやつ。メイン画面です。
  *
+ * Entry Point
+ *
  * Jetpack Composeのスタート地点
  *
  * @param viewModel ViewModel
  * */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {
@@ -47,17 +54,17 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
             // ナビゲーションバーの色
-            SetNavigationBarColor(MaterialTheme.colorScheme.surface)
+            SetNavigationBarColor(color = MaterialTheme.colorScheme.surface)
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
                 miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End)
             })
 
             // Snackbar出す
-            val scaffoldState = rememberScaffoldState()
+            val scaffoldState = androidx.compose.material3.rememberScaffoldState()
+            val snackbarHostState = remember { SnackbarHostState() }
             LaunchedEffect(key1 = errorData.value, block = {
                 if (errorData.value != null) {
-                    val snackbarHostState = scaffoldState.snackbarHostState
                     val result = snackbarHostState.showSnackbar(errorData.value!!, actionLabel = "閉じる", duration = SnackbarDuration.Indefinite)
                     if (result == SnackbarResult.ActionPerformed) {
                         // 閉じるボタン押したら閉じる
@@ -70,6 +77,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             MiniPlayerScaffold(
                 miniPlayerState = miniPlayerState,
                 scaffoldState = scaffoldState,
+                snackbarHostState = snackbarHostState,
                 bottomBar = { HomeScreenBottomNavigation(navHostController = navController) },
                 playerContent = {
                     // 動画再生
@@ -81,7 +89,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 detailContent = {
                     // 動画情報
                     watchPageResponseData.value?.apply {
-                        VideoDetailUI(
+                        VideoDetailScreen(
                             watchPageData = this,
                             miniPlayerState = miniPlayerState,
                             mainViewModel = viewModel,

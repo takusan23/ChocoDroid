@@ -5,8 +5,8 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +42,7 @@ fun AndroidSnowConeSwitch(
     ) {
         BoxWithConstraints {
             val offsetXAnim = animateDpAsState(targetValue = if (isEnable) (maxWidth / 2) else 0.dp)
-            val foregroundColor = animateColorAsState(targetValue = if (isEnable) androidx.compose.material3.MaterialTheme.colorScheme.background else Color.LightGray)
+            val foregroundColor = animateColorAsState(targetValue = if (isEnable) MaterialTheme.colorScheme.background else Color.LightGray)
             Surface(
                 modifier = Modifier
                     .padding(3.dp)

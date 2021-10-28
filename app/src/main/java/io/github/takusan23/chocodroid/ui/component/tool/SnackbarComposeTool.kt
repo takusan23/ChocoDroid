@@ -1,6 +1,8 @@
 package io.github.takusan23.chocodroid.ui.component.tool
 
-import androidx.compose.material.*
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -23,7 +25,7 @@ object SnackbarComposeTool {
         actionLabel: String,
         snackbarDuration: SnackbarDuration = SnackbarDuration.Indefinite,
         onActionPerformed: () -> Unit,
-        onDismissed: () -> Unit = {}
+        onDismissed: () -> Unit = {},
     ) {
         scope.launch {
             val result = snackbarHostState.showSnackbar(snackbarMessage, actionLabel, snackbarDuration)

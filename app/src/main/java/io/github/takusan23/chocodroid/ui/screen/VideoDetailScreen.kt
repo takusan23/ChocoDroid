@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -33,9 +36,9 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
  * @param navHostController 動画詳細とかメニュー切り替え
  * @param mainNavHostController メイン画面のNavController
  * */
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun VideoDetailUI(
+fun VideoDetailScreen(
     watchPageData: WatchPageData,
     mainViewModel: MainScreenViewModel,
     miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
@@ -49,12 +52,16 @@ fun VideoDetailUI(
     SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
 
     Surface(
-        color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.fillMaxSize()
     ) {
         Row {
             // NavigationRail
-            VideoDetailNavigationRail(navHostController = navHostController, watchPageData = watchPageData)
+            VideoDetailNavigationRail(
+                navHostController = navHostController,
+                watchPageData = watchPageData
+            )
+
             Surface(
                 modifier = Modifier
                     .fillMaxHeight()

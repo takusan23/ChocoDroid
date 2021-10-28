@@ -3,7 +3,9 @@ package io.github.takusan23.chocodroid.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +28,6 @@ import androidx.compose.ui.unit.sp
  * @param backgroundColor ボタンの背景
  * @param onClick 押したとき
  * */
-@ExperimentalMaterialApi
 @Composable
 fun RoundedIconButton(
     modifier: Modifier = Modifier,
@@ -67,7 +68,6 @@ fun RoundedIconButton(
  * @param iconRoundedPercent アイコンの角丸レベル
  * @param onClick 押したとき
  * */
-@ExperimentalMaterialApi
 @Composable
 fun RoundedImageButton(
     modifier: Modifier = Modifier,
@@ -105,7 +105,6 @@ fun RoundedImageButton(
 /**
  * Icon部分を変更可能にしたバージョン。
  * */
-@ExperimentalMaterialApi
 @Composable
 private fun RoundedButton(
     modifier: Modifier = Modifier,

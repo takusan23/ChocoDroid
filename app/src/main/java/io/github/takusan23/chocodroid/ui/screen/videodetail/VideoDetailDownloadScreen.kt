@@ -1,12 +1,16 @@
 package io.github.takusan23.chocodroid.ui.screen.videodetail
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,12 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.chocodroid.ui.component.AndroidSnowConeSwitch
+import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.tool.SnackbarComposeTool
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlin.math.roundToInt
@@ -35,6 +39,7 @@ import kotlin.math.roundToInt
  * @param onDownloadClick 動画ダウンロードボタンを押したときに呼ばれる。渡されるデータは画質の指定など
  * @param onDeleteClick 削除ボタン押したときに呼ばれる。渡されるデータは動画ID
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoDetailDownloadScreen(
     watchPageData: WatchPageData,
@@ -44,101 +49,101 @@ fun VideoDetailDownloadScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(
+    M3Scaffold(
         scaffoldState = scaffoldState,
+        snackbarHostState = snackbarHostState,
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
+            Box(modifier = Modifier.padding(it)) {
+                Column(
                     modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth(),
-                    fontSize = 20.sp,
-                    text = stringResource(id = R.string.download),
-                )
-
-                if (watchPageData.type == WatchPageData.WATCH_PAGE_DATA_TYPE_VIDEO) {
-
-                    // 画質一覧
-                    val qualityList = remember { watchPageData.contentUrlList.mapNotNull { it.quality } }
-                    // 画質
-                    val quality = remember { mutableStateOf(qualityList.first()) }
-                    // 分割数
-                    val splitCount = remember { mutableStateOf(10) }
-                    // 音声のみ
-                    val isAudioOnly = remember { mutableStateOf(false) }
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 10.dp, end = 10.dp)
-                    ) {
-                        if (!isAudioOnly.value) {
-                            QualitySelectInput(
-                                currentQuality = quality.value,
-                                qualityList = qualityList,
-                                onQualitySelect = { quality.value = it }
-                            )
-                        }
-                        DownloadSplitSlider(
-                            value = splitCount.value,
-                            onValueChange = { splitCount.value = it }
-                        )
-                        AudioOnlySwitch(
-                            isEnable = isAudioOnly.value,
-                            onValueChange = { isAudioOnly.value = it }
-                        )
-                    }
-                    Divider()
-                    Button(
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
                         modifier = Modifier
                             .padding(10.dp)
-                            .align(alignment = Alignment.End),
-                        elevation = ButtonDefaults.elevation(0.dp),
-                        shape = RoundedCornerShape(50),
-                        onClick = {
-                            onDownloadClick(DownloadRequestData(
-                                videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId,
-                                quality = quality.value,
-                                splitCount = splitCount.value,
-                                isAudioOnly = isAudioOnly.value,
-                            ))
-                        },
-                        content = {
-                            Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null)
-                            Text(text = stringResource(id = R.string.download))
-                        }
+                            .fillMaxWidth(),
+                        fontSize = 20.sp,
+                        text = stringResource(id = R.string.download),
                     )
-                } else {
-                    Button(
-                        modifier = Modifier
-                            .padding(10.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFB00020), contentColor = Color.White),
-                        elevation = ButtonDefaults.elevation(0.dp),
-                        shape = RoundedCornerShape(50),
-                        onClick = {
-                            SnackbarComposeTool.showSnackbar(
-                                scope = scope,
-                                snackbarHostState = scaffoldState.snackbarHostState,
-                                snackbarMessage = context.getString(R.string.delete_message),
-                                actionLabel = context.getString(R.string.delete),
-                                snackbarDuration = SnackbarDuration.Long,
-                                onActionPerformed = { onDeleteClick(watchPageData.watchPageResponseJSONData.videoDetails.videoId) }
-                            )
-                        },
-                        content = {
-                            Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null)
-                            Text(text = stringResource(id = R.string.delete))
-                        }
-                    )
-                }
+                    if (watchPageData.type == WatchPageData.WATCH_PAGE_DATA_TYPE_VIDEO) {
 
+                        // 画質一覧
+                        val qualityList = remember { watchPageData.contentUrlList.mapNotNull { it.quality } }
+                        // 画質
+                        val quality = remember { mutableStateOf(qualityList.first()) }
+                        // 分割数
+                        val splitCount = remember { mutableStateOf(10) }
+                        // 音声のみ
+                        val isAudioOnly = remember { mutableStateOf(false) }
+
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 10.dp, end = 10.dp)
+                        ) {
+                            if (!isAudioOnly.value) {
+                                QualitySelectInput(
+                                    currentQuality = quality.value,
+                                    qualityList = qualityList,
+                                    onQualitySelect = { quality.value = it }
+                                )
+                            }
+                            DownloadSplitSlider(
+                                value = splitCount.value,
+                                onValueChange = { splitCount.value = it }
+                            )
+                            AudioOnlySwitch(
+                                isEnable = isAudioOnly.value,
+                                onValueChange = { isAudioOnly.value = it }
+                            )
+                        }
+                        Divider()
+                        Button(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .align(alignment = Alignment.End),
+                            shape = RoundedCornerShape(50),
+                            onClick = {
+                                onDownloadClick(DownloadRequestData(
+                                    videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId,
+                                    quality = quality.value,
+                                    splitCount = splitCount.value,
+                                    isAudioOnly = isAudioOnly.value,
+                                ))
+                            },
+                            content = {
+                                Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null)
+                                Text(text = stringResource(id = R.string.download))
+                            }
+                        )
+                    } else {
+                        Button(
+                            modifier = Modifier
+                                .padding(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020), contentColor = Color.White),
+                            shape = RoundedCornerShape(50),
+                            onClick = {
+                                SnackbarComposeTool.showSnackbar(
+                                    scope = scope,
+                                    snackbarHostState = snackbarHostState,
+                                    snackbarMessage = context.getString(R.string.delete_message),
+                                    actionLabel = context.getString(R.string.delete),
+                                    snackbarDuration = SnackbarDuration.Long,
+                                    onActionPerformed = { onDeleteClick(watchPageData.watchPageResponseJSONData.videoDetails.videoId) }
+                                )
+                            },
+                            content = {
+                                Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null)
+                                Text(text = stringResource(id = R.string.delete))
+                            }
+                        )
+                    }
+                }
             }
         },
     )

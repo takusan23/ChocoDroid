@@ -1,21 +1,17 @@
 package io.github.takusan23.chocodroid.ui.theme
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.chocodroid.ui.component.tool.SetNavigationBarColor
 
 private val DarkColorPalette = darkColors(
     primary = PrimaryColor,
@@ -42,8 +38,11 @@ private val LightColorPalette = lightColors(
 /**
  * テーマ
  *
+ * アノテーションで警告を黙らせてるけどちゃんと動くようにしてあるのでおｋ
+ *
  * @param darkTheme ダークモード
  * */
+@SuppressLint("NewApi")
 @Composable
 fun ChocoDroidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

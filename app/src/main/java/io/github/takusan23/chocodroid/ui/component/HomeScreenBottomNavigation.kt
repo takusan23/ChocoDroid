@@ -1,18 +1,15 @@
 package io.github.takusan23.chocodroid.ui.component
 
-import androidx.compose.material.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
+
 
 /**
  * 最初の画面に置くボトムナビゲーション

@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.RoundedIconButton
 import io.github.takusan23.chocodroid.ui.component.RoundedImageButton
 import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
@@ -28,7 +29,7 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
  * @param watchPageData 視聴ページレスポンスデータ
  * @param onNavigation 今の所チャンネル画面に遷移する目的以外では使ってない
  * */
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoDetailDescriptionScreen(
     watchPageData: WatchPageData,
@@ -37,52 +38,55 @@ fun VideoDetailDescriptionScreen(
     val videoDetails = watchPageData.watchPageResponseJSONData.videoDetails
     val iconUrl = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.last()?.url
 
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        Text(
-            modifier = Modifier.padding(10.dp),
-            fontSize = 20.sp,
-            text = videoDetails.title,
-        )
-
-        Row {
-            RoundedIconButton(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .weight(1f),
-                mainText = videoDetails.viewCount,
-                subText = stringResource(id = R.string.watch_count),
-                iconPainter = painterResource(id = R.drawable.ic_outline_play_arrow_24),
-                onClick = { }
+    M3Scaffold {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Text(
+                modifier = Modifier.padding(10.dp),
+                fontSize = 20.sp,
+                text = videoDetails.title,
             )
-            RoundedIconButton(
+
+            Row {
+                RoundedIconButton(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .weight(1f),
+                    mainText = videoDetails.viewCount,
+                    subText = stringResource(id = R.string.watch_count),
+                    iconPainter = painterResource(id = R.drawable.ic_outline_play_arrow_24),
+                    onClick = { }
+                )
+                RoundedIconButton(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .weight(1f),
+                    mainText = watchPageData.watchPageResponseJSONData.microformat.playerMicroformatRenderer.publishDate,
+                    subText = stringResource(id = R.string.publish_date),
+                    iconPainter = painterResource(id = R.drawable.ic_outline_today_24),
+                    onClick = { }
+                )
+            }
+
+            RoundedImageButton(
                 modifier = Modifier
                     .padding(5.dp)
-                    .weight(1f),
-                mainText = watchPageData.watchPageResponseJSONData.microformat.playerMicroformatRenderer.publishDate,
-                subText = stringResource(id = R.string.publish_date),
-                iconPainter = painterResource(id = R.drawable.ic_outline_today_24),
-                onClick = { }
+                    .fillMaxWidth(),
+                mainText = videoDetails.author,
+                subText = stringResource(id = R.string.publish_name),
+                iconPainter = rememberImagePainter(
+                    data = iconUrl,
+                    builder = { crossfade(true) }
+                ),
+                onClick = { onNavigation(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageResponseJSONData.videoDetails.channelId)) }
+            )
+
+            Divider()
+            Text(
+                modifier = Modifier.padding(10.dp),
+                fontSize = 15.sp,
+                text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
             )
         }
-
-        RoundedImageButton(
-            modifier = Modifier
-                .padding(5.dp)
-                .fillMaxWidth(),
-            mainText = videoDetails.author,
-            subText = stringResource(id = R.string.publish_name),
-            iconPainter = rememberImagePainter(
-                data = iconUrl,
-                builder = { crossfade(true) }
-            ),
-            onClick = { onNavigation(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageResponseJSONData.videoDetails.channelId)) }
-        )
-
-        Divider()
-        Text(
-            modifier = Modifier.padding(10.dp),
-            fontSize = 15.sp,
-            text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
-        )
     }
+
 }

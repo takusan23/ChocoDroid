@@ -18,7 +18,7 @@ import androidx.core.graphics.red
  * @param color 変更する色。省略時BottomNavigationBarの背景色
  * */
 @Composable
-fun SetNavigationBarColor(color: Color = MaterialTheme.colorScheme.surface) {
+fun SetNavigationBarColor(color: Color = MaterialTheme.colorScheme.primary) {
     val context = LocalContext.current
     // ナビゲーションバーの色
     LaunchedEffect(key1 = color, block = {

@@ -1,24 +1,22 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.channel.C4TabbedHeaderRenderer
-import io.github.takusan23.internet.data.channel.ChannelResponseData
-import io.github.takusan23.internet.data.channel.Header
 
 /**
  * チャンネル画面のヘッダー部分
@@ -80,7 +78,7 @@ fun ChannelHeader(header: C4TabbedHeaderRenderer, onClickOpenBrowser: () -> Unit
                     Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null)
                     Text(text = stringResource(id = R.string.add_favourite_list))
                 }
-                OutlinedButton(
+                androidx.compose.material3.OutlinedButton(
                     onClick = onClickOpenBrowser,
                     modifier = Modifier
                         .padding(top = 2.dp, bottom = 2.dp)

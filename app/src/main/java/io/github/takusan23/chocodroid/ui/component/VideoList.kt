@@ -2,17 +2,18 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.LocalImageLoader
 import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
@@ -40,7 +40,6 @@ import io.github.takusan23.internet.data.CommonVideoData
  * @param isSwipeEnabled 引っ張るやつ無効にする場合はtrue
  * @param onRefresh 引っ張って更新で引っ張ったら呼ばれる
  * */
-@ExperimentalMaterialApi
 @Composable
 fun VideoList(
     lazyListState: LazyListState = rememberLazyListState(),
@@ -74,7 +73,6 @@ fun VideoList(
  * @param videoRenderer 動画情報
  * @param onClick 押したら呼ばれる
  * */
-@ExperimentalMaterialApi
 @Composable
 fun VideoListItem(
     commonVideoData: CommonVideoData,
@@ -104,7 +102,6 @@ fun VideoListItem(
  * @param durationTextBackground 再生時間の背景色。生放送との分岐でどうぞ
  * @param onClick 押したとき。引数は動画ID
  * */
-@ExperimentalMaterialApi
 @Composable
 fun VideoListItem(
     videoId: String,
@@ -119,6 +116,9 @@ fun VideoListItem(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
+        interactionSource = remember { MutableInteractionSource() },
+        indication = rememberRipple(),
         onClick = { onClick(videoId) }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

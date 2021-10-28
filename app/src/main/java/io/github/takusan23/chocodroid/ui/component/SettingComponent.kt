@@ -1,21 +1,22 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import io.github.takusan23.chocodroid.setting.dataStore
-import kotlinx.coroutines.launch
 
 /**
  * 設定画面のタイトル部分
@@ -54,7 +55,6 @@ fun SettingTitle(
  * @param icon アイコン。省略時はスペースだけ開けます
  * @param onClick 押したとき
  * */
-@ExperimentalMaterialApi
 @Composable
 fun SettingItem(
     title: String,
@@ -62,7 +62,13 @@ fun SettingItem(
     icon: Painter?,
     onClick: () -> Unit,
 ) {
-    Surface(onClick = onClick) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
+        interactionSource = remember { MutableInteractionSource() },
+        indication = rememberRipple(),
+        onClick = onClick
+    ) {
         CommonSettingItem(
             modifier = Modifier
                 .padding(10.dp)
@@ -83,7 +89,6 @@ fun SettingItem(
  * @param isEnable 有効かどうか
  * @param onCheckedChange 有効無効切り替わったとき
  * */
-@ExperimentalMaterialApi
 @Composable
 fun SettingSwitchItem(
     title: String,
@@ -92,7 +97,13 @@ fun SettingSwitchItem(
     isEnable: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Surface(onClick = { onCheckedChange(!isEnable) }) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
+        interactionSource = remember { MutableInteractionSource() },
+        indication = rememberRipple(),
+        onClick = { onCheckedChange(!isEnable) }
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CommonSettingItem(
                 modifier = Modifier
@@ -133,15 +144,16 @@ private fun CommonSettingItem(
         if (icon != null) {
             Image(
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(40.dp)
                     .padding(end = 10.dp),
                 painter = icon,
-                contentDescription = null
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
         } else {
             Spacer(
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(40.dp)
                     .padding(end = 10.dp),
             )
         }

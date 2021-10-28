@@ -1,16 +1,14 @@
 package io.github.takusan23.chocodroid.ui.component
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
@@ -20,7 +18,7 @@ import kotlinx.coroutines.launch
 /**
  * 設定画面
  * */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen() {
     val context = LocalContext.current
@@ -29,6 +27,9 @@ fun SettingScreen() {
     val dataStore = context.dataStore
     val dataStoreFlow = context.dataStore.data.collectAsState(initial = null)
 
+    M3Scaffold {
+
+    }
     LazyColumn(
         content = {
             // タイトル

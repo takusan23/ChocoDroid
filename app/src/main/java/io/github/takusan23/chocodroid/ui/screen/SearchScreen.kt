@@ -1,14 +1,16 @@
 package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberScaffoldState
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.SearchScreenBar
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
@@ -20,7 +22,7 @@ import kotlinx.coroutines.launch
  * @param viewModel 検索画面ViewModel
  * @param onClick 押したときに呼ばれる。引数は動画ID
  * */
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: (String) -> Unit) {
     val videoList = viewModel.searchResultListFlow.collectAsState()
@@ -31,6 +33,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
 
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading.value)
     val scope = rememberCoroutineScope()
@@ -38,7 +41,6 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     // エラー時
     LaunchedEffect(key1 = errorMessage.value, block = {
         if (errorMessage.value != null) {
-            val snackbarHostState = scaffoldState.snackbarHostState
             val result = snackbarHostState.showSnackbar(errorMessage.value!!, context.getString(R.string.close), SnackbarDuration.Indefinite)
             if (result == SnackbarResult.ActionPerformed) {
                 snackbarHostState.currentSnackbarData?.dismiss()
@@ -52,8 +54,9 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
         LaunchedEffect(key1 = Unit, block = { viewModel.moreLoad() })
     }
 
-    Scaffold(
+    M3Scaffold(
         scaffoldState = scaffoldState,
+        snackbarHostState = snackbarHostState,
         topBar = {
             SearchScreenBar(
                 onBack = onBack,

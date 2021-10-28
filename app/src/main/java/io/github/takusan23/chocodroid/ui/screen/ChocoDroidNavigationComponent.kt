@@ -1,7 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.activity.ComponentActivity
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,7 +22,6 @@ import io.github.takusan23.internet.api.SearchAPI
  * @param navController 画面遷移コントローラー
  * @param mainScreenViewModel 最初の画面のViewModel
  * */
-@ExperimentalMaterialApi
 @Composable
 fun ChocoDroidNavigationComponent(
     mainScreenViewModel: MainScreenViewModel,

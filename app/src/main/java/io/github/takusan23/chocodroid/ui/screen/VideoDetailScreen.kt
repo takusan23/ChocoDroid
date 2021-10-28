@@ -23,7 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.service.ContentDownloadService
-import io.github.takusan23.chocodroid.ui.component.tool.CalcM3ElevationColor
+import io.github.takusan23.chocodroid.ui.component.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.screen.videodetail.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -37,7 +37,6 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
  * @param navHostController 動画詳細とかメニュー切り替え
  * @param mainNavHostController メイン画面のNavController
  * */
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VideoDetailScreen(
     watchPageData: WatchPageData,
@@ -52,7 +51,7 @@ fun VideoDetailScreen(
     // 戻るキーでミニプレイヤーにできるように
     SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
     // BottomNavの色を出す
-    val bottomNavColor = CalcM3ElevationColor(
+    val bottomNavColor = calcM3ElevationColor(
         colorScheme = MaterialTheme.colorScheme,
         color = MaterialTheme.colorScheme.surface,
         elevation = 3.dp
@@ -74,7 +73,7 @@ fun VideoDetailScreen(
                     .fillMaxHeight()
                     .weight(1f),
                 color = Color.White,
-                shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp),
+                shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
             ) {
                 NavHost(navController = navHostController, startDestination = VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) {
                     // 動画説明

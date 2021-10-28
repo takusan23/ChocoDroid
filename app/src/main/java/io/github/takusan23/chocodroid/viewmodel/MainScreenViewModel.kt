@@ -145,7 +145,8 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
      * プレイヤー終了。データクラス保持Flowにnullを入れます
      * */
     fun closePlayer() {
-        viewModelScope.launch { _watchPageData.value = null }
+        _watchPageData.value = null
+        _mediaUrlDataFlow.value = null
     }
 
     /**

@@ -62,13 +62,11 @@ fun ChocoDroidTheme(
             primary = PrimaryColor,
             secondary = LightColor,
             tertiary = DarkColor,
-            surface = Color.Black,
         )
         else -> lightColorScheme(
             primary = PrimaryColor,
             secondary = LightColor,
             tertiary = DarkColor,
-            surface = Color.White,
         )
     }
 

@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -49,63 +50,65 @@ fun SearchScreenBar(
         SearchAPI.PARAMS_SORT_REVIEW
     )
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-                modifier = Modifier.padding(5.dp),
-                onClick = onBack,
-                content = { Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = null) }
-            )
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                if (searchWord.isEmpty()) {
-                    Text(
-                        modifier = Modifier.padding(5.dp),
-                        text = "検索ワード"
-                    )
-                }
-                BasicTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .onFocusChanged { isFocusTextField.value = it.isFocused }
-                        .padding(5.dp),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    singleLine = true,
-                    keyboardActions = KeyboardActions(onSearch = { onSearch(searchWord) }),
-                    value = searchWord,
-                    onValueChange = onSearchWordChange
-                )
-            }
-            // 消すボタン
-            if (isFocusTextField.value) {
+    Surface {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
                     modifier = Modifier.padding(5.dp),
-                    onClick = { onSearchWordChange("") },
-                    content = { Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = null) }
+                    onClick = onBack,
+                    content = { Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = null) }
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    if (searchWord.isEmpty()) {
+                        Text(
+                            modifier = Modifier.padding(5.dp),
+                            text = "検索ワード"
+                        )
+                    }
+                    BasicTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { isFocusTextField.value = it.isFocused }
+                            .padding(5.dp),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        singleLine = true,
+                        keyboardActions = KeyboardActions(onSearch = { onSearch(searchWord) }),
+                        value = searchWord,
+                        onValueChange = onSearchWordChange
+                    )
+                }
+                // 消すボタン
+                if (isFocusTextField.value) {
+                    IconButton(
+                        modifier = Modifier.padding(5.dp),
+                        onClick = { onSearchWordChange("") },
+                        content = { Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = null) }
+                    )
+                }
+                IconButton(
+                    modifier = Modifier.padding(5.dp),
+                    onClick = { isShowSortMenu.value = !isShowSortMenu.value },
+                    content = { Icon(painter = painterResource(id = R.drawable.ic_outline_sort_24), contentDescription = null) }
+                )
+                IconButton(
+                    modifier = Modifier.padding(5.dp),
+                    onClick = { onSearch(searchWord) },
+                    content = { Icon(painter = painterResource(id = R.drawable.ic_outline_search_24), contentDescription = null) }
                 )
             }
-            IconButton(
-                modifier = Modifier.padding(5.dp),
-                onClick = { isShowSortMenu.value = !isShowSortMenu.value },
-                content = { Icon(painter = painterResource(id = R.drawable.ic_outline_sort_24), contentDescription = null) }
-            )
-            IconButton(
-                modifier = Modifier.padding(5.dp),
-                onClick = { onSearch(searchWord) },
-                content = { Icon(painter = painterResource(id = R.drawable.ic_outline_search_24), contentDescription = null) }
-            )
-        }
-        // ソートメニュー表示
-        if (isShowSortMenu.value) {
-            SearchSortToggleButton(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .align(alignment = Alignment.End),
-                selectedItemPos = sortList.indexOf(sort),
-                onClick = { onSort(sortList[it]) }
-            )
+            // ソートメニュー表示
+            if (isShowSortMenu.value) {
+                SearchSortToggleButton(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .align(alignment = Alignment.End),
+                    selectedItemPos = sortList.indexOf(sort),
+                    onClick = { onSort(sortList[it]) }
+                )
+            }
         }
     }
 }

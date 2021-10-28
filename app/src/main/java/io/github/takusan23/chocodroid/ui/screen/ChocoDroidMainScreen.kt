@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.*
-import io.github.takusan23.chocodroid.ui.component.tool.CalcM3ElevationColor
+import io.github.takusan23.chocodroid.ui.component.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.component.tool.SetActivitySleepComposeApp
 import io.github.takusan23.chocodroid.ui.component.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
@@ -56,7 +56,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
             // ナビゲーションバーの色。BottomNavigationの色に合わせている
-            val bottomNavColor = CalcM3ElevationColor(
+            val bottomNavColor = calcM3ElevationColor(
                 colorScheme = MaterialTheme.colorScheme,
                 color = MaterialTheme.colorScheme.surface,
                 elevation = 3.dp
@@ -88,9 +88,9 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 bottomBar = { HomeScreenBottomNavigation(navHostController = navController) },
                 playerContent = {
                     // 動画再生
-                    watchPageResponseData.value?.apply {
-                        VideoPlayerUI(watchPageData = this, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController)
-                        VideoControlUI(watchPageData = this, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController, state = miniPlayerState)
+                    if (watchPageResponseData.value != null && mediaUrlData.value != null) {
+                        VideoPlayerUI(watchPageData = watchPageResponseData.value!!, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController)
+                        VideoControlUI(watchPageData = watchPageResponseData.value!!, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController, state = miniPlayerState)
                     }
                 },
                 detailContent = {

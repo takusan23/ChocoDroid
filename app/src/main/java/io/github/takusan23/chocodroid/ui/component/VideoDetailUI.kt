@@ -49,7 +49,7 @@ fun VideoDetailUI(
     SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
 
     Surface(
-        color = MaterialTheme.colors.primary,
+        color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
         modifier = Modifier.fillMaxSize()
     ) {
         Row {

@@ -24,4 +24,7 @@ object SettingKeyObject {
 
     /** リピート再生有効かどうか */
     val PLAYER_REPEAT_PLAY = booleanPreferencesKey("player_repeat_play")
+
+    /** Android 12以降で使えるダイナミックカラーを有効にするか */
+    val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
 }

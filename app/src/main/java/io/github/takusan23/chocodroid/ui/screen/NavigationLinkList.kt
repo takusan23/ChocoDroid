@@ -43,4 +43,7 @@ object NavigationLinkList {
     /** 戻るキーを押したときに戻す画面 */
     val NavOptions = navOptions { popUpTo(FavouriteScreen) }
 
+    /** 設定画面 */
+    const val SettingScreen = "setting"
+
 }

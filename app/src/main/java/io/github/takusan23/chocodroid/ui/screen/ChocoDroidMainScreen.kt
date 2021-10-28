@@ -1,12 +1,14 @@
 package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.component.tool.SetActivitySleepComposeApp
+import io.github.takusan23.chocodroid.ui.component.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -44,6 +46,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
+            // ナビゲーションバーの色
+            SetNavigationBarColor(MaterialTheme.colorScheme.surface)
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
                 miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End)
@@ -71,7 +75,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                     // 動画再生
                     watchPageResponseData.value?.apply {
                         VideoPlayerUI(watchPageData = this, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController)
-                        VideoControlUI(watchPageData = this, controller = exoPlayerComposeController, state = miniPlayerState)
+                        VideoControlUI(watchPageData = this, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController, state = miniPlayerState)
                     }
                 },
                 detailContent = {

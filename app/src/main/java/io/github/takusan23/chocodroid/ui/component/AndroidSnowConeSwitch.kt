@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -32,7 +31,7 @@ fun AndroidSnowConeSwitch(
     isEnable: Boolean,
     onValueChange: (Boolean) -> Unit,
 ) {
-    val backgroundColor = animateColorAsState(targetValue = if (isEnable) MaterialTheme.colors.primary else Color.DarkGray)
+    val backgroundColor = animateColorAsState(targetValue = if (isEnable) androidx.compose.material3.MaterialTheme.colorScheme.primary else Color.DarkGray)
     Surface(
         modifier = modifier
             .height(30.dp)
@@ -43,7 +42,7 @@ fun AndroidSnowConeSwitch(
     ) {
         BoxWithConstraints {
             val offsetXAnim = animateDpAsState(targetValue = if (isEnable) (maxWidth / 2) else 0.dp)
-            val foregroundColor = animateColorAsState(targetValue = if (isEnable) MaterialTheme.colors.background else Color.LightGray)
+            val foregroundColor = animateColorAsState(targetValue = if (isEnable) androidx.compose.material3.MaterialTheme.colorScheme.background else Color.LightGray)
             Surface(
                 modifier = Modifier
                     .padding(3.dp)

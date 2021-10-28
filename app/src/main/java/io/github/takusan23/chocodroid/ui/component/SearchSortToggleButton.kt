@@ -27,7 +27,7 @@ fun SearchSortToggleButton(
     onClick: (Int) -> Unit,
 ) {
     val borderColor = LocalTextStyle.current.color.copy(0.5f)
-    val selectedColor = MaterialTheme.colors.primary
+    val selectedColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
 
     // アイコンリスト
     val iconList = listOf(

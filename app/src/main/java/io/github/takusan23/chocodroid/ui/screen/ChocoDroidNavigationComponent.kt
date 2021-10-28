@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.github.takusan23.chocodroid.ui.component.SettingScreen
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
@@ -66,6 +67,10 @@ fun ChocoDroidNavigationComponent(
                 channelScreenViewModel = viewModel(factory = ChannelScreenViewModelFactory(application, channelId)),
                 onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) }
             )
+        }
+        composable(NavigationLinkList.SettingScreen){
+            // 設定画面
+            SettingScreen()
         }
     }
 

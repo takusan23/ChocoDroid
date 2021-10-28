@@ -1,14 +1,21 @@
 package io.github.takusan23.chocodroid.ui.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import io.github.takusan23.chocodroid.setting.SettingKeyObject
+import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.chocodroid.ui.component.tool.SetNavigationBarColor
 
 private val DarkColorPalette = darkColors(
     primary = PrimaryColor,
@@ -35,32 +42,40 @@ private val LightColorPalette = lightColors(
 /**
  * テーマ
  *
- * @param isUseMaterialYou Material Youを使う場合はtrue。Android 12以降のみ対応
  * @param darkTheme ダークモード
  * */
 @Composable
 fun ChocoDroidTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    isUseMaterialYou: Boolean = false,
-    content: @Composable() () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val appColors = if (darkTheme) DarkColorPalette else LightColorPalette
+    val dataStore = context.dataStore.data.collectAsState(initial = null)
+    // ダイナミックカラー使う？
+    val isUseDynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+            && dataStore.value?.get(SettingKeyObject.ENABLE_DYNAMIC_THEME) == true
 
     // Android 12以降で
-    val system_accent1_500 = 0x0106003e // android.R.color.system_accent1_500
-    val system_accent1_700 = 0x01060040 // android.R.color.system_accent1_700
-    val system_accent1_200 = 0x0106003b // android.R.color.system_accent1_200
-    val materialYouColors = appColors.copy(
-        primary = Color(ResourcesCompat.getColor(context.resources, system_accent1_500, context.theme)),
-        primaryVariant = Color(ResourcesCompat.getColor(context.resources, system_accent1_700, context.theme)),
-        secondary = Color(ResourcesCompat.getColor(context.resources, system_accent1_200, context.theme)),
-    )
+    val colorScheme = when {
+        isUseDynamicColor && darkTheme -> dynamicDarkColorScheme(context)
+        isUseDynamicColor && !darkTheme -> dynamicLightColorScheme(context)
+        darkTheme -> darkColorScheme(
+            primary = PrimaryColor,
+            secondary = LightColor,
+            tertiary = DarkColor,
+            surface = Color.Black,
+        )
+        else -> lightColorScheme(
+            primary = PrimaryColor,
+            secondary = LightColor,
+            tertiary = DarkColor,
+            surface = Color.White,
+        )
+    }
 
     MaterialTheme(
-        colors = if (Build.VERSION.SDK_INT >= 31 && isUseMaterialYou) materialYouColors else appColors,
+        colorScheme = colorScheme,
         typography = Typography,
-        shapes = Shapes,
         content = content
     )
 }

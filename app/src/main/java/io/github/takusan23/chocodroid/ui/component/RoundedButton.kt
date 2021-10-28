@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun RoundedIconButton(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.primary.copy(0.5f),
+    backgroundColor: Color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(0.5f),
     shape: Shape = RoundedCornerShape(30.dp),
     mainText: String,
     subText: String,
@@ -71,7 +71,7 @@ fun RoundedIconButton(
 @Composable
 fun RoundedImageButton(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.primary.copy(0.5f),
+    backgroundColor: Color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(0.5f),
     shape: Shape = RoundedCornerShape(30.dp),
     mainText: String,
     subText: String,
@@ -109,7 +109,7 @@ fun RoundedImageButton(
 @Composable
 private fun RoundedButton(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.primary.copy(0.5f),
+    backgroundColor: Color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(0.5f),
     shape: Shape = RoundedCornerShape(30.dp),
     mainText: String,
     subText: String,

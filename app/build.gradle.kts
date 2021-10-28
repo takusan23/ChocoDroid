@@ -80,6 +80,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
+    // Compose + Material You
+    implementation("androidx.compose.material3:material3:1.0.0-alpha01")
 
     // ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer-core:2.15.1")

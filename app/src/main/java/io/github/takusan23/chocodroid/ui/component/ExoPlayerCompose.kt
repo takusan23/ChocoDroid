@@ -17,13 +17,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.video.VideoSize
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
@@ -95,10 +93,40 @@ class ExoPlayerComposeController(
 
     private val trackSelector = DefaultTrackSelector(context)
 
-    /** ExoPlayer */
-    val exoPlayer = SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build().apply {
-        playWhenReady = isDefaultAutoPlay
+    private val loadControl = DefaultLoadControl.Builder().setBufferDurationsMs(
+        5000,
+        50000,
+        1000,
+        5000
+    ).build()
+
+    private val transferListener = object : TransferListener {
+        override fun onTransferInitializing(source: DataSource, dataSpec: DataSpec, isNetwork: Boolean) {
+
+        }
+
+        override fun onTransferStart(source: DataSource, dataSpec: DataSpec, isNetwork: Boolean) {
+
+        }
+
+        override fun onBytesTransferred(source: DataSource, dataSpec: DataSpec, isNetwork: Boolean, bytesTransferred: Int) {
+
+        }
+
+        override fun onTransferEnd(source: DataSource, dataSpec: DataSpec, isNetwork: Boolean) {
+
+        }
     }
+
+    val defaultDataSourceFactory = DefaultDataSourceFactory(context, SingletonOkHttpClientTool.USER_AGENT, transferListener)
+
+    /** ExoPlayer */
+    val exoPlayer = SimpleExoPlayer.Builder(context)
+        .setTrackSelector(trackSelector)
+        .setLoadControl(loadControl)
+        .build().apply {
+            playWhenReady = isDefaultAutoPlay
+        }
 
     /** イベント受け取り */
     private val playerListener = object : Player.Listener {
@@ -150,9 +178,8 @@ class ExoPlayerComposeController(
      * ビデオトラックとオーディオトラックが別のURLの場合に使ってね。
      * */
     fun setMediaSourceVideoAudioUriSupportVer(videoTrackUri: String, audioTrackUri: String) {
-        val factory = DefaultDataSourceFactory(context, SingletonOkHttpClientTool.USER_AGENT)
-        val videoSource = ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(videoTrackUri))
-        val audioSource = ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(audioTrackUri))
+        val videoSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(videoTrackUri))
+        val audioSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(audioTrackUri))
         val mergeSource = MergingMediaSource(videoSource, audioSource)
         exoPlayer.setMediaSource(mergeSource)
         exoPlayer.prepare()

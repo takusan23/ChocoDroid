@@ -38,4 +38,5 @@
     <string name="download_audio_only">Download audio only</string>
     <string name="error">Error</string>
     <string name="download_error_quality">I couldn\'t DL. Try other image quality.</string>
+    <string name="setting">Setting</string>
 </resources>

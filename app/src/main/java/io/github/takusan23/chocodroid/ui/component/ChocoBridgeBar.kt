@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +61,8 @@ fun ChocoBridgeBar(
                 navHostController.navigate(NavigationLinkList.getSearchScreenLink(it))
             }
         },
-        onClipboardClick = { textValue.value = ClipboardTool.getClipboardText(context) ?: "" }
+        onClipboardClick = { textValue.value = ClipboardTool.getClipboardText(context) ?: "" },
+        onSettingClick = { navHostController.navigate(NavigationLinkList.SettingScreen) }
     )
 }
 
@@ -83,9 +85,10 @@ fun ChocoBridgeBar(
     modifier: Modifier = Modifier,
     textValue: String,
     onTextChange: (String) -> Unit,
-    onSearchClick: ((String) -> Unit)? = null,
-    onPlayClick: ((String) -> Unit)? = null,
-    onClipboardClick: (() -> Unit)? = null,
+    onSearchClick: (String) -> Unit = {},
+    onPlayClick: (String) -> Unit = {},
+    onClipboardClick: () -> Unit = {},
+    onSettingClick: () -> Unit = {},
 ) {
     // テキストボックスにフォーカスがあたっているか
     val isFocusTextBox = remember { mutableStateOf(false) }
@@ -98,7 +101,8 @@ fun ChocoBridgeBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(10.dp),
-        color = MaterialTheme.colors.primary,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = Color.White,
         shape = RoundedCornerShape(20.dp),
     ) {
         Column {
@@ -143,14 +147,21 @@ fun ChocoBridgeBar(
                             onValueChange = onTextChange,
                         )
                         // クリアボタン
-                        if (isFocusTextBox.value) {
+                        if (isFocusTextBox.value && textValue.isNotEmpty()) {
                             IconButton(
                                 modifier = Modifier
-                                    .padding(start = 5.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
+                                    .padding(5.dp),
                                 onClick = { onTextChange("") }
                             ) {
                                 Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = "クリア")
                             }
+                        }
+                        IconButton(
+                            modifier = Modifier
+                                .padding(start = 5.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
+                            onClick = onSettingClick,
+                        ) {
+                            Icon(painter = painterResource(id = R.drawable.ic_outline_settings_24), contentDescription = "設定")
                         }
                     }
                 }

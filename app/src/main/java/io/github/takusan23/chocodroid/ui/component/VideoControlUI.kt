@@ -16,8 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
+import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,12 +28,14 @@ import kotlinx.coroutines.launch
  * @param controller ExoPlayer操作用
  * @param watchPageData 視聴ページデータ
  * @param state ミニプレイヤー操作用
+ * @param mediaUrlData ストリーミング情報
  * */
 @Composable
 fun VideoControlUI(
     watchPageData: WatchPageData,
     controller: ExoPlayerComposeController,
     state: MiniPlayerState,
+    mediaUrlData: MediaUrlData,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -63,51 +65,62 @@ fun VideoControlUI(
                 }
         ) {
             if (isShowPlayerUI.value) {
-                Column(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(color = Color.Black.copy(0.8f))
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    // 操作しない100ms後に実行
-                                    delay(100L)
-                                    state.setState(if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) MiniPlayerStateValue.Default else MiniPlayerStateValue.MiniPlayer)
+                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        // 操作しない100ms後に実行
+                                        delay(100L)
+                                        state.setState(if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) MiniPlayerStateValue.Default else MiniPlayerStateValue.MiniPlayer)
+                                    }
+                                },
+                                content = {
+                                    Icon(
+                                        painter = painterResource(id = if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
+                                        contentDescription = null
+                                    )
                                 }
-                            },
-                            content = {
-                                Icon(
-                                    painter = painterResource(id = if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
-                                    contentDescription = null
+                            )
+                            Text(
+                                text = watchPageData.watchPageResponseJSONData.videoDetails.title,
+                                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                                maxLines = 1,
+                            )
+                        }
+                        // ミニプレイヤー時はこれ以降表示しない
+                        if (state.progress.value < 0.5f) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 10.dp),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                if (mediaUrlData.quality != null) {
+                                    QualityChangeButton(
+                                        text = mediaUrlData.quality!!,
+                                        onClick = { }
+                                    )
+                                }
+                                RepeatButton(
+                                    isEnableRepeat = controller.isRepeatEnable.value,
+                                    onRepeatChange = { controller.setRepeatMode(it) }
                                 )
                             }
-                        )
-                        Text(
-                            text = watchPageData.watchPageResponseJSONData.videoDetails.title,
-                            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                            maxLines = 1,
-                        )
+                        }
                     }
                     // ミニプレイヤー時はこれ以降表示しない
                     if (state.progress.value < 0.5f) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(end = 10.dp),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            RepeatButton(
-                                isEnableRepeat = controller.isRepeatEnable.value,
-                                onRepeatChange = { controller.setRepeatMode(it) }
-                            )
-                        }
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f),
+                                .align(Alignment.Center),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -122,7 +135,10 @@ fun VideoControlUI(
 
                         // 生放送時はシークバー出さない
                         if (!watchPageData.isLiveStream()) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                modifier = Modifier.align(Alignment.BottomCenter),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text(
                                     modifier = Modifier.padding(5.dp),
                                     text = TimeFormatTool.videoDurationToFormatText(controller.currentPosition.value / 1000),
@@ -162,5 +178,27 @@ fun VideoControlUI(
             }
         }
     }
+}
 
+/**
+ * 画質変更ボタン
+ *
+ * @param text 画質
+ * @param onClick 押したとき
+ * */
+@Composable
+fun QualityChangeButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        modifier = modifier,
+        onClick = onClick,
+        colors = ButtonDefaults.textButtonColors(backgroundColor = Color.Transparent, contentColor = Color.White),
+        content = {
+            Icon(painter = painterResource(id = R.drawable.ic_baseline_photo_filter_24), contentDescription = null)
+            Text(text = text)
+        }
+    )
 }

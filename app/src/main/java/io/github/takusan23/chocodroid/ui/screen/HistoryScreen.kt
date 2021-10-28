@@ -48,7 +48,7 @@ fun HistoryScreen(
         content = {
             Column(modifier = Modifier.padding(it)) {
                 // 消すボタン
-                Button(
+                androidx.compose.material3.Button(
                     modifier = Modifier
                         .align(alignment = Alignment.End)
                         .padding(end = 10.dp),
@@ -63,8 +63,6 @@ fun HistoryScreen(
                         )
                     },
                     content = { Text(text = stringResource(id = R.string.delete_all)) },
-                    elevation = ButtonDefaults.elevation(0.dp),
-                    shape = RoundedCornerShape(20.dp),
                 )
                 // 一覧表示
                 Divider()

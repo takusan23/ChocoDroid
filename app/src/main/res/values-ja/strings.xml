@@ -38,4 +38,5 @@
     <string name="download_audio_only">音声のみダウンロードする</string>
     <string name="error">問題が発生しました。</string>
     <string name="download_error_quality">DL出来ませんでした。他の画質を試してみてください。</string>
+    <string name="setting">設定</string>
 </resources>

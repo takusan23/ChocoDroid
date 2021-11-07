@@ -42,8 +42,6 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val mediaUrlData = viewModel.mediaUrlDataFlow.collectAsState(initial = null)
             // エラーが流れてくるFlow
             val errorData = viewModel.errorMessageFlow.collectAsState(initial = null)
-            // ExoPlayerコントロール用
-            val exoPlayerComposeController = rememberExoPlayerComposeController(true)
 
             // 動画ミニプレイヤー
             val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateValue.End) {
@@ -89,6 +87,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 playerContent = {
                     // 動画再生
                     if (watchPageResponseData.value != null && mediaUrlData.value != null) {
+                        // ExoPlayerコントロール用
+                        val exoPlayerComposeController = rememberExoPlayerComposeController(true)
                         VideoPlayerUI(watchPageData = watchPageResponseData.value!!, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController)
                         VideoControlUI(watchPageData = watchPageResponseData.value!!, mediaUrlData = mediaUrlData.value!!, controller = exoPlayerComposeController, state = miniPlayerState)
                     }

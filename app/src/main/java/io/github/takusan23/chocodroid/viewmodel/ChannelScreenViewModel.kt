@@ -6,10 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.chocodroid.tool.StacktraceToString
 import io.github.takusan23.internet.api.ChannelAPI
 import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.channel.ChannelResponseData
-import io.github.takusan23.internet.data.channel.GridVideoRenderer
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +41,7 @@ class ChannelScreenViewModel(application: Application, private val channelId: St
     /** 検索が失敗したときに例外を拾う */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _errorMessageFlow.value = throwable.message
+        _errorMessageFlow.value = StacktraceToString.stackTraceToString(throwable)
         _isLoadingFlow.value = false
     }
 

@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import io.github.takusan23.chocodroid.ui.component.SettingScreen
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
@@ -66,7 +67,7 @@ fun ChocoDroidNavigationComponent(
                 onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) }
             )
         }
-        composable(NavigationLinkList.SettingScreen){
+        composable(NavigationLinkList.SettingScreen) {
             // 設定画面
             SettingScreen()
         }

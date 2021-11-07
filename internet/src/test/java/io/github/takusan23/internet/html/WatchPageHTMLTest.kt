@@ -1,6 +1,7 @@
 package io.github.takusan23.internet.html
 
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Test
 
 /**
@@ -50,4 +51,5 @@ class WatchPageHTMLTest {
             println(decryptData.decryptInvokeList)
         }
     }
+
 }

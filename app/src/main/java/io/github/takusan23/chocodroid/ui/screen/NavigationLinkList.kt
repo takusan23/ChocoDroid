@@ -43,7 +43,11 @@ object NavigationLinkList {
     /** 戻るキーを押したときに戻す画面 */
     val NavOptions = navOptions { popUpTo(FavouriteScreen) }
 
-    /** 設定画面 */
+    /**
+     * 設定画面
+     *
+     * 各詳細ページは[io.github.takusan23.chocodroid.ui.screen.setting.SettingNavigationLinkList]を参照
+     * */
     const val SettingScreen = "setting"
 
 }

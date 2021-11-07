@@ -10,6 +10,7 @@ import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
+import io.github.takusan23.chocodroid.tool.StacktraceToString
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -42,7 +43,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     /** コルーチン起動時の引数に指定してね。例外を捕まえ、Flowに流します */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _errorMessageFlow.value = throwable.message
+        _errorMessageFlow.value = StacktraceToString.stackTraceToString(throwable)
         _isLoadingFlow.value = false
     }
 
@@ -138,7 +139,9 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
      * @param quality 画質
      * */
     fun getMediaUrl(quality: String = "360p") {
-        _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(quality)
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(quality)
+        }
     }
 
     /**

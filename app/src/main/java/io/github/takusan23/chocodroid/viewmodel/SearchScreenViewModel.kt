@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.chocodroid.tool.StacktraceToString
 import io.github.takusan23.internet.data.search.VideoContent
 import io.github.takusan23.internet.api.SearchAPI
 import io.github.takusan23.internet.data.CommonVideoData
@@ -36,7 +37,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
     /** 検索が失敗したときに例外を拾う */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _errorMessageFlow.value = throwable.message
+        _errorMessageFlow.value = StacktraceToString.stackTraceToString(throwable)
         _isLoadingFlow.value = false
     }
 

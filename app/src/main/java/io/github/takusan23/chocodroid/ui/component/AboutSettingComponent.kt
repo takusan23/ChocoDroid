@@ -3,11 +3,13 @@ package io.github.takusan23.chocodroid.ui.component
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +30,7 @@ fun AboutSettingHeader() {
             modifier = Modifier
                 .size(100.dp)
                 .padding(10.dp),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             painter = painterResource(id = R.drawable.chocodroid_white_android),
             contentDescription = null
         )

@@ -23,7 +23,7 @@ import io.github.takusan23.internet.api.SearchAPI
  * @param mainScreenViewModel 最初の画面のViewModel
  * */
 @Composable
-fun ChocoDroidNavigationComponent(
+fun ChocoDroidNavigation(
     mainScreenViewModel: MainScreenViewModel,
     navController: NavHostController = rememberNavController(),
 ) {

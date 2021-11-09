@@ -2,9 +2,10 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,10 +27,13 @@ import androidx.compose.ui.unit.dp
  * @param content 動画一覧とか、プレイヤーの後ろに置くコンポーネント
  * @param detailContent 動画説明部分
  * @param playerContent 動画再生部分
+ * @param isShowMiniPlayer ボトムシートの状態
+ * @param
  * @param scaffoldState
  * @param snackbarHostState Snackbar表示用
  * @param miniPlayerState ミニプレイヤーの状態とかをみれる
  * */
+@ExperimentalMaterialApi
 @ExperimentalMaterial3Api
 @Composable
 fun MiniPlayerScaffold(
@@ -37,10 +41,12 @@ fun MiniPlayerScaffold(
     scaffoldState: androidx.compose.material3.ScaffoldState,
     miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    modalBottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
     isShowMiniPlayer: Boolean = true,
     bottomBar: @Composable () -> Unit = {},
-    playerContent: @Composable (BoxScope.() -> Unit),
-    detailContent: @Composable (BoxScope.() -> Unit),
+    playerContent: @Composable BoxScope.() -> Unit,
+    detailContent: @Composable BoxScope.() -> Unit,
+    bottomSheetContent: @Composable ColumnScope.() -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val alpha = kotlin.math.max(miniPlayerState.progress.value, 0f)
@@ -51,6 +57,7 @@ fun MiniPlayerScaffold(
         content = {
             // topBar / bottomBar 分のPaddingを足す
             Box(modifier = Modifier.padding(it)) {
+
                 // 後ろに描画するやつ
                 content()
                 // SnackbarHostがcompose3に未実装なので
@@ -70,7 +77,15 @@ fun MiniPlayerScaffold(
                 state = miniPlayerState,
                 backgroundContent = { },
                 playerContent = playerContent,
-                detailContent = detailContent
+                detailContent = {
+                    // ボトムシート
+                    ModalBottomSheetLayout(
+                        sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+                        sheetState = modalBottomSheetState,
+                        sheetContent = bottomSheetContent,
+                        content = { detailContent() }
+                    )
+                }
             )
         },
     )

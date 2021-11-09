@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
  * @param watchPageData 視聴ページデータ
  * @param state ミニプレイヤー操作用
  * @param mediaUrlData ストリーミング情報
+ * @param onQualityChangeClick 画質変更ボトムシートを表示してほしいときに呼ばれる
  * */
 @Composable
 fun VideoControlUI(
@@ -38,6 +39,7 @@ fun VideoControlUI(
     controller: ExoPlayerComposeController,
     state: MiniPlayerState,
     mediaUrlData: MediaUrlData,
+    onQualityChangeClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -107,7 +109,7 @@ fun VideoControlUI(
                                 if (mediaUrlData.quality != null) {
                                     QualityChangeButton(
                                         text = mediaUrlData.quality!!,
-                                        onClick = { }
+                                        onClick = onQualityChangeClick
                                     )
                                 }
                                 RepeatButton(

@@ -19,6 +19,9 @@ object SettingKeyObject {
     /** base.jsで関数を呼ぶ順番の配列を保存してるJSON */
     val WATCH_PAGE_JS_INVOKE_LIST_JSON = stringPreferencesKey("watchpage_js_invoke_list_json")
 
+    /** base.js内にあるURLのパラメーターを修正するJavaScriptコード */
+    val WATCH_PAGE_JS_PARAM_FIX_JS_CODE = stringPreferencesKey("watchpage_js_url_params_fix_js_code")
+
     /** 動画検索や、チャンネルの投稿動画取得で使うAPIキーを保存しておく */
     val API_KEY = stringPreferencesKey("api_key")
 

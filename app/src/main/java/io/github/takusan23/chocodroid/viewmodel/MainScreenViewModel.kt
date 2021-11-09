@@ -1,7 +1,6 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
-import androidx.compose.runtime.MutableState
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,19 +11,19 @@ import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
 import io.github.takusan23.chocodroid.tool.StacktraceToString
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
+import io.github.takusan23.chocodroid.tool.WebViewJavaScriptEngine
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import io.github.takusan23.internet.html.WatchPageHTML
 import io.github.takusan23.internet.magic.AlgorithmSerializer
+import io.github.takusan23.internet.magic.UnlockMagic
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * [io.github.takusan23.chocodroid.MainActivity]で使うViewModel
@@ -92,19 +91,37 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             _isLoadingFlow.value = true
 
-            // HTML解析とURL（復号処理含めて）取得
-            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage(videoId, localAlgorithmData?.first, localAlgorithmData?.second, localAlgorithmData?.third)
+            // 設定読み出し
+            val setting = context.dataStore.data.first()
+            val baseJsURL = setting[SettingKeyObject.WATCH_PAGE_BASE_JS_URL]
+            val funcNameData = AlgorithmSerializer.toData<AlgorithmFuncNameData?>(setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON])
+            val funcInvokeDataList = AlgorithmSerializer.toData<List<AlgorithmInvokeData>>(setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON])
+            val urlParamsFixJSCode = setting[SettingKeyObject.WATCH_PAGE_JS_PARAM_FIX_JS_CODE]
 
-            // View（Compose）にデータを渡す
-            _watchPageData.value = watchPageData
+            // HTML解析とURL（復号処理含めて）取得
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage(videoId, baseJsURL, funcNameData, funcInvokeDataList, urlParamsFixJSCode)
+
+            /**
+             * View（Compose）にデータを渡す
+             *
+             * 動画の場合はURLのパラメーターを修正する
+             *
+             * ここらへんどうにかしたい
+             * */
+            _watchPageData.value = if (!watchPageData.isLiveStream()) {
+                UnlockMagic.fixUrlParam(watchPageData, decryptData.urlParamFixJSCode) { evalCode ->
+                    withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
+                }
+            } else watchPageData
             getMediaUrl()
             _isLoadingFlow.value = false
 
             // 2回目以降のアルゴリズムの解析をスキップするために解読情報を永続化する
-            context.dataStore.edit { setting ->
-                setting[SettingKeyObject.WATCH_PAGE_BASE_JS_URL] = decryptData.baseJsURL
-                setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON] = AlgorithmSerializer.toJSON(decryptData.algorithmFuncNameData)
-                setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON] = AlgorithmSerializer.toJSON(decryptData.decryptInvokeList)
+            context.dataStore.edit { updateSetting ->
+                updateSetting[SettingKeyObject.WATCH_PAGE_BASE_JS_URL] = decryptData.baseJsURL
+                updateSetting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON] = AlgorithmSerializer.toJSON(decryptData.algorithmFuncNameData)
+                updateSetting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON] = AlgorithmSerializer.toJSON(decryptData.decryptInvokeList)
+                updateSetting[SettingKeyObject.WATCH_PAGE_JS_PARAM_FIX_JS_CODE] = decryptData.urlParamFixJSCode
             }
 
             // 履歴に追加する

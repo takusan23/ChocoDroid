@@ -13,11 +13,13 @@ import java.net.URLDecoder
  * @param baseJsURL 暗号解除のJSコードのURL
  * @param algorithmFuncNameData 暗号解除で使うの文字列操作する関数名を入れたデータクラス
  * @param decryptInvokeList 暗号解除で使う関数を呼ぶ順番に入れた配列
+ * @param urlParamFixJSCode どうやらURLのあるパラメーターの値を変更しないと、ダウンロード速度制限をサーバーでかけてるみたいなので、それを解除するJavaScriptコード
  * */
 data class DecryptData(
     val baseJsURL: String,
     val algorithmFuncNameData: AlgorithmFuncNameData,
     val decryptInvokeList: List<AlgorithmInvokeData>,
+    val urlParamFixJSCode: String,
 ) {
 
     /**

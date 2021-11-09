@@ -12,7 +12,7 @@ class AlgorithmParserTest {
     @Test
     fun escapeTest() {
         val escapedText = AlgorithmParser.replaceRegexEscapeChar(""" """)
-        println(escapedText)
+
     }
 
 }

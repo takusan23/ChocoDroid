@@ -37,9 +37,11 @@ data class WatchPageData(
     /**
      * 指定した画質の[MediaUrlData]を返す
      *
+     * ない場合は今の所最高画質を返してる
+     *
      * @param quality 画質
      * */
-    fun getMediaUrlDataFromQuality(quality: String = "360p") = contentUrlList.find { it.quality == quality }!!
+    fun getMediaUrlDataFromQuality(quality: String = "360p") = contentUrlList.find { it.quality == quality } ?: contentUrlList.first()
 
     companion object {
 

@@ -59,17 +59,17 @@ android {
 }
 
 dependencies {
-    implementation(project(":internet"))
     // API叩くやつ
+    implementation(project(":internet"))
     // 分割ダウンロード
     implementation(project(":downloadpocket"))
 
     // Android
-    implementation("androidx.core:core-ktx:1.6.0")
+    implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation("androidx.activity:activity-compose:1.4.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Jetpack Compose
@@ -78,15 +78,14 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation("androidx.navigation:navigation-compose:2.4.0-beta01")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
     // Compose + Material You
     implementation("androidx.compose.material3:material3:1.0.0-alpha01")
 
     // ExoPlayer
-    implementation("com.google.android.exoplayer:exoplayer-core:2.15.1")
-    implementation("com.google.android.exoplayer:exoplayer-hls:2.15.1")
-
+    implementation("com.google.android.exoplayer:exoplayer-core:2.16.0")
+    implementation("com.google.android.exoplayer:exoplayer-hls:2.16.0")
     // Coil
     implementation("io.coil-kt:coil:1.4.0")
     implementation("io.coil-kt:coil-compose:1.4.0")

@@ -2,6 +2,7 @@ package io.github.takusan23.internet.html
 
 import io.github.takusan23.internet.data.watchpage.*
 import io.github.takusan23.internet.magic.AlgorithmParser
+import io.github.takusan23.internet.magic.UnlockMagic
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import io.github.takusan23.internet.tool.SerializationTool
@@ -21,6 +22,7 @@ object WatchPageHTML {
      * @param baseJSURL base.jsのURLです。この値が変わると復号化アルゴリズムが変化したとみなします。初回時はnullでおｋ。
      * @param algorithmFuncNameData base.js内にある復号に使う文字列操作関数名を入れたデータクラス。初回時は以下略
      * @param algorithmInvokeList [algorithmFuncNameData]を呼ぶ順番をいれたデータクラス。初回時は以下略
+     * @param urlParamsFixJSCode URLのパラメーターの値を修正するJavaScriptコードを入れてください。詳細は[UnlockMagic]。初回時は以下略
      * @return Pairを返します。視聴ページデータと復号で使うデータです
      * */
     suspend fun getWatchPage(
@@ -28,6 +30,7 @@ object WatchPageHTML {
         baseJSURL: String? = null,
         algorithmFuncNameData: AlgorithmFuncNameData? = null,
         algorithmInvokeList: List<AlgorithmInvokeData>? = null,
+        urlParamsFixJSCode: String? = null,
     ) = withContext(Dispatchers.IO) {
 
         val url = if (videoIdOrHttpUrl.startsWith("https://")) {
@@ -39,7 +42,7 @@ object WatchPageHTML {
         val responseBody = SingletonOkHttpClientTool.executeGetRequest(url)
 
         // パーサーにかける
-        parseWatchPage(responseBody, baseJSURL, algorithmFuncNameData, algorithmInvokeList)
+        parseWatchPage(responseBody, baseJSURL, algorithmFuncNameData, algorithmInvokeList, urlParamsFixJSCode)
     }
 
     /**
@@ -49,6 +52,7 @@ object WatchPageHTML {
      * @param baseJSURL base.jsのURLです。この値が変わると復号化アルゴリズムが変化したとみなします。初回時はnullでおｋ。
      * @param algorithmFuncNameData base.js内にある復号に使う文字列操作関数名を入れたデータクラス。初回時は以下略
      * @param algorithmInvokeList [algorithmFuncNameData]を呼ぶ順番をいれたデータクラス。初回時は以下略
+     * @param urlParamsFixJSCode URLを修正するJavaScriptコードを入れてください。詳細は[UnlockMagic]。初回時は以下略
      * @return Pairを返します。視聴ページデータと復号で使うデータです
      * */
     private suspend fun parseWatchPage(
@@ -56,6 +60,7 @@ object WatchPageHTML {
         baseJSURL: String? = null,
         algorithmFuncNameData: AlgorithmFuncNameData? = null,
         algorithmInvokeList: List<AlgorithmInvokeData>? = null,
+        urlParamsFixJSCode: String? = null,
     ) = withContext(Dispatchers.Default) {
         // 成功時。HTMLにあるJSONを取り出す
         val document = Jsoup.parse(responseBody)
@@ -83,9 +88,9 @@ object WatchPageHTML {
             .attr("src")
 
         // 比較して、復号アルゴリズムが変化しているか確認する
-        if (baseJSURL == currentBaseJsUrl && algorithmFuncNameData != null && algorithmInvokeList != null) {
+        if (baseJSURL == currentBaseJsUrl && algorithmFuncNameData != null && algorithmInvokeList != null && urlParamsFixJSCode != null) {
             // アルゴリズムに変化がないので、引数に入れた復号システムが使えます
-            val decryptData = DecryptData(baseJSURL, algorithmFuncNameData, algorithmInvokeList)
+            val decryptData = DecryptData(baseJSURL, algorithmFuncNameData, algorithmInvokeList, urlParamsFixJSCode)
             val watchPageData = WatchPageData(watchPageJSONResponseData, watchPageJSONInitialData, getContentUrlList(watchPageJSONResponseData, decryptData))
             // Pairを返す
             watchPageData to decryptData
@@ -94,7 +99,8 @@ object WatchPageHTML {
             val baseJSCode = SingletonOkHttpClientTool.executeGetRequest(currentBaseJsUrl)
             val funcNameData = AlgorithmParser.funcNameParser(baseJSCode)
             val invokeList = AlgorithmParser.algorithmFuncParser(baseJSCode)
-            val decryptData = DecryptData(currentBaseJsUrl, funcNameData, invokeList)
+            val jsCode = UnlockMagic.getParamFixJavaScriptCode(baseJSCode)
+            val decryptData = DecryptData(currentBaseJsUrl, funcNameData, invokeList, jsCode)
             val watchPageData = WatchPageData(watchPageJSONResponseData, watchPageJSONInitialData, getContentUrlList(watchPageJSONResponseData, decryptData))
             // Pairを返す
             watchPageData to decryptData

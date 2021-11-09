@@ -7,9 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -20,9 +18,11 @@ import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
+import io.github.takusan23.chocodroid.tool.WebViewJavaScriptEngine
 import io.github.takusan23.downloadpocket.DownloadPocket
 import io.github.takusan23.internet.html.WatchPageHTML
 import io.github.takusan23.internet.magic.AlgorithmSerializer
+import io.github.takusan23.internet.magic.UnlockMagic
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import kotlinx.coroutines.*
@@ -131,7 +131,11 @@ class ContentDownloadService : Service() {
             val funcNameData = AlgorithmSerializer.toData<AlgorithmFuncNameData?>(setting[SettingKeyObject.WATCH_PAGE_JS_FUNC_NAME_JSON])
             val funcInvokeDataList = AlgorithmSerializer.toData<List<AlgorithmInvokeData>>(setting[SettingKeyObject.WATCH_PAGE_JS_INVOKE_LIST_JSON])
             // リクエスト
-            val (watchPageData) = WatchPageHTML.getWatchPage(downloadRequestData.videoId, baseJsURL, funcNameData, funcInvokeDataList)
+            val (_watchPageData, _decryptMagic) = WatchPageHTML.getWatchPage(downloadRequestData.videoId, baseJsURL, funcNameData, funcInvokeDataList)
+            // JavaScriptエンジンを利用してURLを直す
+            val watchPageData = UnlockMagic.fixUrlParam(_watchPageData, _decryptMagic.urlParamFixJSCode) { evalCode ->
+                withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(this@ContentDownloadService, evalCode).replace("\"", "") }
+            }
             val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
             val videoTitle = watchPageData.watchPageResponseJSONData.videoDetails.title
             // 非同期待機リスト

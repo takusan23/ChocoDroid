@@ -18,17 +18,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.upstream.TransferListener
 import com.google.android.exoplayer2.video.VideoSize
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.internet.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 
 /**
@@ -94,13 +97,6 @@ class ExoPlayerComposeController(
 
     private val trackSelector = DefaultTrackSelector(context)
 
-    private val loadControl = DefaultLoadControl.Builder().setBufferDurationsMs(
-        5000,
-        50000,
-        1000,
-        5000
-    ).build()
-
     private val transferListener = object : TransferListener {
         override fun onTransferInitializing(source: DataSource, dataSpec: DataSpec, isNetwork: Boolean) {
 
@@ -119,12 +115,11 @@ class ExoPlayerComposeController(
         }
     }
 
-    val defaultDataSourceFactory = DefaultDataSourceFactory(context, SingletonOkHttpClientTool.USER_AGENT, transferListener)
+    private val defaultDataSourceFactory = DefaultDataSource.Factory(context).setTransferListener(transferListener)
 
     /** ExoPlayer */
-    val exoPlayer = SimpleExoPlayer.Builder(context)
+    val exoPlayer = ExoPlayer.Builder(context)
         .setTrackSelector(trackSelector)
-        .setLoadControl(loadControl)
         .build().apply {
             playWhenReady = isDefaultAutoPlay
         }

@@ -35,9 +35,15 @@ object UnlockMagic {
      * @return 実際に書き換えてる部分。JSコードとしては不十分で、文字列の先頭にconst fix = とか付けないとダメです
      * */
     fun getParamFixJavaScriptCode(baseJS: String): String {
-        val regex = """function\(a\)\{var b=a.split\(""\)([\s\S]*?)\};""".toRegex()
-        val paramsFixJSCode = regex.find(baseJS)!!.value
-        return paramsFixJSCode
+        /**
+         * nパラメーターを引数に取っていじって返す正規表現。雑な解説
+         *
+         * - function(a)から始まる
+         * - (アルファベット1文字).split("") が含まれている
+         * - (アルファベット1文字)=[ が含まれている
+         * */
+        val regex = """function\(a\)\{(.*?)=[a-z].split\(""\)(.*?)=(\[)([\s\S]*?)(\};)""".toRegex()
+        return regex.find(baseJS)!!.value
     }
 
     /**

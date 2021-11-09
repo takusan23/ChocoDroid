@@ -1,4 +1,4 @@
-package io.github.takusan23.chocodroid.ui.component.tool
+package io.github.takusan23.chocodroid.ui.tool
 
 import android.app.Activity
 import android.view.WindowManager

@@ -1,4 +1,4 @@
-package io.github.takusan23.chocodroid.ui.component.tool
+package io.github.takusan23.chocodroid.ui.tool
 
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState

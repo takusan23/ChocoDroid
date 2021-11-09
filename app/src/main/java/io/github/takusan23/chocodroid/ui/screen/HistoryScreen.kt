@@ -26,7 +26,7 @@ import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
-import io.github.takusan23.chocodroid.ui.component.tool.SnackbarComposeTool
+import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.chocodroid.viewmodel.HistoryScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 

@@ -25,7 +25,7 @@ import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.chocodroid.ui.component.AndroidSnowConeSwitch
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
-import io.github.takusan23.chocodroid.ui.component.tool.SnackbarComposeTool
+import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlin.math.roundToInt
 

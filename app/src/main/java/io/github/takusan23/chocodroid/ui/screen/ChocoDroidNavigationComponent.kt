@@ -8,7 +8,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
 import io.github.takusan23.chocodroid.ui.component.SettingScreen
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
@@ -64,7 +63,8 @@ fun ChocoDroidNavigationComponent(
             val application = (LocalContext.current as ComponentActivity).application
             ChannelScreen(
                 channelScreenViewModel = viewModel(factory = ChannelScreenViewModelFactory(application, channelId)),
-                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) }
+                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
+                onBack = { navController.popBackStack() }
             )
         }
         composable(NavigationLinkList.SettingScreen) {

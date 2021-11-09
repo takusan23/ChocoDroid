@@ -45,4 +45,8 @@
     <string name="setting_kono_app_description">自己紹介</string>
     <string name="setting_license_title">ライセンス</string>
     <string name="setting_license_description">thx !</string>
+    <string name="source_code">ソースコード</string>
+    <string name="twitter">Twitter</string>
+    <string name="version">バージョン</string>
+    <string name="update_date">更新日</string>
 </resources>

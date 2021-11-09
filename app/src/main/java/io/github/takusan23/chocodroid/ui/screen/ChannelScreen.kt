@@ -29,10 +29,11 @@ import io.github.takusan23.chocodroid.viewmodel.ChannelScreenViewModel
  *
  * @param onClick 動画項目押したとき。引数は動画ID
  * @param channelScreenViewModel チャンネル画面ViewModel
+ * @param onBack 戻ってほしいときに呼ばれます
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (String) -> Unit) {
+fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (String) -> Unit, onBack: () -> Unit) {
 
     val channelResponseData = channelScreenViewModel.channelResponseDataFlow.collectAsState()
     val uploadVideoList = channelScreenViewModel.uploadVideoListFlow.collectAsState()

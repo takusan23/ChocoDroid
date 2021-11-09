@@ -1,6 +1,5 @@
 package io.github.takusan23.chocodroid.ui.component
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -11,7 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.ui.component.tool.calcM3ElevationColor
+import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.screen.videodetail.VideoDetailNavigationLinkList
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 

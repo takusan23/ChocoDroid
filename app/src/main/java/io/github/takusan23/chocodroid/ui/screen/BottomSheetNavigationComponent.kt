@@ -3,6 +3,8 @@ package io.github.takusan23.chocodroid.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,12 +24,16 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  *
  * @param mainScreenViewModel メイン画面ViewModel
  * @param navHostController 画面遷移コントローラー
+ * @param modalBottomSheetState ボトムシート制御用
  * */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChocoDroidBottomSheetNavigation(
     mainScreenViewModel: MainScreenViewModel,
     navHostController: NavHostController = rememberNavController(),
+    modalBottomSheetState: ModalBottomSheetState,
 ) {
+
     Surface {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // 引き出す棒

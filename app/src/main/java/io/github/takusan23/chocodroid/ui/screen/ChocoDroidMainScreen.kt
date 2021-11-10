@@ -82,8 +82,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // MiniPlayerとScaffoldをつなげたもの
             MiniPlayerScaffold(
-                miniPlayerState = miniPlayerState,
                 scaffoldState = scaffoldState,
+                miniPlayerState = miniPlayerState,
                 snackbarHostState = snackbarHostState,
                 modalBottomSheetState = modalBottomSheetState,
                 bottomBar = { HomeScreenBottomNavigation(navHostController = navController) },
@@ -119,7 +119,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 },
                 bottomSheetContent = {
                     // ボトムシートの内容
-                    ChocoDroidBottomSheetNavigation(mainScreenViewModel = viewModel)
+                    ChocoDroidBottomSheetNavigation(mainScreenViewModel = viewModel, modalBottomSheetState = modalBottomSheetState)
                 },
                 content = {
                     // 画面遷移。別コンポーネントへ

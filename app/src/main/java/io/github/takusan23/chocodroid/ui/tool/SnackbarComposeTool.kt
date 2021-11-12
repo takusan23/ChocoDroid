@@ -24,8 +24,8 @@ object SnackbarComposeTool {
         snackbarMessage: String,
         actionLabel: String,
         snackbarDuration: SnackbarDuration = SnackbarDuration.Indefinite,
-        onActionPerformed: () -> Unit,
-        onDismissed: () -> Unit = {},
+        onActionPerformed: suspend () -> Unit,
+        onDismissed: suspend () -> Unit = {},
     ) {
         scope.launch {
             val result = snackbarHostState.showSnackbar(snackbarMessage, actionLabel, snackbarDuration)

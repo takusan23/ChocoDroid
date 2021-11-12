@@ -5,13 +5,16 @@ package io.github.takusan23.chocodroid.ui.screen.favourite
  * */
 object FavouriteScreenNavigationLinkList {
 
-    /** トップページ。なんか出したい */
-    const val TOP = "top"
+    /** 動画フォルダー一覧 */
+    const val FolderList = "folder_list"
 
-    /** 動画リスト */
-    const val VideoList = "video_list"
+    /** フォルダの中身表示 */
+    private const val FolderVideoItemList = "folder_video_list"
 
-    /** チャンネルリスト */
-    const val ChannelList = "channel_list"
+    /**
+     * フォルダの中身を表示する
+     * @param folderId フォルダIDの主キー
+     * */
+    fun getFolderVideoList(folderId: String) = "$FolderVideoItemList?folder_id=$folderId"
 
 }

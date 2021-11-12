@@ -78,7 +78,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("androidx.navigation:navigation-compose:2.4.0-beta01")
+    implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
     // Compose + Material You
     implementation("androidx.compose.material3:material3:1.0.0-alpha01")

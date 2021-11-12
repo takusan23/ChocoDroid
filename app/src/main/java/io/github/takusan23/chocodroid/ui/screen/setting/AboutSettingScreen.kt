@@ -5,15 +5,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.AboutSettingAppInfo
 import io.github.takusan23.chocodroid.ui.component.AboutSettingHeader
+import io.github.takusan23.chocodroid.ui.component.BackButtonSmallTopBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 
 object AboutSettingScreen {
@@ -38,13 +39,9 @@ object AboutSettingScreen {
 fun AboutSettingScreen(onBack: () -> Unit) {
     M3Scaffold(
         topBar = {
-            SmallTopAppBar(
+            BackButtonSmallTopBar(
                 title = { Text(text = stringResource(id = R.string.setting_kono_app_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = null)
-                    }
-                }
+                onBack = onBack
             )
         },
         content = {

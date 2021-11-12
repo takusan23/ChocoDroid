@@ -5,14 +5,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.ui.component.BackButtonSmallTopBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 
 /**
@@ -38,13 +40,9 @@ fun LicenseSettingScreen(
     )
     M3Scaffold(
         topBar = {
-            SmallTopAppBar(
+            BackButtonSmallTopBar(
                 title = { Text(text = stringResource(id = R.string.setting_license_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = null)
-                    }
-                }
+                onBack = onBack
             )
         },
         content = {

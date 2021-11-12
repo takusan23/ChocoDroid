@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.delay
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
  * @param watchPageData 視聴ページデータ
  * @param state ミニプレイヤー操作用
  * @param mediaUrlData ストリーミング情報
- * @param onQualityChangeClick 画質変更ボトムシートを表示してほしいときに呼ばれる
+ * @param onBottomSheetNavigate BottomSheetの表示と画面遷移をしてほしいときに呼ばれる
  * */
 @Composable
 fun VideoControlUI(
@@ -39,7 +40,7 @@ fun VideoControlUI(
     controller: ExoPlayerComposeController,
     state: MiniPlayerState,
     mediaUrlData: MediaUrlData,
-    onQualityChangeClick: () -> Unit,
+    onBottomSheetNavigate: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -109,7 +110,7 @@ fun VideoControlUI(
                                 if (mediaUrlData.quality != null) {
                                     QualityChangeButton(
                                         text = mediaUrlData.quality!!,
-                                        onClick = onQualityChangeClick
+                                        onClick = { onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.QualityChange) }
                                     )
                                 }
                                 RepeatButton(

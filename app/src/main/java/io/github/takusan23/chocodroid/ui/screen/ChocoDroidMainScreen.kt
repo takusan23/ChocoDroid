@@ -34,6 +34,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val scope = rememberCoroutineScope()
             // 画面遷移。ナビゲーション
             val navController = rememberNavController()
+            // BottomSheetの画面遷移
+            val bottomSheetNavHostController = rememberNavController()
             // 再生中の動画情報
             val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
             // コンテンツURL
@@ -102,7 +104,10 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             mediaUrlData = mediaUrlData.value!!,
                             controller = exoPlayerComposeController,
                             state = miniPlayerState,
-                            onQualityChangeClick = { scope.launch { modalBottomSheetState.show() } }
+                            onBottomSheetNavigate = { route ->
+                                bottomSheetNavHostController.navigate(route)
+                                scope.launch { modalBottomSheetState.show() }
+                            }
                         )
                     }
                 },
@@ -119,11 +124,22 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 },
                 bottomSheetContent = {
                     // ボトムシートの内容
-                    ChocoDroidBottomSheetNavigation(mainScreenViewModel = viewModel, modalBottomSheetState = modalBottomSheetState)
+                    ChocoDroidBottomSheetNavigation(
+                        mainScreenViewModel = viewModel,
+                        bottomSheetNavHostController = bottomSheetNavHostController,
+                        modalBottomSheetState = modalBottomSheetState
+                    )
                 },
                 content = {
                     // 画面遷移。別コンポーネントへ
-                    ChocoDroidNavigation(navController = navController, mainScreenViewModel = viewModel)
+                    ChocoDroidNavigation(
+                        navController = navController,
+                        mainScreenViewModel = viewModel,
+                        onBottomSheetNavigate = { route ->
+                            bottomSheetNavHostController.navigate(route)
+                            scope.launch { modalBottomSheetState.show() }
+                        }
+                    )
                 }
             )
         }

@@ -1,10 +1,12 @@
 package io.github.takusan23.chocodroid.ui.screen.bottomsheet
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -17,13 +19,20 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  * 画質一覧画面。BottomSheetで使う
  *
  * @param mainScreenViewModel メイン画面ViewModel
+ * @param onClose 閉じるときに呼ばれる
  * */
 @Composable
-fun QualityChangeScreen(mainScreenViewModel: MainScreenViewModel) {
+fun QualityChangeScreen(
+    mainScreenViewModel: MainScreenViewModel,
+    onClose: () -> Unit,
+) {
     val currentQualityData = mainScreenViewModel.mediaUrlDataFlow.collectAsState()
     val watchPageResponseJSONData = mainScreenViewModel.watchPageResponseDataFlow.collectAsState()
 
-    Column {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Text(
             modifier = Modifier.padding(10.dp),
             text = stringResource(id = R.string.quality),
@@ -34,7 +43,10 @@ fun QualityChangeScreen(mainScreenViewModel: MainScreenViewModel) {
             QualityList(
                 currentQualityLabel = currentQualityData.value?.quality!!,
                 qualityLabelList = watchPageResponseJSONData.value!!.contentUrlList.map { it.quality!! },
-                onQualityClick = { qualityLabel -> mainScreenViewModel.getMediaUrl(qualityLabel) }
+                onQualityClick = { qualityLabel ->
+                    mainScreenViewModel.getMediaUrl(qualityLabel)
+                    onClose()
+                }
             )
         }
     }

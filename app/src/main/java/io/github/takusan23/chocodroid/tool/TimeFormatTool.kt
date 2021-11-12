@@ -1,6 +1,8 @@
 package io.github.takusan23.chocodroid.tool
 
 import android.text.format.DateUtils
+import java.text.SimpleDateFormat
+import java.util.*
 
 /** 時間操作まとめ */
 object TimeFormatTool {
@@ -16,6 +18,16 @@ object TimeFormatTool {
         } else {
             DateUtils.formatElapsedTime(position)
         }.toString()
+    }
+
+    /**
+     * UnixTimeを時刻文字列に変換する
+     *
+     * @param unixTime UnixTime。ミリ秒
+     * @return yyyy/MM/dd HH:mm:ss
+     * */
+    fun unixTimeToFormatText(unixTime: Long): String {
+        return SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault()).format(unixTime)
     }
 
 }

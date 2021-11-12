@@ -21,11 +21,13 @@ import io.github.takusan23.internet.api.SearchAPI
  *
  * @param navController 画面遷移コントローラー
  * @param mainScreenViewModel 最初の画面のViewModel
+ * @param onBottomSheetNavigate BottomSheetの画面遷移と表示をしてほしいときに呼ばれる
  * */
 @Composable
 fun ChocoDroidNavigation(
     mainScreenViewModel: MainScreenViewModel,
     navController: NavHostController = rememberNavController(),
+    onBottomSheetNavigate: (String) -> Unit = {},
 ) {
 
     // 画面遷移
@@ -43,7 +45,11 @@ fun ChocoDroidNavigation(
         }
         composable(NavigationLinkList.FavouriteScreen) {
             // お気に入り画面
-            FavouriteScreen(viewModel = mainScreenViewModel, navController = navController)
+            FavouriteScreen(
+                viewModel = mainScreenViewModel,
+                navController = navController,
+                onBottomSheetNavigate = onBottomSheetNavigate
+            )
         }
         composable(NavigationLinkList.HistoryScreen) {
             // 履歴画面

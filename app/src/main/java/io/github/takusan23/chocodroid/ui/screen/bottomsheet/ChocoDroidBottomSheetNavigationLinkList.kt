@@ -5,6 +5,9 @@ package io.github.takusan23.chocodroid.ui.screen.bottomsheet
  * */
 object ChocoDroidBottomSheetNavigationLinkList {
 
+    /** お気に入りフォルダ追加 */
+    const val AddFavoriteFolder = "add_favorite_folder"
+
     /** 画質変更ボトムシート */
     const val QualityChange = "quality"
 

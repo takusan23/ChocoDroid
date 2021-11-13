@@ -94,7 +94,9 @@ fun VideoControlUI(
                             )
                             Text(
                                 text = watchPageData.watchPageResponseJSONData.videoDetails.title,
-                                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 10.dp, end = 10.dp),
                                 maxLines = 1,
                             )
                         }

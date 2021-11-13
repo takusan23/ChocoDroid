@@ -3,7 +3,8 @@ package io.github.takusan23.chocodroid.ui.screen.videodetail
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
-import io.github.takusan23.chocodroid.ui.component.RelatedVideoList
+import io.github.takusan23.chocodroid.ui.component.VideoList
+import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
@@ -19,8 +20,13 @@ fun VideoDetailRelatedVideoScreen(
     onClick: (String) -> Unit,
 ) {
     // 関連動画
-    val relatedVideoList = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results.mapNotNull { it.compactVideoRenderer }
+    val relatedVideoList = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results
+        .mapNotNull { it.compactVideoRenderer }
+        .map { compactVideoRenderer -> CommonVideoData(compactVideoRenderer) }
     M3Scaffold {
-        RelatedVideoList(list = relatedVideoList, onClick = onClick)
+        VideoList(
+            videoList = relatedVideoList,
+            onClick = onClick
+        )
     }
 }

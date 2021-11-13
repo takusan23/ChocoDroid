@@ -33,14 +33,14 @@ import kotlinx.coroutines.launch
  * @param onClose 閉じるときに使う
  * */
 @Composable
-fun AddFavoriteFolder(
+fun AddFavoriteFolderScreen(
     onClose: () -> Unit,
 ) {
     val textValue = remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    AddFavoriteFolder(
+    AddFavoriteFolderScreen(
         textValue = textValue.value,
         onValueChange = { textValue.value = it },
         onCreate = { folderName ->
@@ -61,7 +61,7 @@ fun AddFavoriteFolder(
  * @param onCreate 作成ボタンを押したら呼ばれる
  * */
 @Composable
-fun AddFavoriteFolder(
+fun AddFavoriteFolderScreen(
     textValue: String,
     onValueChange: (String) -> Unit,
     onCreate: (String) -> Unit,

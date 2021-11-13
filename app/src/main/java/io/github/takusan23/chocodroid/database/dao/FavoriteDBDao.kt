@@ -59,9 +59,37 @@ interface FavoriteDBDao {
 
     /**
      * フォルダIDを利用してフォルダを削除する
+     *
      * @param folderId フォルダID
      * */
     @Query("DELETE FROM favorite_folder_table WHERE id = :folderId")
     suspend fun deleteFavoriteFolderFromFolderId(folderId: Int)
+
+    /**
+     * 指定したフォルダIDの動画を削除する
+     *
+     * @param folderId フォルダID
+     * */
+    @Query("DELETE FROM favorite_video_table WHERE folder_id = :folderId")
+    suspend fun deleteVideoListFromFolderId(folderId: Int)
+
+    /**
+     * フォルダから動画を削除する
+     *
+     * @param folderId 削除する動画があるフォルダ
+     * @param videoId 動画ID
+     * */
+    @Query("DELETE FROM favorite_video_table WHERE folder_id = :folderId AND video_id = :videoId")
+    suspend fun deleteVideoItem(folderId: Int, videoId: String)
+
+    /**
+     * フォルダIDを利用して既に動画を追加済かどうかを返す
+     *
+     * @param folderId フォルダID
+     * @param videoId 動画ID
+     * @return 追加済みの場合true
+     * */
+    @Query("SELECT EXISTS(SELECT * FROM favorite_video_table WHERE folder_id = :folderId AND video_id = :videoId)")
+    suspend fun isExistsVideoItemFromFolderId(folderId: Int, videoId: String): Boolean
 
 }

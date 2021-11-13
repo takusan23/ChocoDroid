@@ -2,6 +2,7 @@ package io.github.takusan23.internet.data
 
 import io.github.takusan23.internet.data.channel.GridVideoRenderer
 import io.github.takusan23.internet.data.search.VideoRenderer
+import io.github.takusan23.internet.data.watchpage.CompactVideoRenderer
 import io.github.takusan23.internet.data.watchpage.WatchPageResponseJSONData
 import java.text.SimpleDateFormat
 import java.util.*
@@ -62,6 +63,17 @@ open class CommonVideoData(
         publishDate = watchPageResponseJSONData.microformat.playerMicroformatRenderer.publishDate,
         ownerName = watchPageResponseJSONData.videoDetails.author,
         thumbnailUrl = watchPageResponseJSONData.videoDetails.thumbnail.thumbnails.last().url,
+    )
+
+    /** [CompactVideoRenderer]から[CommonVideoData]へ変換 */
+    constructor(compactVideoRenderer: CompactVideoRenderer) : this(
+        videoId = compactVideoRenderer.videoId,
+        videoTitle = compactVideoRenderer.title.simpleText,
+        duration = compactVideoRenderer.lengthText.simpleText,
+        watchCount = compactVideoRenderer.shortViewCountText.simpleText,
+        publishDate = compactVideoRenderer.publishedTimeText.simpleText,
+        ownerName = compactVideoRenderer.longBylineText.runs[0].text,
+        thumbnailUrl = compactVideoRenderer.thumbnail.thumbnails.last().url,
     )
 
     /** 継承可能と引き換えにデータクラスのcopyが使えなくなったので */

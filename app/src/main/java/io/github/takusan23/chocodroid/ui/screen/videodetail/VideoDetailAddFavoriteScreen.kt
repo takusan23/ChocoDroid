@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
 /**
  * お気に入りに追加する画面。
  *
- * ライブ配信時は利用しないでください。
+ * 生放送時は利用できません。
  *
  * @param watchPageData 視聴ページ情報
  * */
@@ -59,7 +59,6 @@ fun VideoDetailAddFavoriteScreen(watchPageData: WatchPageData) {
                 )
 
                 // ない場合は無いって表示する
-
                 if (favoriteFolderList.value.isNotEmpty()) {
                     FavoriteFolderList(
                         modifier = Modifier.fillMaxSize(),
@@ -73,12 +72,13 @@ fun VideoDetailAddFavoriteScreen(watchPageData: WatchPageData) {
                                 actionLabel = context.getString(R.string.add),
                                 onActionPerformed = {
                                     // 追加
-                                    addVideoToFavoriteFolder(
+                                    val isAdded = addVideoToFavoriteFolder(
                                         context = context,
                                         folderId = folderId,
                                         watchPageResponseJSONData = watchPageData.watchPageResponseJSONData
                                     )
-                                    Toast.makeText(context, context.getString(R.string.add_successful), Toast.LENGTH_SHORT).show()
+                                    val toastMessage = if (isAdded) context.getString(R.string.add_successful) else context.getString(R.string.already_added)
+                                    Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
                                 },
                             )
                         }
@@ -87,9 +87,7 @@ fun VideoDetailAddFavoriteScreen(watchPageData: WatchPageData) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = stringResource(id = R.string.favorite_folder_empty))
-                    }
+                    ) { Text(text = stringResource(id = R.string.favorite_folder_empty)) }
                 }
             }
         },
@@ -99,11 +97,12 @@ fun VideoDetailAddFavoriteScreen(watchPageData: WatchPageData) {
 /**
  * お気に入りフォルダへ動画を登録する
  *
- * ライブ配信時は利用しないでください。
+ * 生放送時は利用できません。
  *
  * @param context Context
  * @param folderId フォルダID
  * @param watchPageResponseJSONData 視聴ページの中にあるJSON
+ * @return 既に追加済みの場合はfalseを返します
  * */
 private suspend fun addVideoToFavoriteFolder(
     context: Context,
@@ -114,6 +113,10 @@ private suspend fun addVideoToFavoriteFolder(
     val favoriteDB = FavoriteDB.getInstance(context)
     // 使いやすいようデータクラスへ変換
     val commonVideoData = CommonVideoData(watchPageResponseJSONData)
+    // 既に追加済み？
+    val isExists = favoriteDB.favoriteDao().isExistsVideoItemFromFolderId(folderId, commonVideoData.videoId)
+    if (isExists) return@withContext false
+    // 追加
     favoriteDB.favoriteDao().insert(FavoriteVideoDBEntity(
         folderId = folderId,
         videoId = commonVideoData.videoId,
@@ -124,4 +127,5 @@ private suspend fun addVideoToFavoriteFolder(
         insertDate = System.currentTimeMillis(),
         duration = commonVideoData.duration!!,
     ))
+    return@withContext true
 }

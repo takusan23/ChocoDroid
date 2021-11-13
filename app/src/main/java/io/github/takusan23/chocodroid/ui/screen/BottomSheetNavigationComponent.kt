@@ -16,9 +16,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.AddFavoriteFolder
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.AddFavoriteFolderScreen
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.QualityChangeScreen
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreen
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -50,14 +51,29 @@ fun ChocoDroidBottomSheetNavigation(
             )
             // 画面遷移
             NavHost(navController = bottomSheetNavHostController, startDestination = ChocoDroidBottomSheetNavigationLinkList.QualityChange) {
+                // 画質変更
                 composable(ChocoDroidBottomSheetNavigationLinkList.QualityChange) {
                     QualityChangeScreen(
                         mainScreenViewModel = mainScreenViewModel,
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
                 }
+                // お気に入り追加
                 composable(ChocoDroidBottomSheetNavigationLinkList.AddFavoriteFolder) {
-                    AddFavoriteFolder(onClose = { scope.launch { modalBottomSheetState.hide() } })
+                    AddFavoriteFolderScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
+                }
+                // メニュー
+                composable(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu("{video_id}", "{video_title}", "{folder_id}")) {
+                    val videoId = it.arguments?.getString("video_id")!!
+                    val videoTitle = it.arguments?.getString("video_title")!!
+                    val folderId = it.arguments?.getString("folder_id")?.toInt()
+
+                    VideoListMenuScreen(
+                        videoId = videoId,
+                        videoTitle = videoTitle,
+                        folderId = folderId,
+                        onClose = { scope.launch { modalBottomSheetState.hide() } }
+                    )
                 }
             }
         }

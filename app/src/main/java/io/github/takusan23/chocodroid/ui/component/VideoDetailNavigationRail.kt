@@ -50,7 +50,7 @@ fun VideoDetailNavigationRail(navHostController: NavHostController, watchPageDat
         // 生放送ではお気に入り無効
         if (!watchPageData.isLiveStream()) {
             NavigationRailItem(
-                selected = currentNavRoute == VideoDetailNavigationLinkList.VideoDetailRelatedVideos,
+                selected = currentNavRoute == VideoDetailNavigationLinkList.VideoDetailAddFavoriteScreen,
                 icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null) },
                 label = { Text(text = stringResource(id = R.string.favourite)) },
                 onClick = { navHostController.navigate(VideoDetailNavigationLinkList.VideoDetailAddFavoriteScreen, navOptions { this.popUpTo(VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) }) }

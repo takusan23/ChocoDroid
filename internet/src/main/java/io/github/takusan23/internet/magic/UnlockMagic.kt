@@ -64,8 +64,8 @@ object UnlockMagic {
         val fixParamValue = watchPageData.contentUrlList.first().videoTrackUrl!!.toHttpUrl().queryParameter(fixParamName)
         // 実行するJavaScript
         val evalJavaScriptCode = """
-             const fix = $urlParamFixJSCode
-             fix("$fixParamValue")
+             const fix = $urlParamFixJSCode;
+             fix("$fixParamValue");
          """.trimIndent()
         // JavaScriptエンジンで実行した結果を待つ
         val fixedValue = runJavaScriptResult(evalJavaScriptCode)

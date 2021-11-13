@@ -48,11 +48,12 @@ fun FavouriteScreen(
                     }
                     composable(FavouriteScreenNavigationLinkList.getFolderVideoList("{folder_id}")) { backStackEntry ->
                         val folderId = backStackEntry.arguments?.getString("folder_id")!!
-                        // フォルダの中身
+                        // フォルダの中身。動画一覧
                         FavoriteVideoListScreen(
                             mainScreenViewModel = viewModel,
                             folderId = folderId,
-                            onBack = { favouriteNavController.popBackStack() }
+                            onBack = { favouriteNavController.popBackStack() },
+                            onBottomSheetNavigate = onBottomSheetNavigate
                         )
                     }
                 }

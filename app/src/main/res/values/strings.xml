@@ -56,4 +56,6 @@
     <string name="add_successful">Added</string>
     <string name="add_video_message">Do you want to add a video?</string>
     <string name="add">addition</string>
+    <string name="video_list_menu_delete_favorite">Delete from Favorites folder</string>
+    <string name="already_added">Already added</string>
 </resources>

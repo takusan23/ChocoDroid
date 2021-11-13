@@ -25,6 +25,7 @@ import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.ui.component.BackButtonSmallTopBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.chocodroid.viewmodel.FavoriteVideoListViewModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
@@ -35,12 +36,14 @@ import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewMod
  *
  * @param folderId フォルダID
  * @param onBack 戻ってほしいときに呼ばれる
+ * @param onBottomSheetNavigate BottomSheetの表示と画面遷移してほしいときに呼ばれる
  * */
 @ExperimentalMaterial3Api
 @Composable
 fun FavoriteVideoListScreen(
     mainScreenViewModel: MainScreenViewModel,
     folderId: String,
+    onBottomSheetNavigate: (String) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,18 +64,19 @@ fun FavoriteVideoListScreen(
             )
         },
         content = {
-            // ない場合は無いって表示する
-            if (videoList.value.isNotEmpty()) {
-                VideoList(
-                    videoList = videoList.value,
-                    onClick = { mainScreenViewModel.loadWatchPage(it) }
-                )
-            } else {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = stringResource(id = R.string.favorite_folder_video_empty))
+            Box(modifier = Modifier.fillMaxSize()) {
+                // ない場合は無いって表示する
+                if (videoList.value.isNotEmpty()) {
+                    VideoList(
+                        videoList = videoList.value,
+                        onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
+                        onMenuClick = { data -> onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(data.videoId, data.videoTitle, folderId)) }
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = stringResource(id = R.string.favorite_folder_video_empty)
+                    )
                 }
             }
         }
@@ -123,4 +127,5 @@ private fun TopBarDeleteButton(
 private suspend fun deleteFavoriteFolder(context: Context, folderId: Int) {
     val dao = FavoriteDB.getInstance(context).favoriteDao()
     dao.deleteFavoriteFolderFromFolderId(folderId)
+    dao.deleteVideoListFromFolderId(folderId)
 }

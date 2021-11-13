@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
@@ -39,6 +42,7 @@ import io.github.takusan23.internet.data.CommonVideoData
  * @param onClick 押したら呼ばれる。動画IDが渡されます
  * @param isSwipeEnabled 引っ張るやつ無効にする場合はtrue
  * @param onRefresh 引っ張って更新で引っ張ったら呼ばれる
+ * @param onMenuClick メニュー押したとき。nullにした場合はメニューを非表示にします
  * */
 @Composable
 fun VideoList(
@@ -46,6 +50,7 @@ fun VideoList(
     swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(false),
     videoList: List<CommonVideoData>,
     onClick: (String) -> Unit,
+    onMenuClick: ((CommonVideoData) -> Unit)? = null,
     isSwipeEnabled: Boolean = true,
     onRefresh: (() -> Unit)? = null,
 ) {
@@ -58,8 +63,11 @@ fun VideoList(
                 state = lazyListState,
                 content = {
                     items(videoList) { item ->
-                        VideoListItem(commonVideoData = item, onClick = onClick)
-                        // Divider()
+                        VideoListItem(
+                            commonVideoData = item,
+                            onClick = onClick,
+                            onMenuClick = onMenuClick
+                        )
                     }
                 }
             )
@@ -70,13 +78,15 @@ fun VideoList(
 /**
  * 動画一覧で使う各項目のコンポーネント
  *
- * @param videoRenderer 動画情報
+ * @param commonVideoData 動画情報
  * @param onClick 押したら呼ばれる
+ * @param onMenuClick メニュー押したとき。nullにした場合はメニューを非表示にします
  * */
 @Composable
 fun VideoListItem(
     commonVideoData: CommonVideoData,
     onClick: (String) -> Unit,
+    onMenuClick: ((CommonVideoData) -> Unit)? = null,
 ) = VideoListItem(
     videoId = commonVideoData.videoId,
     videoTitle = commonVideoData.videoTitle,
@@ -86,7 +96,10 @@ fun VideoListItem(
     ownerName = commonVideoData.ownerName,
     thumbnailUrl = commonVideoData.thumbnailUrl,
     durationTextBackground = if (commonVideoData.duration == null) Color.Red.copy(0.5f) else Color.Black.copy(0.5f),
-    onClick = onClick
+    onClick = onClick,
+    onMenuClick = if (onMenuClick != null) {
+        { onMenuClick(commonVideoData) }
+    } else null,
 )
 
 /**
@@ -101,6 +114,7 @@ fun VideoListItem(
  * @param duration 動画時間
  * @param durationTextBackground 再生時間の背景色。生放送との分岐でどうぞ
  * @param onClick 押したとき。引数は動画ID
+ * @param onMenuClick メニュー押したとき。nullにした場合はメニューを非表示にします
  * */
 @Composable
 fun VideoListItem(
@@ -113,6 +127,7 @@ fun VideoListItem(
     thumbnailUrl: String,
     durationTextBackground: Color = Color.Black.copy(0.5f),
     onClick: (String) -> Unit,
+    onMenuClick: (() -> Unit)? = null,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -147,7 +162,11 @@ fun VideoListItem(
                     text = duration
                 )
             }
-            Column(modifier = Modifier.padding(start = 5.dp)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 5.dp)
+            ) {
                 Text(
                     modifier = Modifier.padding(0.dp),
                     fontSize = 16.sp,
@@ -164,6 +183,12 @@ fun VideoListItem(
                     fontSize = 14.sp,
                     text = ownerName
                 )
+            }
+            if (onMenuClick != null) {
+                IconButton(
+                    modifier = Modifier.padding(start = 5.dp, end = 10.dp),
+                    onClick = onMenuClick
+                ) { Icon(painter = painterResource(id = io.github.takusan23.chocodroid.R.drawable.ic_outline_more_vert_24), contentDescription = null) }
             }
         }
     }

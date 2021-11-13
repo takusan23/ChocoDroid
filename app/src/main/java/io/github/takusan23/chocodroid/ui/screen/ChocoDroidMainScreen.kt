@@ -5,8 +5,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
 import io.github.takusan23.chocodroid.ui.tool.SetActivitySleepComposeApp
@@ -31,6 +33,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {
         Surface {
 
+            val context = LocalContext.current
             val scope = rememberCoroutineScope()
             // 画面遷移。ナビゲーション
             val navController = rememberNavController()
@@ -74,7 +77,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val snackbarHostState = remember { SnackbarHostState() }
             LaunchedEffect(key1 = errorData.value, block = {
                 if (errorData.value != null) {
-                    val result = snackbarHostState.showSnackbar(errorData.value!!, actionLabel = "閉じる", duration = SnackbarDuration.Indefinite)
+                    val result = snackbarHostState.showSnackbar(errorData.value!!, actionLabel = context.getString(R.string.close), duration = SnackbarDuration.Indefinite)
                     if (result == SnackbarResult.ActionPerformed) {
                         // 閉じるボタン押したら閉じる
                         snackbarHostState.currentSnackbarData?.dismiss()

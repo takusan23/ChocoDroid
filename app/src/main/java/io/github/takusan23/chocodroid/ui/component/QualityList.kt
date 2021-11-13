@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +38,6 @@ fun QualityList(
                 isSelected = it == currentQualityLabel,
                 onClick = { onQualityClick(it) }
             )
-            Divider()
         }
     })
 }

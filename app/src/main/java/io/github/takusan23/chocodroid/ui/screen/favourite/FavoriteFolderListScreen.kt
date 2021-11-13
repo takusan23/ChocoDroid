@@ -26,7 +26,7 @@ import io.github.takusan23.chocodroid.viewmodel.FavoriteFolderScreenViewModel
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoriteFolderScreen(
+fun FavoriteFolderListScreen(
     viewModel: FavoriteFolderScreenViewModel = viewModel(),
     onFabClick: (String) -> Unit,
     onVideoListNavigate: (Int) -> Unit,

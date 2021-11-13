@@ -9,6 +9,8 @@ import androidx.room.PrimaryKey
  *
  * 動画情報とかダウンロードして動画パスをDBに入れる。RoomならFlowで変更が取れる
  *
+ * こいつは履歴とかお気に入りと違って[watchPageResponseJSON]を入れてるけど、動画再生時に動画情報をオフラインでも見れるようにするためです。
+ *
  * @param id 主キー
  * @param videoId 動画ID
  * @param videoTitle 動画タイトル

@@ -22,8 +22,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.service.ContentDownloadService
-import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.screen.videodetail.*
+import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
@@ -88,6 +88,10 @@ fun VideoDetailScreen(
                     // メニュー画面
                     composable(VideoDetailNavigationLinkList.VideoDetailMenuScreen) {
                         VideoDetailMenuScreen(watchPageData = watchPageData)
+                    }
+                    // お気に入り追加
+                    composable(VideoDetailNavigationLinkList.VideoDetailAddFavoriteScreen) {
+                        VideoDetailAddFavoriteScreen(watchPageData = watchPageData)
                     }
                     // 関連動画
                     composable(VideoDetailNavigationLinkList.VideoDetailRelatedVideos) {

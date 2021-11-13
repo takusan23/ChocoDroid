@@ -52,4 +52,8 @@
     <string name="add_favorite_folder">Add favorite folder</string>
     <string name="favorite_folder_empty">There is no favorite folder.</string>
     <string name="folder_name">Folder name</string>
+    <string name="favorite_folder_video_empty">There seems to be no video yet.</string>
+    <string name="add_successful">Added</string>
+    <string name="add_video_message">Do you want to add a video?</string>
+    <string name="add">addition</string>
 </resources>

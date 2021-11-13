@@ -1,8 +1,10 @@
 package io.github.takusan23.chocodroid.database.entity
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.github.takusan23.internet.data.CommonVideoData
 
 /**
  * お気に入り動画をいれるDB
@@ -28,4 +30,22 @@ data class FavoriteVideoDBEntity(
     @ColumnInfo(name = "thumbnail_url") val thumbnailUrl: String,
     @ColumnInfo(name = "duration") val duration: String,
     @ColumnInfo(name = "insert_date") val insertDate: Long = System.currentTimeMillis(),
-)
+) {
+
+    /**
+     * [CommonVideoData]形式へ変換する
+     *
+     * @param context Context
+     * @return [CommonVideoData]
+     * */
+    fun convertToCommonVideoData(context: Context) = CommonVideoData(
+        videoId = videoId,
+        videoTitle = title,
+        duration = duration,
+        watchCount = "",
+        publishDate = publishedDate,
+        ownerName = ownerName,
+        thumbnailUrl = thumbnailUrl,
+    )
+
+}

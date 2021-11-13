@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Divider
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -46,7 +45,6 @@ fun FavoriteFolderList(
         content = {
             items(list) { item ->
                 FavoriteFolderItem(item, onClick)
-                Divider()
             }
         }
     )

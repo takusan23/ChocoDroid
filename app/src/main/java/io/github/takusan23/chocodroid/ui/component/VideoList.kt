@@ -36,7 +36,7 @@ import io.github.takusan23.internet.data.CommonVideoData
  * @param swipeRefreshState スワイプして更新のくるくるを手動で表示したい場合は
  * @param lazyListState スクロール制御など
  * @param videoList 動画一覧
- * @param onClick 押したら呼ばれる
+ * @param onClick 押したら呼ばれる。動画IDが渡されます
  * @param isSwipeEnabled 引っ張るやつ無効にする場合はtrue
  * @param onRefresh 引っ張って更新で引っ張ったら呼ばれる
  * */

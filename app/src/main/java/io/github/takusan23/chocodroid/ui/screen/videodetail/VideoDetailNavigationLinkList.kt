@@ -14,4 +14,7 @@ object VideoDetailNavigationLinkList {
     /** ダウンロード */
     const val VideoDetailDownloadScreen = "download"
 
+    /** お気に入り追加。生放送では表示しないでください */
+    const val VideoDetailAddFavoriteScreen = "add_favorite"
+
 }

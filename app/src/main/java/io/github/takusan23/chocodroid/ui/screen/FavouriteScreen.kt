@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
-import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteFolderScreen
+import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteFolderListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteVideoListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavouriteScreenNavigationLinkList
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
@@ -41,7 +41,7 @@ fun FavouriteScreen(
                 NavHost(navController = favouriteNavController, startDestination = FavouriteScreenNavigationLinkList.FolderList) {
                     composable(FavouriteScreenNavigationLinkList.FolderList) {
                         // フォルダ一覧
-                        FavoriteFolderScreen(
+                        FavoriteFolderListScreen(
                             onVideoListNavigate = { folderId -> favouriteNavController.navigate(FavouriteScreenNavigationLinkList.getFolderVideoList(folderId.toString())) },
                             onFabClick = { route -> onBottomSheetNavigate(route) }
                         )
@@ -49,7 +49,11 @@ fun FavouriteScreen(
                     composable(FavouriteScreenNavigationLinkList.getFolderVideoList("{folder_id}")) { backStackEntry ->
                         val folderId = backStackEntry.arguments?.getString("folder_id")!!
                         // フォルダの中身
-                        FavoriteVideoListScreen(folderId = folderId,onBack = { favouriteNavController.popBackStack() })
+                        FavoriteVideoListScreen(
+                            mainScreenViewModel = viewModel,
+                            folderId = folderId,
+                            onBack = { favouriteNavController.popBackStack() }
+                        )
                     }
                 }
             }

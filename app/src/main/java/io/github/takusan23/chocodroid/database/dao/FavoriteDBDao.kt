@@ -17,9 +17,21 @@ interface FavoriteDBDao {
     @Query("SELECT * FROM favorite_folder_table")
     fun getAllFavVideoFolder(): Flow<List<FavoriteFolderDBEntity>>
 
-    /** フォルダIDから[FavoriteVideoDBEntity]を作成する */
+    /**
+     * フォルダIDから[FavoriteVideoDBEntity]を作成する
+     *
+     * @param folderId フォルダID
+     * */
     @Query("SELECT * FROM favorite_video_table WHERE folder_id = :folderId")
     fun getFavFolderVideoFromFolderId(folderId: Int): Flow<List<FavoriteVideoDBEntity>>
+
+    /**
+     * フォルダの名前などを取得する。Flowで
+     *
+     * @param folderId フォルダID
+     * */
+    @Query("SELECT * FROM favorite_folder_table WHERE id = :folderId")
+    fun getFolderInfoFromFolderId(folderId: Int): Flow<FavoriteFolderDBEntity>
 
     /** [FavoriteFolderDBEntity]追加 */
     @Insert

@@ -1,7 +1,10 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.material.Icon
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -10,8 +13,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.ui.screen.videodetail.VideoDetailNavigationLinkList
+import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
@@ -44,6 +47,15 @@ fun VideoDetailNavigationRail(navHostController: NavHostController, watchPageDat
             label = { Text(text = stringResource(id = R.string.video_menu)) },
             onClick = { navHostController.navigate(VideoDetailNavigationLinkList.VideoDetailMenuScreen, navOptions { this.popUpTo(VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) }) }
         )
+        // 生放送ではお気に入り無効
+        if (!watchPageData.isLiveStream()) {
+            NavigationRailItem(
+                selected = currentNavRoute == VideoDetailNavigationLinkList.VideoDetailRelatedVideos,
+                icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null) },
+                label = { Text(text = stringResource(id = R.string.favourite)) },
+                onClick = { navHostController.navigate(VideoDetailNavigationLinkList.VideoDetailAddFavoriteScreen, navOptions { this.popUpTo(VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) }) }
+            )
+        }
         NavigationRailItem(
             selected = currentNavRoute == VideoDetailNavigationLinkList.VideoDetailRelatedVideos,
             icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_art_track_24), contentDescription = null) },

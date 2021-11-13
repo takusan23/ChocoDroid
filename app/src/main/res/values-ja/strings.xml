@@ -52,4 +52,8 @@
     <string name="add_favorite_folder">お気に入りフォルダーを追加</string>
     <string name="favorite_folder_empty">お気に入りフォルダーはありません。</string>
     <string name="folder_name">フォルダ名</string>
+    <string name="favorite_folder_video_empty">まだ動画は無いようです。</string>
+    <string name="add_successful">追加しました</string>
+    <string name="add_video_message">動画を追加しますか？</string>
+    <string name="add">追加</string>
 </resources>

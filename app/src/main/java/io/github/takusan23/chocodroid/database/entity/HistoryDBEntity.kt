@@ -1,8 +1,11 @@
 package io.github.takusan23.chocodroid.database.entity
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.github.takusan23.chocodroid.R
+import io.github.takusan23.internet.data.CommonVideoData
 
 /**
  * データベースに突っ込む内容
@@ -30,4 +33,21 @@ data class HistoryDBEntity(
     @ColumnInfo(name = "owner_name") val ownerName: String,
     @ColumnInfo(name = "thumbnail_url") val thumbnailUrl: String,
     @ColumnInfo(name = "duration") val duration: String,
-)
+) {
+
+    /**
+     * [CommonVideoData]へ変換する。一覧表示がこの形式なので
+     * @param context Context
+     * @return [CommonVideoData]
+     * */
+    fun convertToCommonVideoData(context: Context) = CommonVideoData(
+        videoId = videoId,
+        videoTitle = title,
+        duration = duration,
+        watchCount = "${context.getString(R.string.watch_count)} : ${localWatchCount}",
+        publishDate = publishedDate,
+        ownerName = ownerName,
+        thumbnailUrl = thumbnailUrl,
+    )
+
+}

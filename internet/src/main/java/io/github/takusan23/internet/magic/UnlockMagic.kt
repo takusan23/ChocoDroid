@@ -13,7 +13,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * - URLから「n」パラメーターを取得します。
  * - base.js内にパラメーターを修正する関数があるので探す。[getParamFixJavaScriptCode]
  * - なんらかの方法で上記のJavaScriptコードを実行する（多分最短はAndroidなどのWebView）
- *  -
  * - 実行した結果、パラメーターが戻り値で取得できるので、nパラメーターに入れ替える
  * - これで快適に見れるはず。
  *

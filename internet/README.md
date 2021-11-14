@@ -3,6 +3,8 @@
 
 今回はappモジュールがクソデカにならないように、**通信部分だけ**取り出しました。Android非依存なので他環境に持っていけるかもしれない。
 
+嘘ですAndroid非依存で他持っていけると思いますが、JavaScriptエンジンというか実行環境が無いと使えなくはないですが不便です。(`UnlockMagic.kt` 参照)
+
 ## 視聴ページ取得関数
 
 `WatchPageHTML#getWatchPage()`
@@ -33,7 +35,7 @@ APIキーは`apiKeyFlow`を使ってFlowで流れてきますので、ViewModel�
 保存したAPIキーを`init`関数の引数につっこめばAPIキー取得作業をパスできます。
 
 ## テストコード
-testsパッケージ内の@Testアノテーションを付けた関数はAndroid Studioを利用して開発環境のJava VMで実行できます。
+testパッケージ内の@Testアノテーションを付けた関数はAndroid Studioを利用して開発環境のJava VMで実行できます。
 `SearchAPITest`、`WatchPageHTMLTest`参照。
 
 ## YTAPICall

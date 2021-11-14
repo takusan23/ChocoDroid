@@ -91,10 +91,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.4.0")
 
     // Room
-    implementation("androidx.room:room-runtime:2.3.0")
-    implementation("androidx.room:room-ktx:2.3.0")
-    annotationProcessor("androidx.room:room-compiler:2.3.0")
-    kapt("androidx.room:room-compiler:2.3.0")
+    implementation("androidx.room:room-runtime:2.4.0-beta01")
+    implementation("androidx.room:room-ktx:2.4.0-beta01")
+    annotationProcessor("androidx.room:room-compiler:2.4.0-beta01")
+    kapt("androidx.room:room-compiler:2.4.0-beta01")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

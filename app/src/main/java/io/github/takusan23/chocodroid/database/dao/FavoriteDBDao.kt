@@ -92,4 +92,17 @@ interface FavoriteDBDao {
     @Query("SELECT EXISTS(SELECT * FROM favorite_video_table WHERE folder_id = :folderId AND video_id = :videoId)")
     suspend fun isExistsVideoItemFromFolderId(folderId: Int, videoId: String): Boolean
 
+    /**
+     * フォルダ一覧と、フォルダ内動画を5件ほど入れたデータクラスを返す。カルーセルUIを実装するときに使う
+     *
+     * ただ、INNER JOINでは
+     *
+     * */
+    @Query("""
+        SELECT * 
+            FROM favorite_folder_table folder
+            JOIN (SELECT * FROM favorite_video_table GROUP BY folder_id) video ON video.folder_id = folder.id
+    """)
+    fun getFavoriteFolderAndVideoListMap(): Flow<Map<FavoriteFolderDBEntity, List<FavoriteVideoDBEntity>>>
+
 }

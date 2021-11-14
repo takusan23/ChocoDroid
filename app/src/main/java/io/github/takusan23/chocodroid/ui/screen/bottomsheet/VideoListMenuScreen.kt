@@ -105,6 +105,7 @@ fun FavoriteVideoDeleteButton(
                 actionLabel = context.getString(R.string.delete),
                 onActionPerformed = {
                     database.favoriteDao().deleteVideoItem(folderId = folderId, videoId = videoId)
+                    onClose()
                 }
             )
         },

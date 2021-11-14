@@ -62,7 +62,9 @@ private fun FavoriteFolderItem(
     onClick: (Int) -> Unit,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .fillMaxWidth(),
         interactionSource = remember { MutableInteractionSource() },
         indication = rememberRipple(),
         onClick = { onClick(favoriteFolderDBEntity.id) }

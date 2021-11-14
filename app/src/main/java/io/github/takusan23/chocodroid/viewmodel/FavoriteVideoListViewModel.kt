@@ -20,7 +20,7 @@ class FavoriteVideoListViewModel(application: Application, folderId: Int) : Andr
 
     /** お気に入りフォルダ内の動画をFlowでもらう */
     val folderVideoList = favoriteDB.favoriteDao().getFavFolderVideoFromFolderId(folderId)
-        .map { it.map { it.convertToCommonVideoData(context) } }
+        .map { it.map { it.convertToCommonVideoData() } }
 
     /** フォルダの情報をFlowでもらう */
     val folderInfo = favoriteDB.favoriteDao().getFolderInfoFromFolderId(folderId)

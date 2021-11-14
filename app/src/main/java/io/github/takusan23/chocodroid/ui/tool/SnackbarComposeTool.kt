@@ -28,6 +28,7 @@ object SnackbarComposeTool {
         onDismissed: suspend () -> Unit = {},
     ) {
         scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
             val result = snackbarHostState.showSnackbar(snackbarMessage, actionLabel, snackbarDuration)
             if (result == SnackbarResult.ActionPerformed) {
                 onActionPerformed()

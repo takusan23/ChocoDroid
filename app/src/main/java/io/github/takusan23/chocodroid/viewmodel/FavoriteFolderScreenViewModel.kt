@@ -2,10 +2,9 @@ package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.database.db.FavoriteDB
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
+import kotlinx.coroutines.flow.map
 
 /**
  * お気に入りフォルダ一覧画面で使うViewModel
@@ -20,14 +19,8 @@ class FavoriteFolderScreenViewModel(application: Application) : AndroidViewModel
     /** お気に入りフォルダ一覧をFlowで返す */
     val favoriteFolderList = favoriteDB.favoriteDao().getAllFavVideoFolder()
 
-    init {
-        viewModelScope.launch {
-            favoriteDB.favoriteDao().getFavoriteFolderAndVideoListMap().collect {
-                println(it.keys)
-                println(it.values)
-                println("----")
-            }
-        }
-    }
+    /** フォルダの名前を入れた動画データクラス */
+    val favoriteFolderVideoMap = favoriteDB.favoriteDao().getFavoriteFolderAndVideoListMap()
+        .map { it.groupBy { FavoriteFolderDBEntity(it.folderId, it.folderName) } } // ここ雑
 
 }

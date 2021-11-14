@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.database.dao
 
 import androidx.room.*
+import io.github.takusan23.chocodroid.database.entity.FavoriteConcatData
 import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
 import io.github.takusan23.chocodroid.database.entity.FavoriteVideoDBEntity
 import kotlinx.coroutines.flow.Flow
@@ -95,14 +96,15 @@ interface FavoriteDBDao {
     /**
      * フォルダ一覧と、フォルダ内動画を5件ほど入れたデータクラスを返す。カルーセルUIを実装するときに使う
      *
-     * ただ、INNER JOINでは
-     *
+     * @return Map。フォルダ情報とフォルダに保存されてる動画
      * */
+    @RewriteQueriesToDropUnusedColumns
     @Query("""
-        SELECT * 
+        SELECT folder.folder_name as folder_name, folder.id as fav_folder_id, video.*
             FROM favorite_folder_table folder
-            JOIN (SELECT * FROM favorite_video_table GROUP BY folder_id) video ON video.folder_id = folder.id
+            LEFT JOIN favorite_video_table video ON video.folder_id = folder.id
+            ORDER BY folder.id ASC, video.insert_date DESC
     """)
-    fun getFavoriteFolderAndVideoListMap(): Flow<Map<FavoriteFolderDBEntity, List<FavoriteVideoDBEntity>>>
+    fun getFavoriteFolderAndVideoListMap(): Flow<List<FavoriteConcatData>>
 
 }

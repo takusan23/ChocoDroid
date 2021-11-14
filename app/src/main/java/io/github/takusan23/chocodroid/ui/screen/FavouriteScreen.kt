@@ -43,17 +43,18 @@ fun FavouriteScreen(
                         // フォルダ一覧
                         FavoriteFolderListScreen(
                             onVideoListNavigate = { folderId -> favouriteNavController.navigate(FavouriteScreenNavigationLinkList.getFolderVideoList(folderId.toString())) },
-                            onFabClick = { route -> onBottomSheetNavigate(route) }
+                            onFabClick = { route -> onBottomSheetNavigate(route) },
+                            onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) }
                         )
                     }
                     composable(FavouriteScreenNavigationLinkList.getFolderVideoList("{folder_id}")) { backStackEntry ->
                         val folderId = backStackEntry.arguments?.getString("folder_id")!!
                         // フォルダの中身。動画一覧
                         FavoriteVideoListScreen(
-                            mainScreenViewModel = viewModel,
                             folderId = folderId,
+                            onBottomSheetNavigate = onBottomSheetNavigate,
                             onBack = { favouriteNavController.popBackStack() },
-                            onBottomSheetNavigate = onBottomSheetNavigate
+                            onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) }
                         )
                     }
                 }

@@ -28,7 +28,6 @@ import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.chocodroid.viewmodel.FavoriteVideoListViewModel
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewModelFactory
 
 /**
@@ -36,13 +35,14 @@ import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewMod
  *
  * @param folderId フォルダID
  * @param onBack 戻ってほしいときに呼ばれる
+ * @param onVideoLoad 動画を読み込んでほしいときに呼ばれます。動画IDが渡されます
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移してほしいときに呼ばれる
  * */
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteVideoListScreen(
-    mainScreenViewModel: MainScreenViewModel,
     folderId: String,
+    onVideoLoad: (String) -> Unit,
     onBottomSheetNavigate: (String) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -69,7 +69,7 @@ fun FavoriteVideoListScreen(
                 if (videoList.value.isNotEmpty()) {
                     VideoList(
                         videoList = videoList.value,
-                        onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
+                        onClick = onVideoLoad,
                         onMenuClick = { data -> onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(data.videoId, data.videoTitle, folderId)) }
                     )
                 } else {

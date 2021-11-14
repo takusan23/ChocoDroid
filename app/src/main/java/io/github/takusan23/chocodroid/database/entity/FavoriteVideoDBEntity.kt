@@ -1,6 +1,5 @@
 package io.github.takusan23.chocodroid.database.entity
 
-import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -35,10 +34,9 @@ data class FavoriteVideoDBEntity(
     /**
      * [CommonVideoData]形式へ変換する
      *
-     * @param context Context
      * @return [CommonVideoData]
      * */
-    fun convertToCommonVideoData(context: Context) = CommonVideoData(
+    fun convertToCommonVideoData() = CommonVideoData(
         videoId = videoId,
         videoTitle = title,
         duration = duration,

@@ -28,14 +28,12 @@ import kotlin.math.roundToInt
  * @param playerContent プレイヤー部分に描画するもの。プレイヤー
  * @param detailContent 動画説明文の部分
  * @param state プレイヤーの状態を公開するために使う。状態変更コールバック関数もこいつにある
- * @param isDisableMiniPlayer ドラッグ操作を禁止する場合はtrue
  * @param isFullScreenMode 全画面モードにするならtrueに
  * */
 @Composable
 fun MiniPlayerCompose(
     modifier: Modifier = Modifier,
     state: MiniPlayerState = rememberMiniPlayerState(),
-    isDisableMiniPlayer: Boolean = false,
     isFullScreenMode: Boolean = false,
     backgroundContent: @Composable () -> Unit,
     playerContent: @Composable (BoxScope.() -> Unit),
@@ -117,8 +115,8 @@ fun MiniPlayerCompose(
                             .fillMaxWidth(playerWidthEx.value) // 引数で大きさを決められる
                             .aspectRatio(1.7f) // 16:9を維持
                             .draggable(
-                                enabled = !isDisableMiniPlayer,
-                                startDragImmediately = true,
+                                enabled = !state.isDisableDragGesture.value,
+                                startDragImmediately = false,
                                 orientation = Orientation.Vertical,
                                 state = rememberDraggableState { delta ->
                                     // どれだけ移動したかが渡される
@@ -195,9 +193,17 @@ class MiniPlayerState(
     /** プレイヤーの遷移状態。 */
     val progress = mutableStateOf(0f)
 
+    /** ドラッグ操作無効時はtrue */
+    val isDisableDragGesture = mutableStateOf(false)
+
     /** プレイヤーの状態を更新する */
     fun setState(toState: Int) {
         currentState.value = toState
+    }
+
+    /** ドラッグ操作を無効にする場合はtrue */
+    fun isDisableDraggableGesture(isDisabled: Boolean) {
+        isDisableDragGesture.value = isDisabled
     }
 
     companion object {

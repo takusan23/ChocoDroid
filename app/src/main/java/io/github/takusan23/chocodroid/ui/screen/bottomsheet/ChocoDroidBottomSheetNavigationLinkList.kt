@@ -20,8 +20,18 @@ object ChocoDroidBottomSheetNavigationLinkList {
      * @param videoId 動画ID
      * @param videoTitle 動画タイトル
      * @param folderId お気に入りフォルダ内の動画の場合はフォルダIDを入れる
+     * @param isDownloadContent ダウンロード済みコンテンツの場合は"true"←これ直したい
      * */
-    fun getVideoListMenu(videoId: String, videoTitle: String, folderId: String? = null) =
-        "$VideoListMenu?video_id=$videoId&video_title=$videoTitle&folder_id=$folderId"
+    fun getVideoListMenu(
+        videoId: String,
+        videoTitle: String,
+        folderId: String? = null,
+        isDownloadContent: String? = null,
+    ) = "$VideoListMenu?" + mutableMapOf(
+        "video_id" to videoId,
+        "video_title" to videoTitle,
+        "folder_id" to folderId,
+        "is_download_content" to isDownloadContent
+    ).toList().joinToString(separator = "&") { "${it.first}=${it.second}" }
 
 }

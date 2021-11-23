@@ -7,15 +7,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.*
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,7 +23,6 @@ import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.chocodroid.ui.component.AndroidSnowConeSwitch
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
-import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlin.math.roundToInt
 
@@ -117,27 +114,6 @@ fun VideoDetailDownloadScreen(
                             content = {
                                 Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null)
                                 Text(text = stringResource(id = R.string.download))
-                            }
-                        )
-                    } else {
-                        Button(
-                            modifier = Modifier
-                                .padding(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB00020), contentColor = Color.White),
-                            shape = RoundedCornerShape(50),
-                            onClick = {
-                                SnackbarComposeTool.showSnackbar(
-                                    scope = scope,
-                                    snackbarHostState = snackbarHostState,
-                                    snackbarMessage = context.getString(R.string.delete_message),
-                                    actionLabel = context.getString(R.string.delete),
-                                    snackbarDuration = SnackbarDuration.Long,
-                                    onActionPerformed = { onDeleteClick(watchPageData.watchPageResponseJSONData.videoDetails.videoId) }
-                                )
-                            },
-                            content = {
-                                Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null)
-                                Text(text = stringResource(id = R.string.delete))
                             }
                         )
                     }

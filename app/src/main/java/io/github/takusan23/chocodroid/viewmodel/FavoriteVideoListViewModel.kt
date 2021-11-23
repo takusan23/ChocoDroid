@@ -1,7 +1,6 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
 import kotlinx.coroutines.flow.map
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.map
  *
  * @param folderId フォルダID。[FavoriteFolderDBEntity.id]
  * */
-class FavoriteVideoListViewModel(application: Application, folderId: Int) : AndroidViewModel(application) {
+class FavoriteVideoListViewModel(application: Application, folderId: Int) : BaseAndroidViewModel(application) {
 
     private val context = application.applicationContext
 

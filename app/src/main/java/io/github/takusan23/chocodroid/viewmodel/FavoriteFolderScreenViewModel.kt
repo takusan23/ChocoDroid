@@ -1,7 +1,6 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.map
 /**
  * お気に入りフォルダ一覧画面で使うViewModel
  * */
-class FavoriteFolderScreenViewModel(application: Application) : AndroidViewModel(application) {
+class FavoriteFolderScreenViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val context = application.applicationContext
 

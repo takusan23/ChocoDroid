@@ -1,14 +1,14 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.database.db.HistoryDB
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /** 履歴画面で使うViewModel */
-class HistoryScreenViewModel(application: Application) : AndroidViewModel(application) {
+class HistoryScreenViewModel(application: Application) : BaseAndroidViewModel(application) {
     private val context = application.applicationContext
 
     /** データベース */
@@ -21,7 +21,7 @@ class HistoryScreenViewModel(application: Application) : AndroidViewModel(applic
 
     /** 履歴を全部消す */
     fun deleteAllDB() {
-        viewModelScope.launch {
+        viewModelScope.launch(errorHandler + Dispatchers.IO) {
             historyDB.historyDao().deleteAll()
         }
     }

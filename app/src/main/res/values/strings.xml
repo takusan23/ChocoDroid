@@ -59,4 +59,6 @@
     <string name="video_list_menu_delete_favorite">Delete from Favorites folder</string>
     <string name="already_added">Already added</string>
     <string name="live">Live broadcast</string>
+    <string name="video_list_menu_delete_download">Remove from download</string>
+    <string name="video_list_menu_export_media_folder">Copy to the video (music) folder of the terminal</string>
 </resources>

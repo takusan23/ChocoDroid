@@ -190,7 +190,7 @@ fun VideoListItem(
                 IconButton(
                     modifier = Modifier.padding(start = 5.dp, end = 10.dp),
                     onClick = onMenuClick
-                ) { Icon(painter = painterResource(id = io.github.takusan23.chocodroid.R.drawable.ic_outline_more_vert_24), contentDescription = null) }
+                ) { Icon(painter = painterResource(id = R.drawable.ic_outline_more_vert_24), contentDescription = null) }
             }
         }
     }

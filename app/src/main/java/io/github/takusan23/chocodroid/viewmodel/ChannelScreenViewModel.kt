@@ -2,15 +2,12 @@ package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
 import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.chocodroid.tool.StacktraceToString
 import io.github.takusan23.internet.api.ChannelAPI
 import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.channel.ChannelResponseData
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,14 +20,12 @@ import kotlinx.coroutines.launch
  *
  * @param channelId チャンネルID
  * */
-class ChannelScreenViewModel(application: Application, private val channelId: String) : AndroidViewModel(application) {
+class ChannelScreenViewModel(application: Application, private val channelId: String) : BaseAndroidViewModel(application) {
 
     private val context = application.applicationContext
 
     private val _uploadVideoListFlow = MutableStateFlow<List<CommonVideoData>>(emptyList())
     private val _channelResponseData = MutableStateFlow<ChannelResponseData?>(null)
-    private val _isLoadingFlow = MutableStateFlow(false)
-    private val _errorMessageFlow = MutableStateFlow<String?>(null)
 
     /** チャンネルAPI */
     private val channelAPI = ChannelAPI()
@@ -38,24 +33,11 @@ class ChannelScreenViewModel(application: Application, private val channelId: St
     /** これ以上追加読み込みしない */
     private var isEOL = false
 
-    /** 検索が失敗したときに例外を拾う */
-    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
-        throwable.printStackTrace()
-        _errorMessageFlow.value = StacktraceToString.stackTraceToString(throwable)
-        _isLoadingFlow.value = false
-    }
-
     /** チャンネル情報 */
     val channelResponseDataFlow = _channelResponseData as StateFlow<ChannelResponseData?>
 
     /** 投稿動画 */
     val uploadVideoListFlow = _uploadVideoListFlow as StateFlow<List<CommonVideoData>>
-
-    /** 読み込み中？ */
-    val isLoadingFlow = _isLoadingFlow as StateFlow<Boolean>
-
-    /** エラー出たら呼ばれます */
-    val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
 
     init {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {

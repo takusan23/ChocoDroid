@@ -59,4 +59,6 @@
     <string name="video_list_menu_delete_favorite">お気に入りフォルダから削除する</string>
     <string name="already_added">追加済みです</string>
     <string name="live">生放送</string>
+    <string name="video_list_menu_delete_download">ダウンロードから削除</string>
+    <string name="video_list_menu_export_media_folder">端末の動画（音楽）フォルダへコピーする</string>
 </resources>

@@ -2,14 +2,12 @@ package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
 import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.database.db.HistoryDB
 import io.github.takusan23.chocodroid.database.entity.HistoryDBEntity
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
-import io.github.takusan23.chocodroid.tool.StacktraceToString
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.chocodroid.tool.WebViewJavaScriptEngine
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
@@ -19,9 +17,11 @@ import io.github.takusan23.internet.magic.AlgorithmSerializer
 import io.github.takusan23.internet.magic.UnlockMagic
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -30,21 +30,12 @@ import kotlinx.coroutines.withContext
  *
  * Composeでも使います（画面回転しんどいので）
  * */
-class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
+class MainScreenViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val context = application.applicationContext
 
     private val _watchPageData = MutableStateFlow<WatchPageData?>(null)
     private val _mediaUrlDataFlow = MutableStateFlow<MediaUrlData?>(null)
-    private val _isLoadingFlow = MutableStateFlow(false)
-    private val _errorMessageFlow = MutableStateFlow<String?>(null)
-
-    /** コルーチン起動時の引数に指定してね。例外を捕まえ、Flowに流します */
-    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
-        throwable.printStackTrace()
-        _errorMessageFlow.value = StacktraceToString.stackTraceToString(throwable)
-        _isLoadingFlow.value = false
-    }
 
     /** ローカルに保持してる解析アルゴリズム。flowで更新されるはず */
     private var localAlgorithmData: Triple<String?, AlgorithmFuncNameData?, List<AlgorithmInvokeData>?>? = null
@@ -60,12 +51,6 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
 
     /** 動画パス、生放送HLSアドレス等を入れたデータクラス流すFlow */
     val mediaUrlDataFlow = _mediaUrlDataFlow as StateFlow<MediaUrlData?>
-
-    /** 読み込み中？ */
-    val isLoadingFlow = _isLoadingFlow as Flow<Boolean>
-
-    /** エラーメッセージ送信用Flow */
-    val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
 
     init {
         viewModelScope.launch {

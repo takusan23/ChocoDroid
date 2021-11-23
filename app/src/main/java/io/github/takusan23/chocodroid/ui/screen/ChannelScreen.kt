@@ -37,7 +37,7 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
 
     val channelResponseData = channelScreenViewModel.channelResponseDataFlow.collectAsState()
     val uploadVideoList = channelScreenViewModel.uploadVideoListFlow.collectAsState()
-    val isLoading = channelScreenViewModel.isLoadingFlow.collectAsState()
+    val isLoading = channelScreenViewModel.isLoadingFlow.collectAsState(initial = false)
     val errorMessage = channelScreenViewModel.errorMessageFlow.collectAsState()
 
     val context = LocalContext.current

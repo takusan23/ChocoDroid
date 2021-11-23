@@ -1,13 +1,12 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
 
 /**
  * ダウンロード一覧画面で使うViewModel
  * */
-class DownloadScreenVideModel(application: Application) : AndroidViewModel(application) {
+class DownloadScreenVideModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val context = application.applicationContext
 

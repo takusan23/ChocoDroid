@@ -60,7 +60,8 @@ fun ChocoDroidNavigation(
             DownloadScreen(
                 mainScreenViewModel = mainScreenViewModel,
                 navController = navController,
-                downloadScreenVideModel = viewModel()
+                downloadScreenVideModel = viewModel(),
+                onBottomSheetNavigate = onBottomSheetNavigate
             )
         }
         composable(NavigationLinkList.getChannelScreenLink("{channel_id}")) {

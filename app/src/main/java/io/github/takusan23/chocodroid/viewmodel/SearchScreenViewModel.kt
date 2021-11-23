@@ -2,15 +2,11 @@ package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
 import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.chocodroid.tool.StacktraceToString
-import io.github.takusan23.internet.data.search.VideoContent
 import io.github.takusan23.internet.api.SearchAPI
 import io.github.takusan23.internet.data.CommonVideoData
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,36 +15,21 @@ import kotlinx.coroutines.withContext
 /**
  * 検索結果で使うViewModel
  * */
-class SearchScreenViewModel(application: Application, private val query: String, private val sort: String) : AndroidViewModel(application) {
+class SearchScreenViewModel(application: Application, private val query: String, private val sort: String) : BaseAndroidViewModel(application) {
     private val context = application.applicationContext
 
     /** 非公式検索APIを叩く */
     private val searchAPI = SearchAPI()
 
     private val _searchResultListFlow = MutableStateFlow<List<CommonVideoData>>(listOf())
-    private val _isLoadingFlow = MutableStateFlow(false)
-    private val _errorMessageFlow = MutableStateFlow<String?>(null)
     private val _queryFlow = MutableStateFlow(query)
     private val _sortFlow = MutableStateFlow(sort)
 
     /** これ以上追加読み込みしない */
     private var isEOL = false
 
-    /** 検索が失敗したときに例外を拾う */
-    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
-        throwable.printStackTrace()
-        _errorMessageFlow.value = StacktraceToString.stackTraceToString(throwable)
-        _isLoadingFlow.value = false
-    }
-
     /** 検索結果 */
     val searchResultListFlow = _searchResultListFlow as StateFlow<List<CommonVideoData>>
-
-    /** 読み込み中？ */
-    val isLoadingFlow = _isLoadingFlow as StateFlow<Boolean>
-
-    /** エラー出たら呼ばれます */
-    val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
 
     /** 検索ワード */
     val queryFlow = _queryFlow as StateFlow<String>
@@ -67,7 +48,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
             search(query, sort)
         }
         // APIキーを保存しておく
-        viewModelScope.launch {
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
             searchAPI.apiKeyFlow.collect { apiKey ->
                 if (apiKey != null) {
                     context.dataStore.edit { setting -> setting[SettingKeyObject.API_KEY] = apiKey }
@@ -91,7 +72,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
      * @param query 検索ワード
      * @param sort ソート。[SearchAPI.PARAMS_SORT_RELEVANCE]など
      * */
-    private suspend fun search(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = withContext(errorHandler) {
+    private suspend fun search(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = withContext(errorHandler + Dispatchers.IO) {
         _isLoadingFlow.value = true
         _searchResultListFlow.value = searchAPI.search(query, sort) ?: listOf()
         _isLoadingFlow.value = false
@@ -103,7 +84,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
      * 結果はFlowに流れます。
      * */
     fun moreLoad() {
-        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+        viewModelScope.launch(errorHandler + Dispatchers.IO) {
             // これ以上読み込まない場合 or 追加読み込み中ならreturn
             if (isEOL || _isLoadingFlow.value) return@launch
 

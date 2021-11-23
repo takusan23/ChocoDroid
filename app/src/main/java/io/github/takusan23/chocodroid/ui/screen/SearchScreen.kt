@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: (String) -> Unit) {
     val videoList = viewModel.searchResultListFlow.collectAsState()
-    val isLoading = viewModel.isLoadingFlow.collectAsState()
+    val isLoading = viewModel.isLoadingFlow.collectAsState(initial = false)
     val errorMessage = viewModel.errorMessageFlow.collectAsState()
     val query = viewModel.queryFlow.collectAsState()
     val sort = viewModel.sortFlow.collectAsState()

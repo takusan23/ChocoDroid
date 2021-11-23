@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.VideoList
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.viewmodel.DownloadScreenVideModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -18,11 +19,17 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  *
  * @param mainScreenViewModel メイン画面のViewModel
  * @param navController メイン画面のNavController
+ * @param downloadScreenVideModel ダウンロード画面のViewModel
+ * @param onBottomSheetNavigate BottomSheetの切り替えをしてほしいときに呼ばれる
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DownloadScreen(mainScreenViewModel: MainScreenViewModel, navController: NavHostController, downloadScreenVideModel: DownloadScreenVideModel) {
-
+fun DownloadScreen(
+    mainScreenViewModel: MainScreenViewModel,
+    navController: NavHostController,
+    downloadScreenVideModel: DownloadScreenVideModel,
+    onBottomSheetNavigate: (String) -> Unit,
+) {
     // 動画一覧を取得する
     val videoList = downloadScreenVideModel.downloadContentFlow.collectAsState(initial = listOf())
 
@@ -32,7 +39,14 @@ fun DownloadScreen(mainScreenViewModel: MainScreenViewModel, navController: NavH
             Column(modifier = Modifier.padding(it)) {
                 VideoList(
                     videoList = videoList.value,
-                    onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) }
+                    onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
+                    onMenuClick = { videoData ->
+                        onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(
+                            videoId = videoData.videoId,
+                            videoTitle = videoData.videoTitle,
+                            isDownloadContent = "true"
+                        ))
+                    }
                 )
             }
         }

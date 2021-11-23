@@ -1,6 +1,7 @@
 package io.github.takusan23.internet.html
 
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Test
 
 /**
@@ -49,6 +50,8 @@ class WatchPageHTMLTest {
             println(decryptData.algorithmFuncNameData)
             println(decryptData.decryptInvokeList)
 
+            println("nパラメーター")
+            println(watchPageData.getMediaUrlDataFromQuality().videoTrackUrl?.toHttpUrl()?.queryParameter("n"))
             println("パラメーター変更JavaScriptコード")
             println(decryptData.urlParamFixJSCode)
         }

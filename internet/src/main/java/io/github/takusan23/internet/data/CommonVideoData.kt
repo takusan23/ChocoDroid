@@ -19,7 +19,7 @@ import java.util.*
  * @param ownerName 投稿者。変態糞土方
  * @param publishDate 投稿日。ライブ配信時はnull
  * @param thumbnailUrl サムネイルURL
- * @param watchCount 視聴回数
+ * @param watchCount 視聴回数。ライブ配信時は同接
  * @param duration 再生時間。ライブ配信時はnull
  * */
 open class CommonVideoData(
@@ -69,9 +69,9 @@ open class CommonVideoData(
     constructor(compactVideoRenderer: CompactVideoRenderer) : this(
         videoId = compactVideoRenderer.videoId,
         videoTitle = compactVideoRenderer.title.simpleText,
-        duration = compactVideoRenderer.lengthText.simpleText,
-        watchCount = compactVideoRenderer.shortViewCountText.simpleText,
-        publishDate = compactVideoRenderer.publishedTimeText.simpleText,
+        duration = compactVideoRenderer.lengthText?.simpleText,
+        watchCount = compactVideoRenderer.shortViewCountText.simpleText ?: compactVideoRenderer.shortViewCountText.runs?.joinToString(separator = "") { it.text }!!,
+        publishDate = compactVideoRenderer.publishedTimeText?.simpleText,
         ownerName = compactVideoRenderer.longBylineText.runs[0].text,
         thumbnailUrl = compactVideoRenderer.thumbnail.thumbnails.last().url,
     )

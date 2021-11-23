@@ -36,15 +36,16 @@ data class SecondaryResultsResults(
     val compactVideoRenderer: CompactVideoRenderer? = null,
 )
 
+/** 関連動画 */
 @Serializable
 data class CompactVideoRenderer(
     val videoId: String,
     val title: Title,
     val shortViewCountText: ViewCountText,
-    val lengthText: LengthText,
+    val lengthText: LengthText? = null,
     val thumbnail: Thumbnail,
     val channelThumbnail: Thumbnail,
-    val publishedTimeText: PublishedTimeText,
+    val publishedTimeText: PublishedTimeText? = null,
     val longBylineText: LongBylineText,
 )
 
@@ -68,10 +69,18 @@ data class LengthText(
     val simpleText: String,
 )
 
+/** ライブ配信時は[runs]に値が入る */
 @Serializable
 data class ViewCountText(
-    val simpleText: String,
+    val simpleText: String? = null,
+    val runs: List<ViewCountTextRunsText>? = null,
 )
+
+@Serializable
+data class ViewCountTextRunsText(
+    val text: String,
+)
+
 
 @Serializable
 data class Title(

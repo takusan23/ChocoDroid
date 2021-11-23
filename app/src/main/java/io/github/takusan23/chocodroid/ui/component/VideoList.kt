@@ -22,12 +22,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.CommonVideoData
 
 
@@ -51,8 +53,8 @@ fun VideoList(
     videoList: List<CommonVideoData>,
     onClick: (String) -> Unit,
     onMenuClick: ((CommonVideoData) -> Unit)? = null,
-    isSwipeEnabled: Boolean = true,
     onRefresh: (() -> Unit)? = null,
+    isSwipeEnabled: Boolean = onRefresh != null,
 ) {
     SwipeRefresh(
         swipeEnabled = isSwipeEnabled,
@@ -90,9 +92,9 @@ fun VideoListItem(
 ) = VideoListItem(
     videoId = commonVideoData.videoId,
     videoTitle = commonVideoData.videoTitle,
-    duration = commonVideoData.duration ?: "生放送です",
+    duration = commonVideoData.duration ?: stringResource(id = R.string.live),
     watchCount = commonVideoData.watchCount,
-    publishDate = commonVideoData.publishDate ?: "---",
+    publishDate = commonVideoData.publishDate ?: stringResource(id = R.string.live),
     ownerName = commonVideoData.ownerName,
     thumbnailUrl = commonVideoData.thumbnailUrl,
     durationTextBackground = if (commonVideoData.duration == null) Color.Red.copy(0.5f) else Color.Black.copy(0.5f),

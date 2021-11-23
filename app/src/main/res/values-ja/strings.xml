@@ -58,4 +58,5 @@
     <string name="add">追加</string>
     <string name="video_list_menu_delete_favorite">お気に入りフォルダから削除する</string>
     <string name="already_added">追加済みです</string>
+    <string name="live">生放送</string>
 </resources>

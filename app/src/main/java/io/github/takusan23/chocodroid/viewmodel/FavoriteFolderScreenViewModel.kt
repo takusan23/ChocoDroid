@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 /**
@@ -21,6 +23,7 @@ class FavoriteFolderScreenViewModel(application: Application) : AndroidViewModel
 
     /** フォルダの名前を入れた動画データクラス */
     val favoriteFolderVideoMap = favoriteDB.favoriteDao().getFavoriteFolderAndVideoListMap()
-        .map { it.groupBy { FavoriteFolderDBEntity(it.folderId, it.folderName) } } // ここ雑
+        .map { it.groupBy { FavoriteFolderDBEntity(it.folderId, it.folderName, 0, 0) } } // ここ雑
+        .flowOn(Dispatchers.Default)
 
 }

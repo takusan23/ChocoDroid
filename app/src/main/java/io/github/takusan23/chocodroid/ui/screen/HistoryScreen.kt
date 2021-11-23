@@ -77,7 +77,6 @@ fun HistoryScreen(
                 Divider()
                 if (historyList.value.isNotEmpty()) {
                     VideoList(
-                        isSwipeEnabled = false,
                         videoList = historyList.value,
                         onClick = { mainViewModel.loadWatchPage(it) }
                     )

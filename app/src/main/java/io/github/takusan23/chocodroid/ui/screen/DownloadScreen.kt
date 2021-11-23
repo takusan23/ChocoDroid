@@ -1,10 +1,8 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,7 +31,6 @@ fun DownloadScreen(mainScreenViewModel: MainScreenViewModel, navController: NavH
         content = {
             Column(modifier = Modifier.padding(it)) {
                 VideoList(
-                    isSwipeEnabled = false,
                     videoList = videoList.value,
                     onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) }
                 )

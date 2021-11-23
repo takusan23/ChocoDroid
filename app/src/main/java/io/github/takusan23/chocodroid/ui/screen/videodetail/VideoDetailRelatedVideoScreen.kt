@@ -26,7 +26,7 @@ fun VideoDetailRelatedVideoScreen(
     M3Scaffold {
         VideoList(
             videoList = relatedVideoList,
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }

@@ -61,4 +61,5 @@
     <string name="live">Live broadcast</string>
     <string name="video_list_menu_delete_download">Remove from download</string>
     <string name="video_list_menu_export_media_folder">Copy to the video (music) folder of the terminal</string>
+    <string name="copy_successful">Successful copy</string>
 </resources>

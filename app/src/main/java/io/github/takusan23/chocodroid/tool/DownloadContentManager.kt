@@ -1,6 +1,10 @@
 package io.github.takusan23.chocodroid.tool
 
 import android.content.Context
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.core.content.contentValuesOf
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.database.db.DownloadContentDB
 import io.github.takusan23.chocodroid.database.entity.DownloadContentDBEntity
@@ -186,6 +190,46 @@ class DownloadContentManager(private val context: Context) {
             thumbnailPath = thumbnailPath,
         )
         downloadContentDB.downloadContentDao().insert(entity)
+    }
+
+    /**
+     * ダウンロードしたコンテンツを端末のギャラリー（Videoフォルダ）へコピーする
+     *
+     * 音声の場合は Musicフォルダ に入る
+     *
+     * MediaStore API を使う
+     *
+     * @param videoId 動画ID
+     * */
+    suspend fun copyFileToVideoOrMusicFolder(videoId: String) {
+        val contentResolver = context.contentResolver
+        // DBから動画情報を取得
+        val dbItem = downloadContentDB.downloadContentDao().getDownloadContentDataFromVideoId(videoId)
+        val isAudioOnly = dbItem.contentPath.endsWith(".aac")
+        val extension = if (isAudioOnly) "aac" else "mp4"
+        val folderPath = if (isAudioOnly) Environment.DIRECTORY_MUSIC else Environment.DIRECTORY_MOVIES
+        // MediaStoreに入れる中身
+        val contentValues = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValuesOf(
+                MediaStore.MediaColumns.DISPLAY_NAME to "${dbItem.videoTitle}.$extension",
+                MediaStore.MediaColumns.RELATIVE_PATH to "$folderPath/ChocoDroid"
+            )
+        } else {
+            contentValuesOf(
+                MediaStore.MediaColumns.DISPLAY_NAME to "${dbItem.videoTitle}.$extension",
+            )
+        }
+        // MediaStoreへ登録
+        val contentUri = if (isAudioOnly) MediaStore.Audio.Media.EXTERNAL_CONTENT_URI else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        val uri = contentResolver.insert(contentUri, contentValues) ?: return
+        // コピーする
+        val outputStream = contentResolver.openOutputStream(uri)
+        // コピー対象
+        val inputStream = File(dbItem.contentPath).inputStream()
+        outputStream?.write(inputStream.readBytes())
+        // リリース
+        outputStream?.close()
+        inputStream.close()
     }
 
 

@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen.bottomsheet
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,14 +10,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.DownloadContentDeleteButton
 import io.github.takusan23.chocodroid.ui.component.ExportDeviceMediaFolderButton
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.viewmodel.VideoListMenuScreenViewModel
+import kotlinx.coroutines.launch
 
 /**
  * 動画一覧から開くメニュー。いろいろボタンがあるVer
@@ -40,6 +45,9 @@ fun VideoListMenuScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onClose: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     VideoListMenuScreen(
         videoTitle = videoTitle,
         snackbarHostState = snackbarHostState,
@@ -61,7 +69,11 @@ fun VideoListMenuScreen(
             // ダウンロードのときのみ
             if (isDownloadContent) {
                 ExportDeviceMediaFolderButton {
-
+                    scope.launch {
+                        viewModel.copyFileToVideoOrMusicFolder(videoId)
+                        Toast.makeText(context, context.getString(R.string.copy_successful), Toast.LENGTH_SHORT).show()
+                        onClose()
+                    }
                 }
                 DownloadContentDeleteButton(
                     snackbarHostState = snackbarHostState,

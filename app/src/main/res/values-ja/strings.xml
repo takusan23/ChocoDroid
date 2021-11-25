@@ -61,4 +61,5 @@
     <string name="live">生放送</string>
     <string name="video_list_menu_delete_download">ダウンロードから削除</string>
     <string name="video_list_menu_export_media_folder">端末の動画（音楽）フォルダへコピーする</string>
+    <string name="copy_successful">コピーに成功しました</string>
 </resources>

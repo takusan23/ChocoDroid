@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
 import io.github.takusan23.chocodroid.viewmodel.DownloadScreenVideModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -41,11 +42,11 @@ fun DownloadScreen(
                     videoList = videoList.value,
                     onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
                     onMenuClick = { videoData ->
-                        onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(
-                            videoId = videoData.videoId,
-                            videoTitle = videoData.videoTitle,
-                            isDownloadContent = "true"
-                        ))
+                        onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(VideoListMenuData(
+                            videoData.videoId,
+                            videoData.videoTitle,
+                            isDownloadContent = true
+                        )))
                     }
                 )
             }

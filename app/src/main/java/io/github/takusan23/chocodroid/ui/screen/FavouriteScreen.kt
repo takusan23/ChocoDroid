@@ -48,7 +48,7 @@ fun FavouriteScreen(
                         )
                     }
                     composable(FavouriteScreenNavigationLinkList.getFolderVideoList("{folder_id}")) { backStackEntry ->
-                        val folderId = backStackEntry.arguments?.getString("folder_id")!!
+                        val folderId = backStackEntry.arguments?.getString("folder_id")!!.toInt()
                         // フォルダの中身。動画一覧
                         FavoriteVideoListScreen(
                             folderId = folderId,

@@ -63,22 +63,14 @@ fun ChocoDroidBottomSheetNavigation(
                     AddFavoriteFolderScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
                 }
                 // メニュー
-                composable(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(
-                    videoId = "{video_id}",
-                    videoTitle = "{video_title}",
-                    folderId = "{folder_id}",
-                    isDownloadContent = "{is_download_content}"
-                )) {
-                    val videoId = it.arguments?.getString("video_id")!!
-                    val videoTitle = it.arguments?.getString("video_title")!!
-                    val folderId = it.arguments?.getString("folder_id")?.toIntOrNull()
-                    val isDownloadContent = it.arguments?.getString("is_download_content").toBoolean()
+                composable(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenuTemplate()) {
+                    val videoListMenuData = ChocoDroidBottomSheetNavigationLinkList.decodeVideoListMenu(it.arguments!!)
 
                     VideoListMenuScreen(
-                        videoId = videoId,
-                        videoTitle = videoTitle,
-                        folderId = folderId,
-                        isDownloadContent = isDownloadContent,
+                        videoId = videoListMenuData.videoId,
+                        videoTitle = videoListMenuData.videoTitle,
+                        folderId = videoListMenuData.folderId,
+                        isDownloadContent = videoListMenuData.isDownloadContent,
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
                 }

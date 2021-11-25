@@ -40,4 +40,17 @@ class VideoListMenuScreenViewModel(application: Application) : BaseAndroidViewMo
         favoriteDB.favoriteDao().deleteVideoItem(folderId = folderId, videoId = videoId)
     }
 
+    /**
+     * ダウンロードしたコンテンツを端末のギャラリー（Videoフォルダ）へコピーする
+     *
+     * 音声の場合はMusicフォルダに入る
+     *
+     * MediaStore API を使う
+     *
+     * @param videoId 動画ID
+     * */
+    suspend fun copyFileToVideoOrMusicFolder(videoId: String) = withContext(errorHandler + Dispatchers.IO) {
+        downloadContentManager.copyFileToVideoOrMusicFolder(videoId)
+    }
+
 }

@@ -26,6 +26,7 @@ import io.github.takusan23.chocodroid.ui.component.BackButtonSmallTopBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
 import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.chocodroid.viewmodel.FavoriteVideoListViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewModelFactory
@@ -41,7 +42,7 @@ import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewMod
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteVideoListScreen(
-    folderId: String,
+    folderId: Int,
     onVideoLoad: (String) -> Unit,
     onBottomSheetNavigate: (String) -> Unit,
     onBack: () -> Unit,
@@ -59,7 +60,7 @@ fun FavoriteVideoListScreen(
         topBar = {
             BackButtonSmallTopBar(
                 title = { Text(text = folderInfo.value?.folderName ?: "") },
-                actions = { TopBarDeleteButton(folderId = folderId.toInt(), snackbarHostState, onBack) },
+                actions = { TopBarDeleteButton(folderId = folderId, snackbarHostState, onBack) },
                 onBack = onBack
             )
         },
@@ -70,7 +71,13 @@ fun FavoriteVideoListScreen(
                     VideoList(
                         videoList = videoList.value,
                         onClick = onVideoLoad,
-                        onMenuClick = { data -> onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(data.videoId, data.videoTitle, folderId)) }
+                        onMenuClick = { data ->
+                            onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(VideoListMenuData(
+                                data.videoId,
+                                data.videoTitle,
+                                folderId
+                            )))
+                        }
                     )
                 } else {
                     Text(

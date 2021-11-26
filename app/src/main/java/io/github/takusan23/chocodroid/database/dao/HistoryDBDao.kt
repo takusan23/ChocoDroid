@@ -38,6 +38,10 @@ interface HistoryDBDao {
     @Query("SELECT * FROM history_db WHERE video_id = :videoId")
     suspend fun getHistoryFromVideoId(videoId: String): HistoryDBEntity
 
+    /** 動画IDを指定して削除 */
+    @Query("DELETE FROM history_db WHERE video_id = :videoId")
+    suspend fun deleteHistoryFromVideoId(videoId: String)
+
     /**
      * 動画タイトルを部分一致検索してFlowで返す。更新日時の新しい順になります
      *

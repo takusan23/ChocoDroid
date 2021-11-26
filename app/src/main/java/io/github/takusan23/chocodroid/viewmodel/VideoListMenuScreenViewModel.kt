@@ -2,6 +2,7 @@ package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
 import io.github.takusan23.chocodroid.database.db.FavoriteDB
+import io.github.takusan23.chocodroid.database.db.HistoryDB
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,6 +21,9 @@ class VideoListMenuScreenViewModel(application: Application) : BaseAndroidViewMo
 
     /** お気に入りDB */
     private val favoriteDB by lazy { FavoriteDB.getInstance(context) }
+
+    /** 履歴DB */
+    private val historyDB by lazy { HistoryDB.getInstance(context) }
 
     /**
      * ダウンロードしたコンテンツを削除する
@@ -51,6 +55,15 @@ class VideoListMenuScreenViewModel(application: Application) : BaseAndroidViewMo
      * */
     suspend fun copyFileToVideoOrMusicFolder(videoId: String) = withContext(errorHandler + Dispatchers.IO) {
         downloadContentManager.copyFileToVideoOrMusicFolder(videoId)
+    }
+
+    /**
+     * 履歴一覧から削除する
+     *
+     * @param videoId 削除する動画ID
+     * */
+    suspend fun deleteHistoryFromVideoId(videoId: String) = withContext(errorHandler + Dispatchers.IO) {
+        historyDB.historyDao().deleteHistoryFromVideoId(videoId)
     }
 
 }

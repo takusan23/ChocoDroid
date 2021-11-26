@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.DownloadContentDeleteButton
 import io.github.takusan23.chocodroid.ui.component.ExportDeviceMediaFolderButton
+import io.github.takusan23.chocodroid.ui.component.HistoryDeleteButton
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.viewmodel.VideoListMenuScreenViewModel
 import kotlinx.coroutines.launch
@@ -26,11 +27,8 @@ import kotlinx.coroutines.launch
 /**
  * 動画一覧から開くメニュー。いろいろボタンがあるVer
  *
- * @param viewModel 動画一覧ボトムシートメニューのViewModel。UIと分離すべきなのかな
- * @param videoTitle 動画タイトル
- * @param videoId 動画ID
- * @param folderId お気に入りフォルダ内の動画の場合はフォルダIDを入れてください
- * @param isDownloadContent ダウンロードコンテンツの場合はtrue
+ * @param viewModel Composeにデータベース処理とか書いていいの？よくわからんからViewModelに書いてる
+ * @param data メニューに渡すデータクラス。[ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu]等を参照
  * @param snackbarHostState Snackbarだすやつ
  * @param onClose 閉じてほしいときに呼ばれる
  * */
@@ -38,26 +36,25 @@ import kotlinx.coroutines.launch
 @Composable
 fun VideoListMenuScreen(
     viewModel: VideoListMenuScreenViewModel = viewModel(),
-    videoTitle: String,
-    videoId: String,
-    folderId: Int?,
-    isDownloadContent: Boolean,
+    data: VideoListMenuData,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onClose: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val paddingModifier = Modifier.padding(start = 5.dp, top = 5.dp, end = 5.dp)
 
     VideoListMenuScreen(
-        videoTitle = videoTitle,
+        videoTitle = data.videoTitle,
         snackbarHostState = snackbarHostState,
         content = {
 
             // お気に入り削除ボタン
-            folderId?.let { folderId ->
+            data.folderId?.let { folderId ->
                 FavoriteVideoDeleteButton(
+                    modifier = paddingModifier,
                     snackbarHostState = snackbarHostState,
-                    videoId = videoId,
+                    videoId = data.videoId,
                     folderId = folderId,
                     onDeleteClick = { videoId, folderId ->
                         viewModel.deleteFavoriteVideoItem(videoId, folderId)
@@ -67,19 +64,37 @@ fun VideoListMenuScreen(
             }
 
             // ダウンロードのときのみ
-            if (isDownloadContent) {
-                ExportDeviceMediaFolderButton {
-                    scope.launch {
-                        viewModel.copyFileToVideoOrMusicFolder(videoId)
-                        Toast.makeText(context, context.getString(R.string.copy_successful), Toast.LENGTH_SHORT).show()
-                        onClose()
+            if (data.isDownloadContent) {
+                ExportDeviceMediaFolderButton(
+                    modifier = paddingModifier,
+                    onClick = {
+                        scope.launch {
+                            viewModel.copyFileToVideoOrMusicFolder(data.videoId)
+                            Toast.makeText(context, context.getString(R.string.copy_successful), Toast.LENGTH_SHORT).show()
+                            onClose()
+                        }
                     }
-                }
+                )
                 DownloadContentDeleteButton(
+                    modifier = paddingModifier,
                     snackbarHostState = snackbarHostState,
                     onDeleteClick = {
-                        viewModel.deleteDownloadContent(videoId)
+                        viewModel.deleteDownloadContent(data.videoId)
                         onClose()
+                    }
+                )
+            }
+
+            // 履歴一覧のときのみ
+            if (data.isHistory) {
+                HistoryDeleteButton(
+                    modifier = paddingModifier,
+                    snackbarHostState = snackbarHostState,
+                    onDelete = {
+                        scope.launch {
+                            viewModel.deleteHistoryFromVideoId(data.videoId)
+                            onClose()
+                        }
                     }
                 )
             }

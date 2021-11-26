@@ -53,7 +53,11 @@ fun ChocoDroidNavigation(
         }
         composable(NavigationLinkList.HistoryScreen) {
             // 履歴画面
-            HistoryScreen(mainViewModel = mainScreenViewModel, navController = navController)
+            HistoryScreen(
+                mainViewModel = mainScreenViewModel,
+                navController = navController,
+                onBottomSheetNavigate = onBottomSheetNavigate
+            )
         }
         composable(NavigationLinkList.DownloadScreen) {
             // ダウンロード画面

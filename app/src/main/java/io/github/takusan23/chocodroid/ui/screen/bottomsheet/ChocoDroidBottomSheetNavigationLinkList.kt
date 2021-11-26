@@ -22,6 +22,7 @@ object ChocoDroidBottomSheetNavigationLinkList {
         "video_title",
         "folder_id",
         "is_download_content",
+        "is_history",
     )
 
     /** Compose NavigationのBottomSheetのルート作成時のパス。引数は取れるようになってます */
@@ -39,7 +40,8 @@ object ChocoDroidBottomSheetNavigationLinkList {
             "video_id" to data.videoId,
             "video_title" to data.videoTitle,
             "folder_id" to data.folderId,
-            "is_download_content" to data.isDownloadContent
+            "is_download_content" to data.isDownloadContent,
+            "is_history" to data.isHistory,
         ).toList().joinToString(separator = "&") { "${it.first}=${it.second}" }
 
     /**
@@ -55,6 +57,7 @@ object ChocoDroidBottomSheetNavigationLinkList {
             navArgument.getString("video_title")!!,
             navArgument.getString("folder_id")?.toIntOrNull(),
             navArgument.getString("is_download_content").toBoolean(),
+            navArgument.getString("is_history").toBoolean(),
         )
 
 }
@@ -66,10 +69,12 @@ object ChocoDroidBottomSheetNavigationLinkList {
  * @param videoTitle 動画タイトル
  * @param folderId お気に入りフォルダ内の動画の場合はフォルダIDを入れる
  * @param isDownloadContent ダウンロード済みコンテンツの場合は"true"←これ直したい
+ * @param isHistory 履歴一覧から表示の場合はtrue。履歴削除ボタンを表示します
  * */
 data class VideoListMenuData(
     val videoId: String,
     val videoTitle: String,
     val folderId: Int? = null,
     val isDownloadContent: Boolean = false,
+    val isHistory: Boolean = false,
 )

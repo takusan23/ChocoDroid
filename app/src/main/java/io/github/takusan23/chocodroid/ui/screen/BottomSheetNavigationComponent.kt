@@ -67,10 +67,7 @@ fun ChocoDroidBottomSheetNavigation(
                     val videoListMenuData = ChocoDroidBottomSheetNavigationLinkList.decodeVideoListMenu(it.arguments!!)
 
                     VideoListMenuScreen(
-                        videoId = videoListMenuData.videoId,
-                        videoTitle = videoListMenuData.videoTitle,
-                        folderId = videoListMenuData.folderId,
-                        isDownloadContent = videoListMenuData.isDownloadContent,
+                        data = videoListMenuData,
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
                 }

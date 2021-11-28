@@ -21,7 +21,7 @@ class FavoriteFolderScreenViewModel(application: Application) : BaseAndroidViewM
     val favoriteFolderList = favoriteDB.favoriteDao().getAllFavVideoFolder()
 
     /** フォルダの名前を入れた動画データクラス */
-    val favoriteFolderVideoMap = favoriteDB.favoriteDao().getFavoriteFolderAndVideoListMap()
+    val favoriteFolderVideoMap = favoriteDB.favoriteDao().flowGetFavoriteFolderAndVideoListMap()
         .map { it.groupBy { FavoriteFolderDBEntity(it.folderId, it.folderName, 0, 0) } } // ここ雑
         .flowOn(Dispatchers.Default)
 

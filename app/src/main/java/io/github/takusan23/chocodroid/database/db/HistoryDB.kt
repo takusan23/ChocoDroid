@@ -20,8 +20,8 @@ abstract class HistoryDB : RoomDatabase() {
 
         /**
          * データベースのインスタンスはシングルトンにする必要があるため
-         * @param context Context
-         * @return
+         * @param context [Context]
+         * @return データベースのインスタンス
          * */
         fun getInstance(context: Context): HistoryDB {
             if (historyDB == null) {

@@ -60,33 +60,29 @@ fun ChannelHeader(header: C4TabbedHeaderRenderer, onClickOpenBrowser: () -> Unit
                     text = header.subscriberCountText.simpleText,
                 )
             }
-            // アイコン
-            Column(
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            // 登録ボタン
+            Button(
+                onClick = { },
                 modifier = Modifier
-                    .padding(end = 10.dp)
-                    .width(IntrinsicSize.Max)
+                    .padding(start = 5.dp)
+                    .wrapContentWidth()
             ) {
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .wrapContentWidth()
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null)
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = stringResource(id = R.string.add_favourite_list))
-                }
-                OutlinedButton(
-                    onClick = onClickOpenBrowser,
-                    modifier = Modifier
-                        .padding(top = 2.dp, bottom = 2.dp)
-                        .fillMaxWidth()
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_outline_open_in_browser_24), contentDescription = null)
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = stringResource(id = R.string.open_browser))
-                }
+                Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null)
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = stringResource(id = R.string.add_favourite_list))
             }
+            // ブラウザで開く
+            IconButton(
+                modifier = Modifier
+                    .padding(end = 10.dp),
+                onClick = onClickOpenBrowser
+            ) { Icon(painter = painterResource(id = R.drawable.ic_outline_open_in_browser_24), contentDescription = null) }
         }
 
     }

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import io.github.takusan23.internet.data.CommonVideoData
 
 /**
- * お気に入り動画をいれるDB
+ * お気に入り動画をいれるテーブル
  *
  * @param id 主キー
  * @param videoId 動画ID

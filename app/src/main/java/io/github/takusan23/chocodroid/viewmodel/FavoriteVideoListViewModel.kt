@@ -22,6 +22,6 @@ class FavoriteVideoListViewModel(application: Application, folderId: Int) : Base
         .map { it.map { it.convertToCommonVideoData() } }
 
     /** フォルダの情報をFlowでもらう */
-    val folderInfo = favoriteDB.favoriteDao().getFolderInfoFromFolderId(folderId)
+    val folderInfo = favoriteDB.favoriteDao().flowGetFolderInfoFromFolderId(folderId)
 
 }

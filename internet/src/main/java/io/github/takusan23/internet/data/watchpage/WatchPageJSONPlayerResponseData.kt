@@ -31,8 +31,8 @@ data class WatchPageResponseJSONData(
  * [adaptiveFormats]に記載されているURLで、一部の画質以外 404 を返す場合、[dashManifestUrl]から再生するとうまくいくかもしれません。
  *
  *
- * @param adaptiveFormats 音声と映像が別のURLで配信されてます
- * @param formats
+ * @param adaptiveFormats 音声と映像が別のURLで配信されてます。一部の動画は[formats]しか入ってない？
+ * @param formats 音声と映像が合成済みのURLをくれる。代わりに画質が選べない
  * @param dashManifestUrl MPEG-DASH？HLSの代替手段みたいなやつ。なんか[adaptiveFormats]の画質で404を返すときはこっちを再生するといい？
  * @param hlsManifestUrl アクセスするとマスターのマニフェストファイルが返ってきます。こっから画質を選んで
  * */

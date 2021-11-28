@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * お気に入り動画をまとめておくフォルダ的なやつ
+ * お気に入り動画をまとめておくフォルダ的なやつのテーブル
  *
  * @param id 主キー
  * @param folderName フォルダ名

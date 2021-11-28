@@ -22,7 +22,8 @@ abstract class FavoriteDB : RoomDatabase() {
 
         /**
          * データベースのインスタンスを返す
-         * @param context Context
+         * @param context [Context]
+         * @return データベースのインスタンス
          * */
         fun getInstance(context: Context): FavoriteDB {
             if (favoriteDB == null) {

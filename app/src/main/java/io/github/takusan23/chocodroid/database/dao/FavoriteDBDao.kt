@@ -32,7 +32,7 @@ interface FavoriteDBDao {
      * @param folderId フォルダID
      * */
     @Query("SELECT * FROM favorite_folder_table WHERE id = :folderId")
-    fun getFolderInfoFromFolderId(folderId: Int): Flow<FavoriteFolderDBEntity>
+    fun flowGetFolderInfoFromFolderId(folderId: Int): Flow<FavoriteFolderDBEntity>
 
     /** [FavoriteFolderDBEntity]追加 */
     @Insert
@@ -105,6 +105,6 @@ interface FavoriteDBDao {
             LEFT JOIN favorite_video_table video ON video.folder_id = folder.id
             ORDER BY folder.id ASC, video.insert_date DESC
     """)
-    fun getFavoriteFolderAndVideoListMap(): Flow<List<FavoriteConcatData>>
+    fun flowGetFavoriteFolderAndVideoListMap(): Flow<List<FavoriteConcatData>>
 
 }

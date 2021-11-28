@@ -21,7 +21,7 @@ abstract class DownloadContentDB : RoomDatabase() {
         /**
          * データベースのインスタンスを返します
          *
-         * @param context Context
+         * @param context [Context]
          * @return データベースのインスタンス
          * */
         fun getInstance(context: Context): DownloadContentDB {

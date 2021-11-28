@@ -44,7 +44,7 @@ data class HistoryDBEntity(
         videoId = videoId,
         videoTitle = title,
         duration = duration,
-        watchCount = "${context.getString(R.string.watch_count)} : ${localWatchCount}",
+        watchCount = "${context.getString(R.string.watch_count)} : $localWatchCount",
         publishDate = publishedDate,
         ownerName = ownerName,
         thumbnailUrl = thumbnailUrl,

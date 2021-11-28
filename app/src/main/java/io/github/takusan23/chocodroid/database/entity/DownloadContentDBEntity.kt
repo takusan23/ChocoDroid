@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * ダウンロードコンテンツデータベースの定義
+ * ダウンロードコンテンツデータベースのテーブル
  *
  * 動画情報とかダウンロードして動画パスをDBに入れる。RoomならFlowで変更が取れる
  *

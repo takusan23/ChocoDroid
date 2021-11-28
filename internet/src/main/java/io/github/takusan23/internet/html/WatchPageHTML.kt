@@ -116,24 +116,27 @@ object WatchPageHTML {
      * */
     private fun getContentUrlList(watchPageJSONResponseData: WatchPageResponseJSONData, decryptData: DecryptData): List<MediaUrlData> {
         // 生放送時
-        return if (watchPageJSONResponseData.videoDetails.isLive == true) {
-            listOf(MediaUrlData(mixTrackUrl = watchPageJSONResponseData.streamingData.hlsManifestUrl!!))
-        } else {
-            // 音声ファイル選ぶ
-            val audioTrack = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.mimeType.contains("audio") }!!
-            val audioTrackUrl = if (audioTrack.signatureCipher != null) decryptData.decryptURL(audioTrack.signatureCipher) else audioTrack.url
-            // 音声、映像データクラスの配列
-            watchPageJSONResponseData.streamingData.adaptiveFormats
-                .filter { it.mimeType.contains("avc1") } // 映像のみ
-                .map { adaptiveFormat ->
-                    // 復号化が必要な場合は復号する
-                    if (adaptiveFormat.signatureCipher != null) {
-                        val url = decryptData.decryptURL(adaptiveFormat.signatureCipher)
-                        MediaUrlData(url, audioTrackUrl, adaptiveFormat.qualityLabel, null)
-                    } else {
-                        MediaUrlData(adaptiveFormat.url, audioTrackUrl, adaptiveFormat.qualityLabel, null)
+        return when {
+            watchPageJSONResponseData.videoDetails.isLive == true -> {
+                listOf(MediaUrlData(mixTrackUrl = watchPageJSONResponseData.streamingData.hlsManifestUrl!!))
+            }
+            else -> {
+                // 音声ファイル選ぶ
+                val audioTrack = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.mimeType.contains("audio") }!!
+                val audioTrackUrl = if (audioTrack.signatureCipher != null) decryptData.decryptURL(audioTrack.signatureCipher) else audioTrack.url
+                // 音声、映像データクラスの配列
+                watchPageJSONResponseData.streamingData.adaptiveFormats
+                    .filter { it.mimeType.contains("avc1") } // 映像のみ
+                    .map { adaptiveFormat ->
+                        // 復号化が必要な場合は復号する
+                        if (adaptiveFormat.signatureCipher != null) {
+                            val url = decryptData.decryptURL(adaptiveFormat.signatureCipher)
+                            MediaUrlData(url, audioTrackUrl, adaptiveFormat.qualityLabel, null)
+                        } else {
+                            MediaUrlData(adaptiveFormat.url, audioTrackUrl, adaptiveFormat.qualityLabel, null)
+                        }
                     }
-                }
+            }
         }
     }
 

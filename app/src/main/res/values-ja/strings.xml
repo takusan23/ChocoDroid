@@ -63,4 +63,6 @@
     <string name="video_list_menu_export_media_folder">端末の動画（音楽）フォルダへコピーする</string>
     <string name="copy_successful">コピーに成功しました</string>
     <string name="video_list_menu_delete_history">履歴一覧から削除</string>
+    <string name="already_added_favourite_list">お気に入りに登録済みです</string>
+    <string name="favorite_channel">お気に入りチャンネル</string>
 </resources>

@@ -19,10 +19,17 @@ import io.github.takusan23.internet.data.channel.C4TabbedHeaderRenderer
  * チャンネル画面のヘッダー部分
  *
  * @param header チャンネルAPIレスポンスのヘッダー部分のデータ
- * @param onClickOpenBrowser ブラウザで開く押したとき
+ * @param isAddedFavoriteCh お気に入りチャンネル登録済みならtrue
+ * @param onAddFavoriteChClick お気に入りチャンネル押したら呼ばれる
+ * @param onOpenBrowserClick ブラウザで開く押したとき
  * */
 @Composable
-fun ChannelHeader(header: C4TabbedHeaderRenderer, onClickOpenBrowser: () -> Unit) {
+fun ChannelHeader(
+    header: C4TabbedHeaderRenderer,
+    isAddedFavoriteCh: Boolean = false,
+    onAddFavoriteChClick: () -> Unit,
+    onOpenBrowserClick: () -> Unit,
+) {
 
     Column {
         if (header.banner != null) {
@@ -66,22 +73,35 @@ fun ChannelHeader(header: C4TabbedHeaderRenderer, onClickOpenBrowser: () -> Unit
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
-            // 登録ボタン
-            Button(
-                onClick = { },
-                modifier = Modifier
-                    .padding(start = 5.dp)
-                    .wrapContentWidth()
-            ) {
-                Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null)
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = stringResource(id = R.string.add_favourite_list))
+            // 登録ボタン。登録済みならアウトラインにする？
+            if (isAddedFavoriteCh) {
+                OutlinedButton(
+                    onClick = onAddFavoriteChClick,
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .wrapContentWidth()
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_outline_done_24), contentDescription = null)
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = stringResource(id = R.string.already_added_favourite_list))
+                }
+            } else {
+                Button(
+                    onClick = onAddFavoriteChClick,
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .wrapContentWidth()
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null)
+                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(text = stringResource(id = R.string.add_favourite_list))
+                }
             }
             // ブラウザで開く
             IconButton(
                 modifier = Modifier
                     .padding(end = 10.dp),
-                onClick = onClickOpenBrowser
+                onClick = onOpenBrowserClick
             ) { Icon(painter = painterResource(id = R.drawable.ic_outline_open_in_browser_24), contentDescription = null) }
         }
 

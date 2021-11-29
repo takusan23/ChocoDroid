@@ -42,9 +42,10 @@ fun FavouriteScreen(
                     composable(FavouriteScreenNavigationLinkList.FolderList) {
                         // フォルダ一覧
                         FavoriteFolderListScreen(
-                            onVideoListNavigate = { folderId -> favouriteNavController.navigate(FavouriteScreenNavigationLinkList.getFolderVideoList(folderId.toString())) },
+                            onNavigate = { route -> favouriteNavController.navigate(route) },
                             onFabClick = { route -> onBottomSheetNavigate(route) },
-                            onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) }
+                            onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) },
+                            onChannelClick = { channelId -> navController.navigate(NavigationLinkList.getChannelScreenLink(channelId)) }
                         )
                     }
                     composable(FavouriteScreenNavigationLinkList.getFolderVideoList("{folder_id}")) { backStackEntry ->

@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,48 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.database.entity.FavoriteConcatData
-import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
 import io.github.takusan23.internet.data.CommonVideoData
-
-/**
- * カルーセルUIリスト。縦に詰んでいく
- *
- * @param favoriteFolderVideoConcatList フォルダの名前を入れたフォルダ内動画データクラス
- * @param contentModifier カルーセルUIにつけるModifier
- * @param onLabelClick フォルダ名ラベルを押したときに呼ばれる
- * @param onVideoClick 動画押したとき。動画IDが渡されます
- * */
-@Composable
-fun FavoriteFolderVideoCarouselList(
-    modifier: Modifier = Modifier,
-    contentModifier: Modifier = Modifier,
-    favoriteFolderVideoConcatList: Map<FavoriteFolderDBEntity, List<FavoriteConcatData>>,
-    onLabelClick: (Int) -> Unit,
-    onVideoClick: (String) -> Unit,
-) {
-    LazyColumn(
-        modifier = modifier,
-        content = {
-            favoriteFolderVideoConcatList.forEach { item ->
-                item {
-                    FavoriteFolderVideoCarouselItem(
-                        modifier = contentModifier,
-                        folderName = item.key.folderName,
-                        folderId = item.key.id,
-                        favoriteVideoList = item.value.mapNotNull { it.convertToCommonVideoData() },
-                        onLabelClick = onLabelClick,
-                        onVideoClick = onVideoClick
-                    )
-                }
-            }
-        }
-    )
-}
 
 /**
  * カルーセルUI
@@ -179,15 +142,15 @@ private fun FavoriteFolderVideoCarouselRowItem(
                 )
             }
             Text(
-                modifier = Modifier.padding(0.dp),
                 fontSize = 16.sp,
                 text = videoTitle,
+                overflow = TextOverflow.Ellipsis,
                 maxLines = 2
             )
             Text(
-                modifier = Modifier.padding(0.dp),
                 fontSize = 14.sp,
                 text = ownerName,
+                overflow = TextOverflow.Ellipsis,
                 maxLines = 1
             )
         }

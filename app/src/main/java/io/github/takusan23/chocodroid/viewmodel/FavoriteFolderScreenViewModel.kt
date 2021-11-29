@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.viewmodel
 
 import android.app.Application
+import io.github.takusan23.chocodroid.database.db.FavoriteChDB
 import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,9 @@ class FavoriteFolderScreenViewModel(application: Application) : BaseAndroidViewM
     /** お気に入りDB */
     private val favoriteDB = FavoriteDB.getInstance(context)
 
+    /** お気に入りチャンネルDB */
+    private val favoriteChDB = FavoriteChDB.getInstance(context)
+
     /** お気に入りフォルダ一覧をFlowで返す */
     val favoriteFolderList = favoriteDB.favoriteDao().getAllFavVideoFolder()
 
@@ -24,5 +28,8 @@ class FavoriteFolderScreenViewModel(application: Application) : BaseAndroidViewM
     val favoriteFolderVideoMap = favoriteDB.favoriteDao().flowGetFavoriteFolderAndVideoListMap()
         .map { it.groupBy { FavoriteFolderDBEntity(it.folderId, it.folderName, 0, 0) } } // ここ雑
         .flowOn(Dispatchers.Default)
+
+    /** お気に入りチャンネルの一覧をFlowで流す */
+    val favoriteChList = favoriteChDB.favoriteChDao().flowGetAll()
 
 }

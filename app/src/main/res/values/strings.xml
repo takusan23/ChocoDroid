@@ -63,4 +63,6 @@
     <string name="video_list_menu_export_media_folder">Copy to the video (music) folder of the terminal</string>
     <string name="copy_successful">Successful copy</string>
     <string name="video_list_menu_delete_history">Delete from history list</string>
+    <string name="already_added_favourite_list">It has been registered as a favorite</string>
+    <string name="favorite_channel">Favorite channel</string>
 </resources>

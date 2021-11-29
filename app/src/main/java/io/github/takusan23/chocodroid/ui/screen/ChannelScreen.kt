@@ -39,6 +39,7 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
     val uploadVideoList = channelScreenViewModel.uploadVideoListFlow.collectAsState()
     val isLoading = channelScreenViewModel.isLoadingFlow.collectAsState(initial = false)
     val errorMessage = channelScreenViewModel.errorMessageFlow.collectAsState()
+    val isAddedFavoriteCh = channelScreenViewModel.isAddedFavoriteChFlow.collectAsState(initial = false)
 
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
@@ -71,10 +72,19 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
                 channelResponseData.value?.apply {
                     ChannelHeader(
                         header = this.header.c4TabbedHeaderRenderer,
-                        onClickOpenBrowser = {
+                        isAddedFavoriteCh = isAddedFavoriteCh.value,
+                        onOpenBrowserClick = {
                             // ブラウザで開く
                             val intent = Intent(Intent.ACTION_VIEW, "https://www.youtube.com/channel/${this.header.c4TabbedHeaderRenderer.channelId}".toUri())
                             context.startActivity(intent)
+                        },
+                        onAddFavoriteChClick = {
+                            // 登録する？
+                            if (isAddedFavoriteCh.value) {
+                                channelScreenViewModel.deleteFavoriteChDB()
+                            } else {
+                                channelScreenViewModel.addFavoriteChDB()
+                            }
                         }
                     )
                 }

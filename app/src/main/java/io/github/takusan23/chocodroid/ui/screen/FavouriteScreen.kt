@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
+import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteChListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteFolderListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteVideoListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavouriteScreenNavigationLinkList
@@ -49,13 +50,21 @@ fun FavouriteScreen(
                         )
                     }
                     composable(FavouriteScreenNavigationLinkList.getFolderVideoList("{folder_id}")) { backStackEntry ->
-                        val folderId = backStackEntry.arguments?.getString("folder_id")!!.toInt()
                         // フォルダの中身。動画一覧
+                        val folderId = backStackEntry.arguments?.getString("folder_id")!!.toInt()
                         FavoriteVideoListScreen(
                             folderId = folderId,
                             onBottomSheetNavigate = onBottomSheetNavigate,
                             onBack = { favouriteNavController.popBackStack() },
                             onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) }
+                        )
+                    }
+                    composable(FavouriteScreenNavigationLinkList.ChannelList) {
+                        // チャンネル一覧
+                        FavoriteChListScreen(
+                            onBack = { favouriteNavController.popBackStack() },
+                            onChannelClick = { channelId -> navController.navigate(NavigationLinkList.getChannelScreenLink(channelId)) },
+                            onMenuClick = { }
                         )
                     }
                 }

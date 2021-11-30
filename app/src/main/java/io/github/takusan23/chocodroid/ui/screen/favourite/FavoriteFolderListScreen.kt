@@ -63,7 +63,7 @@ fun FavoriteFolderListScreen(
                                 FavoriteChCarouselItem(
                                     channelList = favoriteChList.value!!,
                                     onChannelClick = onChannelClick,
-                                    onLabelClick = { /* まだ */ },
+                                    onLabelClick = { onNavigate(FavouriteScreenNavigationLinkList.ChannelList) },
                                 )
                             }
                         }

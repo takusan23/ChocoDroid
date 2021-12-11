@@ -23,7 +23,7 @@ interface FavoriteDBDao {
      *
      * @param folderId フォルダID
      * */
-    @Query("SELECT * FROM favorite_video_table WHERE folder_id = :folderId")
+    @Query("SELECT * FROM favorite_video_table WHERE folder_id = :folderId ORDER BY insert_date DESC")
     fun getFavFolderVideoFromFolderId(folderId: Int): Flow<List<FavoriteVideoDBEntity>>
 
     /**

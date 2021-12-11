@@ -23,6 +23,26 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- 共有を受け取る labelが共有するときのアプリの名前になる（TwitterとかだとTwiiterじゃなくてツイートになってる部分。あれ） -->
+            <intent-filter android:label="@string/open_url">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
+            <!-- URLから起動 -->
+            <intent-filter android:label="@string/open_url">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.youtube.com"
+                    android:scheme="https" />
+                <data
+                    android:host="youtu.be"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
 
         <service

@@ -9,7 +9,6 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,7 +41,6 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
     val isAddedFavoriteCh = channelScreenViewModel.isAddedFavoriteChFlow.collectAsState(initial = false)
 
     val context = LocalContext.current
-    val scaffoldState = rememberScaffoldState()
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading.value)
@@ -65,32 +63,33 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
 
     M3Scaffold(
         snackbarHostState = snackbarHostState,
-        scaffoldState = scaffoldState,
         content = {
             Column(modifier = Modifier.padding(it)) {
-                // ヘッダー部
-                channelResponseData.value?.apply {
-                    ChannelHeader(
-                        header = this.header.c4TabbedHeaderRenderer,
-                        isAddedFavoriteCh = isAddedFavoriteCh.value,
-                        onOpenBrowserClick = {
-                            // ブラウザで開く
-                            val intent = Intent(Intent.ACTION_VIEW, "https://www.youtube.com/channel/${this.header.c4TabbedHeaderRenderer.channelId}".toUri())
-                            context.startActivity(intent)
-                        },
-                        onAddFavoriteChClick = {
-                            // 登録する？
-                            if (isAddedFavoriteCh.value) {
-                                channelScreenViewModel.deleteFavoriteChDB()
-                            } else {
-                                channelScreenViewModel.addFavoriteChDB()
-                            }
-                        }
-                    )
-                }
-                Divider()
                 // 動画配列
                 VideoList(
+                    headerLayout = {
+                        // ヘッダー部
+                        channelResponseData.value?.apply {
+                            ChannelHeader(
+                                header = this.header.c4TabbedHeaderRenderer,
+                                isAddedFavoriteCh = isAddedFavoriteCh.value,
+                                onOpenBrowserClick = {
+                                    // ブラウザで開く
+                                    val intent = Intent(Intent.ACTION_VIEW, "https://www.youtube.com/channel/${this.header.c4TabbedHeaderRenderer.channelId}".toUri())
+                                    context.startActivity(intent)
+                                },
+                                onAddFavoriteChClick = {
+                                    // 登録する？
+                                    if (isAddedFavoriteCh.value) {
+                                        channelScreenViewModel.deleteFavoriteChDB()
+                                    } else {
+                                        channelScreenViewModel.addFavoriteChDB()
+                                    }
+                                }
+                            )
+                        }
+                        Divider()
+                    },
                     lazyListState = lazyListState,
                     swipeRefreshState = swipeRefreshState,
                     videoList = uploadVideoList.value,

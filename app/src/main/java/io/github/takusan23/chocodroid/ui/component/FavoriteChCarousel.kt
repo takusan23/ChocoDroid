@@ -1,11 +1,9 @@
 package io.github.takusan23.chocodroid.ui.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -15,14 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.database.entity.FavoriteChDBEntity
 
@@ -87,18 +82,10 @@ private fun FavoriteChCarouselRowItem(
                 .padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
+            RoundedAvatarImage(
                 modifier = Modifier
-                    .size(70.dp)
-                    .clip(RoundedCornerShape(50)),
-                painter = rememberImagePainter(
-                    data = favoriteChDBEntity.thumbnailUrl,
-                    builder = {
-                        crossfade(true)
-                    }
-                ),
-                contentScale = ContentScale.Crop,
-                contentDescription = null
+                    .size(70.dp),
+                avatarUrl = favoriteChDBEntity.thumbnailUrl
             )
             Text(
                 modifier = Modifier

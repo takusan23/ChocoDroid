@@ -8,7 +8,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -46,13 +45,11 @@ fun HistoryScreen(
     onBottomSheetNavigate: (String) -> Unit,
 ) {
     val historyList = historyScreenViewModel.historyDBDataListFlow.collectAsState(initial = listOf())
-    val scaffoldState = rememberScaffoldState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     M3Scaffold(
-        scaffoldState = scaffoldState,
         snackbarHostState = snackbarHostState,
         topBar = { ChocoBridgeBar(viewModel = mainViewModel, navHostController = navController) },
         content = {

@@ -55,6 +55,7 @@ fun VideoList(
     onMenuClick: ((CommonVideoData) -> Unit)? = null,
     onRefresh: (() -> Unit)? = null,
     isSwipeEnabled: Boolean = onRefresh != null,
+    headerLayout: (@Composable () -> Unit)? = null,
 ) {
     SwipeRefresh(
         swipeEnabled = isSwipeEnabled,
@@ -64,6 +65,9 @@ fun VideoList(
             LazyColumn(
                 state = lazyListState,
                 content = {
+                    headerLayout?.also { layout ->
+                        item { layout() }
+                    }
                     items(videoList) { item ->
                         VideoListItem(
                             commonVideoData = item,

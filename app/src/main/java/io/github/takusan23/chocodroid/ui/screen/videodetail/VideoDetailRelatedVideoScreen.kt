@@ -23,7 +23,7 @@ fun VideoDetailRelatedVideoScreen(
     val relatedVideoList = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.secondaryResults.secondaryResults.results
         .mapNotNull { it.compactVideoRenderer }
         .map { compactVideoRenderer -> CommonVideoData(compactVideoRenderer) }
-    M3Scaffold {
+    M3Scaffold() {
         VideoList(
             videoList = relatedVideoList,
             onClick = onClick,

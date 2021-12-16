@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,8 +24,6 @@ import androidx.compose.ui.unit.dp
  * @param detailContent 動画説明部分
  * @param playerContent 動画再生部分
  * @param isShowMiniPlayer ボトムシートの状態
- * @param
- * @param scaffoldState
  * @param snackbarHostState Snackbar表示用
  * @param miniPlayerState ミニプレイヤーの状態とかをみれる
  * */
@@ -36,7 +32,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MiniPlayerScaffold(
     modifier: Modifier = Modifier,
-    scaffoldState: ScaffoldState,
     miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modalBottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
@@ -56,7 +51,6 @@ fun MiniPlayerScaffold(
         content = {
             Scaffold(
                 modifier = modifier,
-                scaffoldState = scaffoldState,
                 bottomBar = { if (alpha > 0.01f) Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
                 content = {
                     // topBar / bottomBar 分のPaddingを足す

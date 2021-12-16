@@ -2,7 +2,7 @@
 buildscript {
 
     val kotlinVersion: String by extra("1.6.0")
-    val composeVersion: String by extra("1.1.0-beta04")
+    val composeVersion: String by extra("1.1.0-rc01")
 
     repositories {
         google()

@@ -73,7 +73,6 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             })
 
             // Snackbar出す
-            val scaffoldState = androidx.compose.material3.rememberScaffoldState()
             val snackbarHostState = remember { SnackbarHostState() }
             LaunchedEffect(key1 = errorData.value, block = {
                 if (errorData.value != null) {
@@ -87,7 +86,6 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // MiniPlayerとScaffoldをつなげたもの
             MiniPlayerScaffold(
-                scaffoldState = scaffoldState,
                 miniPlayerState = miniPlayerState,
                 snackbarHostState = snackbarHostState,
                 modalBottomSheetState = modalBottomSheetState,

@@ -32,7 +32,7 @@ import io.github.takusan23.chocodroid.viewmodel.FavoriteFolderScreenViewModel
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoriteFolderListScreen(
+fun FavoriteTopScreen(
     viewModel: FavoriteFolderScreenViewModel = viewModel(),
     onFabClick: (String) -> Unit,
     onChannelClick: (String) -> Unit,
@@ -46,12 +46,12 @@ fun FavoriteFolderListScreen(
     val favoriteChList = viewModel.favoriteChList.collectAsState(initial = null)
 
     M3Scaffold(
-        floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             LargeFloatingActionButton(onClick = { onFabClick(ChocoDroidBottomSheetNavigationLinkList.AddFavoriteFolder) }) {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_create_24), contentDescription = null)
             }
         },
+        floatingActionButtonPosition = FabPosition.Center,
         content = {
             if (favoriteFolderVideoMap.value.isNotEmpty()) {
                 LazyColumn(

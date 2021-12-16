@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteChListScreen
-import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteFolderListScreen
+import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteTopScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteVideoListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavouriteScreenNavigationLinkList
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
@@ -39,10 +39,10 @@ fun FavouriteScreen(
         content = {
             Column(modifier = Modifier.padding(it)) {
                 // ルーティング
-                NavHost(navController = favouriteNavController, startDestination = FavouriteScreenNavigationLinkList.FolderList) {
-                    composable(FavouriteScreenNavigationLinkList.FolderList) {
-                        // フォルダ一覧
-                        FavoriteFolderListScreen(
+                NavHost(navController = favouriteNavController, startDestination = FavouriteScreenNavigationLinkList.FavoriteTop) {
+                    composable(FavouriteScreenNavigationLinkList.FavoriteTop) {
+                        // フォルダ、チャンネル一覧
+                        FavoriteTopScreen(
                             onNavigate = { route -> favouriteNavController.navigate(route) },
                             onFabClick = { route -> onBottomSheetNavigate(route) },
                             onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) },

@@ -38,7 +38,7 @@ fun VideoDetailDescriptionScreen(
     val videoDetails = watchPageData.watchPageResponseJSONData.videoDetails
     val iconUrl = watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.last()?.url
 
-    M3Scaffold {
+    M3Scaffold() {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Text(
                 modifier = Modifier.padding(10.dp),

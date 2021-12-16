@@ -21,7 +21,7 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoDetailMenuScreen(watchPageData: WatchPageData) {
-    M3Scaffold {
+    M3Scaffold() {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Text(
                 modifier = Modifier.padding(10.dp),

@@ -9,7 +9,7 @@ object FavouriteScreenNavigationLinkList {
     private const val FolderVideoItemList = "folder_video_list"
 
     /** 動画フォルダー一覧 */
-    const val FolderList = "folder_list"
+    const val FavoriteTop = "folder_list"
 
     /** お気に入りチャンネル一覧 */
     const val ChannelList = "channel_list"

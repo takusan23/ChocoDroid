@@ -10,7 +10,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,11 +42,9 @@ fun VideoDetailDownloadScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     M3Scaffold(
-        scaffoldState = scaffoldState,
         snackbarHostState = snackbarHostState,
         content = {
             Box(modifier = Modifier.padding(it)) {
@@ -192,8 +189,8 @@ private fun DownloadSplitSlider(value: Int, onValueChange: (Int) -> Unit) {
                 value = value.toFloat(),
                 valueRange = 1f..10f,
                 colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.primary,
-                    activeTrackColor = MaterialTheme.colorScheme.primary
+                    thumbColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                    activeTrackColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
                 ),
                 onValueChange = { onValueChange(it.roundToInt()) }
             )

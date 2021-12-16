@@ -5,7 +5,6 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -32,7 +31,6 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     val sort = viewModel.sortFlow.collectAsState()
 
     val context = LocalContext.current
-    val scaffoldState = rememberScaffoldState()
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading.value)
@@ -55,7 +53,6 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onBack: () -> Unit, onClick: 
     }
 
     M3Scaffold(
-        scaffoldState = scaffoldState,
         snackbarHostState = snackbarHostState,
         topBar = {
             SearchScreenBar(

@@ -76,11 +76,14 @@ class ContentDownloadService : Service() {
     /** ダウンロード中動画を数えてる */
     private val downloadingItemList = arrayListOf<DownloadRequestData>()
 
+    /** ダウンロード中止ブロードキャストアクション */
+    private val BROAD_CAST_ACTION_CANCEL = "io.github.takusan23.chocodroid.DOWNLOAD_SERVICE_STOP"
+
     /** ブロードキャストレシーバー */
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                "service_stop" -> {
+                BROAD_CAST_ACTION_CANCEL -> {
                     coroutineScope.launch {
                         // ダウンロード中のコンテンツは削除する。もしくはレジュームするって手もあるけど
                         downloadingItemList.forEach { downloadContentManager.deleteContent(it.videoId) }
@@ -264,7 +267,7 @@ class ContentDownloadService : Service() {
             })
             // 強制終了ボタン置いておく
             val pendingIntentFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-            addAction(R.drawable.ic_outline_cancel_24, getString(R.string.cancel), PendingIntent.getBroadcast(this@ContentDownloadService, 10, Intent("service_stop"), pendingIntentFlag))
+            addAction(R.drawable.ic_outline_cancel_24, getString(R.string.cancel), PendingIntent.getBroadcast(this@ContentDownloadService, 10, Intent(BROAD_CAST_ACTION_CANCEL), pendingIntentFlag))
             // 通知グループにする。班長
             setGroup(DOWNLOAD_PROGRESS_NOTIFICATION_GROUP)
             setGroupSummary(true) // 親に設定

@@ -52,3 +52,29 @@ fun DownloadContentDeleteButton(
         }
     )
 }
+
+/**
+ * 動画一覧から開くメニューのダウンロードボタン
+ *
+ * @param modifier [Modifier]
+ * @param onClick 押したとき
+ * */
+@Composable
+fun DownloadButton(
+    modifier: Modifier,
+    onClick:()->Unit
+) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    LeftStartTextButton(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        content = {
+            Icon(painter = painterResource(id = R.drawable.ic_outline_file_download_24), contentDescription = null)
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(id = R.string.download))
+        }
+    )
+}
+

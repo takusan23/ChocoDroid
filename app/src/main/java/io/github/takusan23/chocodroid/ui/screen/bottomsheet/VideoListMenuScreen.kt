@@ -17,10 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.ui.component.DownloadContentDeleteButton
-import io.github.takusan23.chocodroid.ui.component.ExportDeviceMediaFolderButton
-import io.github.takusan23.chocodroid.ui.component.HistoryDeleteButton
-import io.github.takusan23.chocodroid.ui.component.M3Scaffold
+import io.github.takusan23.chocodroid.data.DownloadRequestData
+import io.github.takusan23.chocodroid.service.ContentDownloadService
+import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.viewmodel.VideoListMenuScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -49,22 +48,8 @@ fun VideoListMenuScreen(
         snackbarHostState = snackbarHostState,
         content = {
 
-            // お気に入り削除ボタン
-            data.folderId?.let { folderId ->
-                FavoriteVideoDeleteButton(
-                    modifier = paddingModifier,
-                    snackbarHostState = snackbarHostState,
-                    videoId = data.videoId,
-                    folderId = folderId,
-                    onDeleteClick = { videoId, folderId ->
-                        viewModel.deleteFavoriteVideoItem(videoId, folderId)
-                        onClose()
-                    }
-                )
-            }
-
-            // ダウンロードのときのみ
             if (data.isDownloadContent) {
+                // ダウンロードのときのみ
                 ExportDeviceMediaFolderButton(
                     modifier = paddingModifier,
                     onClick = {
@@ -83,6 +68,18 @@ fun VideoListMenuScreen(
                         onClose()
                     }
                 )
+            } else {
+                // ダウンロードサービス起動
+                DownloadButton(
+                    modifier = paddingModifier,
+                    onClick = {
+                        ContentDownloadService.startDownloadService(context, DownloadRequestData(
+                            videoId = data.videoId,
+                            isAudioOnly = false,
+                            quality = null
+                        ))
+                    }
+                )
             }
 
             // 履歴一覧のときのみ
@@ -95,6 +92,20 @@ fun VideoListMenuScreen(
                             viewModel.deleteHistoryFromVideoId(data.videoId)
                             onClose()
                         }
+                    }
+                )
+            }
+
+            // お気に入り削除ボタン
+            data.folderId?.let { folderId ->
+                FavoriteVideoDeleteButton(
+                    modifier = paddingModifier,
+                    snackbarHostState = snackbarHostState,
+                    videoId = data.videoId,
+                    folderId = folderId,
+                    onDeleteClick = { videoId, folderId ->
+                        viewModel.deleteFavoriteVideoItem(videoId, folderId)
+                        onClose()
                     }
                 )
             }

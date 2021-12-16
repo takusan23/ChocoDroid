@@ -128,10 +128,10 @@ class DownloadContentManager(private val context: Context) {
      * 音声ファイルを保存する
      *
      * @param watchPageData 視聴ページ
-     * @param quality 画質
+     * @param quality 画質。nullを渡すと最高画質で落とします
      * @param splitCount ファイル分割数
      * */
-    suspend fun downloadAudioFile(watchPageData: WatchPageData, quality: String = "360p", splitCount: Int = 5): Pair<File, DownloadPocket> {
+    suspend fun downloadAudioFile(watchPageData: WatchPageData, quality: String? = "360p", splitCount: Int = 5): Pair<File, DownloadPocket> {
         val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
         val audioFileUrl = watchPageData.getMediaUrlDataFromQuality(quality).audioTrackUrl
         val splitFolderName = "${videoId}_audio"
@@ -143,10 +143,10 @@ class DownloadContentManager(private val context: Context) {
      * 映像ファイルを保存する
      *
      * @param watchPageData 視聴ページ
-     * @param quality 画質
+     * @param quality 画質。nullを渡すと最高画質で落とします
      * @param splitCount ファイル分割数
      * */
-    suspend fun downloadVideoFile(watchPageData: WatchPageData, quality: String = "360p", splitCount: Int = 5): Pair<File, DownloadPocket> {
+    suspend fun downloadVideoFile(watchPageData: WatchPageData, quality: String? = "360p", splitCount: Int = 5): Pair<File, DownloadPocket> {
         val videoId = watchPageData.watchPageResponseJSONData.videoDetails.videoId
         val videoFileUrl = watchPageData.getMediaUrlDataFromQuality(quality).videoTrackUrl
         val splitFolderName = "${videoId}_video"

@@ -1,22 +1,21 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.takusan23.chocodroid.R
 
 /**
  * 画質選択一覧
@@ -59,15 +58,24 @@ private fun QualityListItem(
         onClick = onClick,
         interactionSource = remember { MutableInteractionSource() },
         indication = rememberRipple(),
+        contentColor = if (isSelected) MaterialTheme.colorScheme.primary else contentColorFor(MaterialTheme.colorScheme.surface)
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            text = label,
-            fontSize = 25.sp,
-            textAlign = TextAlign.Start,
-            style = TextStyle(color = if (isSelected) MaterialTheme.colorScheme.primary else LocalTextStyle.current.color)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (isSelected) {
+                Icon(painter = painterResource(id = R.drawable.ic_outline_play_arrow_24), contentDescription = null)
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                text = label,
+                fontSize = 25.sp,
+                textAlign = TextAlign.Start,
+                style = TextStyle(color = LocalContentColor.current)
+            )
+        }
+
     }
 }

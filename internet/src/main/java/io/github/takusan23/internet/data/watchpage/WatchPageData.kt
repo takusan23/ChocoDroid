@@ -41,7 +41,7 @@ data class WatchPageData(
      *
      * @param quality 画質
      * */
-    fun getMediaUrlDataFromQuality(quality: String = "360p") = contentUrlList.find { it.quality == quality } ?: contentUrlList.first()
+    fun getMediaUrlDataFromQuality(quality: String? = "360p") = contentUrlList.find { it.quality == quality } ?: contentUrlList.first()
 
     companion object {
 

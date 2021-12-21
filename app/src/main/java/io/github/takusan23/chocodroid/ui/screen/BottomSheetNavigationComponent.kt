@@ -40,7 +40,10 @@ fun ChocoDroidBottomSheetNavigation(
     val scope = rememberCoroutineScope()
 
     Surface {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             // 引き出す棒
             Box(
                 modifier = Modifier

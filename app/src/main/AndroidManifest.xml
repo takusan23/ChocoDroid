@@ -49,6 +49,14 @@
             android:name=".service.ContentDownloadService"
             android:exported="false" />
 
+        <service
+            android:name=".service.DownloadContentBackgroundPlayerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

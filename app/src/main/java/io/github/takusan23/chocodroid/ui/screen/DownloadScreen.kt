@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
+import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayButton
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
@@ -36,6 +37,7 @@ fun DownloadScreen(
 
     Scaffold(
         topBar = { ChocoBridgeBar(viewModel = mainScreenViewModel, navHostController = navController) },
+        floatingActionButton = { DownloadContentBackgroundPlayButton(onClick = {}) },
         content = {
             Column(modifier = Modifier.padding(it)) {
                 VideoList(

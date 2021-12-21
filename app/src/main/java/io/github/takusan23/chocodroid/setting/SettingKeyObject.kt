@@ -30,4 +30,7 @@ object SettingKeyObject {
 
     /** Android 12以降で使えるダイナミックカラーを有効にするか */
     val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
+
+    /** 最後に再生した曲を保存する */
+    val DOWNLOAD_CONTENT_BACKGROUND_PLAYER_LATEST_PLAYING_ID = stringPreferencesKey("download_content_background_player_latest_playing_id")
 }

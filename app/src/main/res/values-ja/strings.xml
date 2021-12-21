@@ -66,4 +66,5 @@
     <string name="already_added_favourite_list">お気に入りに登録済みです</string>
     <string name="favorite_channel">お気に入りチャンネル</string>
     <string name="open_url">URLを開く</string>
+    <string name="download_content_backrgound_player">バックグラウンド音楽再生</string>
 </resources>

@@ -66,4 +66,5 @@
     <string name="already_added_favourite_list">It has been registered as a favorite</string>
     <string name="favorite_channel">Favorite channel</string>
     <string name="open_url">Open URL</string>
+    <string name="download_content_backrgound_player">Background music playback</string>
 </resources>

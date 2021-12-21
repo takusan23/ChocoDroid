@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,11 +63,8 @@ fun DownloadContentDeleteButton(
 @Composable
 fun DownloadButton(
     modifier: Modifier,
-    onClick:()->Unit
+    onClick: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
     LeftStartTextButton(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
@@ -78,3 +76,16 @@ fun DownloadButton(
     )
 }
 
+/**
+ * 音楽モード開始FloatingActionButton
+ *
+ * @param onClick 押したとき
+ * */
+@Composable
+fun DownloadContentBackgroundPlayButton(onClick: () -> Unit) {
+    ExtendedFloatingActionButton(
+        text = { Text(text = stringResource(id = R.string.download_content_backrgound_player)) },
+        icon = { Icon(painter = painterResource(id = R.drawable.ic_outline_audiotrack_24), contentDescription = null) },
+        onClick = onClick
+    )
+}

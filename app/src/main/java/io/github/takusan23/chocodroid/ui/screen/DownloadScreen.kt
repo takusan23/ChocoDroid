@@ -1,15 +1,16 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
-import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayButton
+import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayIconButton
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
@@ -37,9 +38,18 @@ fun DownloadScreen(
 
     Scaffold(
         topBar = { ChocoBridgeBar(viewModel = mainScreenViewModel, navHostController = navController) },
-        floatingActionButton = { DownloadContentBackgroundPlayButton(onClick = {}) },
         content = {
             Column(modifier = Modifier.padding(it)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    DownloadContentBackgroundPlayIconButton(modifier = Modifier.padding(end = 10.dp)) {
+
+                    }
+                }
+                Divider()
                 VideoList(
                     videoList = videoList.value,
                     onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },

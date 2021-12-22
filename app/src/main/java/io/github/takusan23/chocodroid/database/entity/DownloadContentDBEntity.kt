@@ -1,8 +1,12 @@
 package io.github.takusan23.chocodroid.database.entity
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.github.takusan23.chocodroid.R
+import io.github.takusan23.internet.data.CommonVideoData
+import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * ダウンロードコンテンツデータベースのテーブル
@@ -38,4 +42,20 @@ data class DownloadContentDBEntity(
     @ColumnInfo(name = "update_date") val updateDate: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "last_watch_pos") val lastWatchPos: Long = 0,
     @ColumnInfo(name = "local_watch_count") val localWatchCount: Int = 0,
-)
+) {
+
+    /**
+     * [CommonVideoData]形式へ変換する
+     *
+     * @param context [Context]
+     * @return [CommonVideoData]
+     * */
+    fun toCommonVideoData(context: Context): CommonVideoData {
+        val responseJSONData = WatchPageData.decodeWatchPageResponseDataFromString(watchPageResponseJSON)
+        return CommonVideoData(responseJSONData).copy(
+            watchCount = "${context.getString(R.string.watch_count)} : ${localWatchCount}",
+            thumbnailUrl = "file://${thumbnailPath}",
+        )
+    }
+
+}

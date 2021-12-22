@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.contentValuesOf
-import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.database.db.DownloadContentDB
 import io.github.takusan23.chocodroid.database.entity.DownloadContentDBEntity
 import io.github.takusan23.chocodroid.setting.dataStore
@@ -26,6 +25,8 @@ import java.io.File
  *
  * ダウンロード用関数には返り値にPairを返しFlowを取得できます。新しくコルーチンを起動してcollectすると0から100まで受け取ります。
  * 100まで行ったらコルーチンをキャンセルしてガベージコレクションが回収できるようにしてください。
+ *
+ * コンテンツIDは動画IDみたいなもの。音声のみDL出来るので一応ね？
  *
  * @param context Context ファイル読み書きするので
  * */
@@ -55,19 +56,19 @@ class DownloadContentManager(private val context: Context) {
         downloadContentDB.downloadContentDao().deleteFromVideoId(videoId)
     }
 
+    /**
+     * データベース内のデータをFlowで返す
+     *
+     * 動画情報だけが欲しい場合は[collectDownloadContentToWatchPageData]の方が良いと思います
+     * */
+    fun collectDownloadContent(): Flow<List<DownloadContentDBEntity>> {
+        return downloadContentDB.downloadContentDao().flowGetAll()
+    }
+
     /** データベース内のデータを[CommonVideoData]の配列にして送る */
     fun collectDownloadContentToWatchPageData(): Flow<List<CommonVideoData>> {
-        return downloadContentDB.downloadContentDao()
-            .flowGetAll()
-            .map { list ->
-                list.map { dbItem ->
-                    val responseJSONData = WatchPageData.decodeWatchPageResponseDataFromString(dbItem.watchPageResponseJSON)
-                    CommonVideoData(responseJSONData).copy(
-                        watchCount = "${context.getString(R.string.watch_count)} : ${dbItem.localWatchCount}",
-                        thumbnailUrl = "file://${dbItem.thumbnailPath}",
-                    )
-                }
-            }
+        return collectDownloadContent()
+            .map { list -> list.map { dbItem -> dbItem.toCommonVideoData(context) } }
     }
 
     /**
@@ -109,6 +110,17 @@ class DownloadContentManager(private val context: Context) {
             contentUrlList = listOf(MediaUrlData(mixTrackUrl = dbItem.contentPath)),
             type = "download"
         )
+    }
+
+    /**
+     * [CommonVideoData]形式でデータを返す
+     *
+     * @param videoId 動画ID
+     * @return [WatchPageData]
+     * */
+    suspend fun getCommonVideoData(videoId: String): CommonVideoData {
+        val dbItem = downloadContentDB.downloadContentDao().getDownloadContentDataFromVideoId(videoId)
+        return dbItem.toCommonVideoData(context)
     }
 
     /**

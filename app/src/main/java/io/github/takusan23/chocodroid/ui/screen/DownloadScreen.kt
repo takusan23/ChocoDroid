@@ -7,8 +7,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayIconButton
 import io.github.takusan23.chocodroid.ui.component.VideoList
@@ -33,6 +35,8 @@ fun DownloadScreen(
     downloadScreenVideModel: DownloadScreenVideModel,
     onBottomSheetNavigate: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+
     // 動画一覧を取得する
     val videoList = downloadScreenVideModel.downloadContentFlow.collectAsState(initial = listOf())
 
@@ -46,7 +50,7 @@ fun DownloadScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     DownloadContentBackgroundPlayIconButton(modifier = Modifier.padding(end = 10.dp)) {
-
+                        DownloadContentBackgroundPlayerService.startService(context)
                     }
                 }
                 Divider()

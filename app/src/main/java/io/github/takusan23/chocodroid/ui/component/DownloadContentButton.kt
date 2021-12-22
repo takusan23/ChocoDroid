@@ -89,5 +89,5 @@ fun DownloadContentBackgroundPlayIconButton(
     IconButton(
         modifier = modifier,
         onClick = onClick
-    ) { Icon(painter = painterResource(id = R.drawable.ic_outline_audiotrack_24), contentDescription = null) }
+    ) { Icon(painter = painterResource(id = R.drawable.chocodroid_background_player), contentDescription = null) }
 }

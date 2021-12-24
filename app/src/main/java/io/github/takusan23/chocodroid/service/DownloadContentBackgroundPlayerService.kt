@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.service
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -23,16 +24,32 @@ import coil.request.ImageRequest
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import io.github.takusan23.chocodroid.MainActivity
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService.Companion.REQUEST_START_VIDEO_ID
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
 import io.github.takusan23.internet.data.CommonVideoData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import kotlin.math.max
 
 /**
- * ダウンロード済みのコンテンツはバックグラウンドで連続再生できるようにする
+ * ダウンロード済みの動画はバックグラウンドで連続再生できるようにする
+ *
+ * 通知のボタンを押す
+ * ↓
+ * [NotificationMediaButtonReceiver]が受け取る
+ * ↓
+ * [MediaSessionCompat.Callback]が受け取る
+ * ↓
+ * [ExoPlayer]に来る
+ *
+ * putExtra いれられるもの
+ *
+ * [REQUEST_START_VIDEO_ID] | String | 指定した動画から再生してほしい場合は動画IDを入れて下さい
+ *
  * */
 class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
 
@@ -67,6 +84,11 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
         MediaSessionCompat(this, MEDIASESSION_TAG).apply {
             setCallback(mediaSessionCallback)
         }
+    }
+
+    /** [MediaButtonReceiver]がリピートモードに対応してないので自前で書いた */
+    private val notificationButtonReceiver by lazy {
+        NotificationMediaButtonReceiver(this, mediaSession.controller.transportControls)
     }
 
     /** MediaSessionで受け付けている操作のコールバック */
@@ -106,12 +128,23 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
         /** 終了時 */
         override fun onStop() {
             super.onStop()
+            mediaSession.isActive = false
             stopSelf()
         }
+
+        /** リピートモード変更時 */
+        override fun onSetRepeatMode(repeatMode: Int) {
+            super.onSetRepeatMode(repeatMode)
+            // ExoPlayerに反映
+            val exoPlayerRepeatMode = if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_ONE
+            exoPlayer.repeatMode = exoPlayerRepeatMode
+        }
+
     }
 
     /** ExoPlayerのコールバック */
     private val exoPlayerListener = object : Player.Listener {
+
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             super.onPlayWhenReadyChanged(playWhenReady, reason)
             scope.launch {
@@ -150,8 +183,23 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
         // Token登録
         sessionToken = mediaSession.sessionToken
         mediaSession.isActive = true
-        // 動画をロード
-        scope.launch { loadContent() }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        scope.launch {
+            // 再生する動画指定されていればそれに従う
+            val requestIndexPos = intent?.getStringExtra(REQUEST_START_VIDEO_ID)
+
+            // 最後の動画から設定を読み出す
+            val setting = dataStore.data.first()
+            val lastPlayingId = setting[SettingKeyObject.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_LATEST_PLAYING_ID]
+            val isRepeatOne = setting[SettingKeyObject.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_REPEAT_MODE] == true
+
+            // 動画をロード
+            loadContent(requestIndexPos ?: lastPlayingId)
+            exoPlayer.repeatMode = if (isRepeatOne) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
+        }
+        return START_NOT_STICKY
     }
 
     /** 外部からの接続が来たとき */
@@ -169,8 +217,9 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
         result.detach()
         if (parentId == ROOT_REQUIRE_RECENT) {
             scope.launch(Dispatchers.IO) {
-                // 最後に再生したコンテンツのIDとそれから情報を取得
-                val latestPlayingId = getLatestPlayVideoId()
+                // 最後に再生した動画のIDとそれから情報を取得
+                val setting = dataStore.data.first()
+                val latestPlayingId = setting[SettingKeyObject.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_LATEST_PLAYING_ID]
                 if (latestPlayingId != null) {
                     val commonVideoData = downloadContentManager.getCommonVideoData(latestPlayingId)
                     result.sendResult(mutableListOf(createMediaItem(commonVideoData)))
@@ -182,20 +231,26 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
     /** 後始末 */
     override fun onDestroy() {
         super.onDestroy()
-        // 今再生中のコンテンツIDを控える
         scope.launch {
+            // 次再生時用に値を保存する
             dataStore.edit {
                 val currentPlayingId = exoPlayer.currentMediaItem?.mediaId ?: return@edit
                 it[SettingKeyObject.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_LATEST_PLAYING_ID] = currentPlayingId
+                it[SettingKeyObject.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_REPEAT_MODE] = exoPlayer.repeatMode == Player.REPEAT_MODE_ONE
             }
             scope.cancel()
         }
+        notificationButtonReceiver.release()
         mediaSession.release()
         exoPlayer.release()
     }
 
-    /** ダウンロードコンテンツを読み込んで、ExoPlayerの連続再生の形式にして返す */
-    private suspend fun loadContent() {
+    /**
+     * ダウンロードコンテンツを読み込んで、ExoPlayerの連続再生の形式にして返す
+     *
+     * @param startVideoId もしこの動画から再生してほしい！みたいなのがあればその動画ID
+     * */
+    private suspend fun loadContent(startVideoId: String? = null) {
         val videoList = withContext(Dispatchers.IO) { downloadContentManager.collectDownloadContent().first() }
         if (videoList.isNotEmpty()) {
             // ExoPlayerのプレイリスト登録
@@ -211,6 +266,9 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
                 val commonVideoData = it.toCommonVideoData(this)
                 MediaSessionCompat.QueueItem(createMediaDescription(commonVideoData), it.id.toLong())
             })
+            // 位置を出す。-1かもしれないのでmaxで大きい方を取る
+            val indexPos = videoList.indexOfFirst { it.videoId == startVideoId }
+            exoPlayer.seekTo(max(0, indexPos), 0)
         } else {
             // 無いので終了
             stopSelf()
@@ -219,6 +277,9 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
 
     /** ExoPlayerの再生状態をMediaSessionへ渡す */
     private suspend fun updateState() {
+        // リピートモードの設定
+        val mediaSessionRepeatMode = if (exoPlayer.repeatMode == Player.REPEAT_MODE_ALL) PlaybackStateCompat.REPEAT_MODE_ALL else PlaybackStateCompat.REPEAT_MODE_ONE
+        mediaSession.setRepeatMode(mediaSessionRepeatMode)
         // 再生状態の提供
         val playbackStateCompat = PlaybackStateCompat.Builder().apply {
             // 受け付ける操作
@@ -229,10 +290,12 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
                         or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                         or PlaybackStateCompat.ACTION_SEEK_TO
                         or PlaybackStateCompat.ACTION_STOP
+                        or PlaybackStateCompat.ACTION_SET_REPEAT_MODE
             )
             val currentState = if (exoPlayer.playWhenReady) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
             setState(currentState, exoPlayer.currentPosition, 1f)
         }.build()
+        mediaSession
         // 再生中の音楽情報。DBから持ってくる
         val playingContentId = exoPlayer.currentMediaItem?.mediaId
         if (playingContentId != null) {
@@ -240,9 +303,7 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
             val videoData = downloadContentManager.getCommonVideoData(playingContentId)
             val duration = exoPlayer.duration
             // CoilでBitmap読み込み
-            val bitmap = imageLoader.execute(ImageRequest.Builder(this).data(videoData.thumbnailUrl).build())
-                .drawable
-                ?.toBitmap()
+            val bitmap = loadBitmap(videoData.thumbnailUrl)
             val mediaMetadataCompat = MediaMetadataCompat.Builder().apply {
                 putString(MediaMetadataCompat.METADATA_KEY_TITLE, videoData.videoTitle)
                 putString(MediaMetadataCompat.METADATA_KEY_ARTIST, videoData.ownerName)
@@ -265,33 +326,58 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
             notificationManager.createNotificationChannel(channel)
         }
         val notificationManagerCompat = NotificationCompat.Builder(this@DownloadContentBackgroundPlayerService, channelId).apply {
-            setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken).setShowActionsInCompactView(0, 1, 2))
+            setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken).setShowActionsInCompactView(1, 2, 3))
             setSmallIcon(R.drawable.chocodroid_background_player)
-            // ボタン
-            addAction(R.drawable.ic_outline_skip_previous_24, "prev", MediaButtonReceiver.buildMediaButtonPendingIntent(this@DownloadContentBackgroundPlayerService, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS))
+            setContentIntent(PendingIntent.getActivity(
+                this@DownloadContentBackgroundPlayerService,
+                0,
+                Intent(this@DownloadContentBackgroundPlayerService, MainActivity::class.java),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+            ))
+
+            /** addActionしやすいように関数に分ける */
+            fun simpleAddAction(icon: Int, title: String, action: String) {
+                addAction(
+                    icon,
+                    title,
+                    notificationButtonReceiver.buildPendingIntent(action)
+                )
+            }
+
+            // リピートボタン
+            val isRepeatOne = exoPlayer.repeatMode == Player.REPEAT_MODE_ONE
+            simpleAddAction(
+                if (isRepeatOne) R.drawable.ic_outline_repeat_one_24 else R.drawable.ic_outline_repeat_24,
+                "repeat",
+                if (isRepeatOne) NotificationMediaButtonReceiver.ACTION_REPEAT_ALL else NotificationMediaButtonReceiver.ACTION_REPEAT_ONE
+            )
+            // 前の曲ボタン
+            simpleAddAction(
+                R.drawable.ic_outline_skip_previous_24,
+                "prev",
+                NotificationMediaButtonReceiver.ACTION_SKIP_TO_PREVIOUS
+            )
+            // 一時停止ボタン
             val isPlaying = exoPlayer.playWhenReady
-            addAction(
+            simpleAddAction(
                 if (isPlaying) R.drawable.ic_outline_pause_24 else R.drawable.ic_outline_play_arrow_24,
                 if (isPlaying) "pause" else "play",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(
-                    this@DownloadContentBackgroundPlayerService,
-                    if (isPlaying) PlaybackStateCompat.ACTION_PAUSE else PlaybackStateCompat.ACTION_PLAY
-                )
+                if (isPlaying) NotificationMediaButtonReceiver.ACTION_PAUSE else NotificationMediaButtonReceiver.ACTION_PLAY
             )
-            addAction(R.drawable.ic_outline_skip_next_24, "next", MediaButtonReceiver.buildMediaButtonPendingIntent(this@DownloadContentBackgroundPlayerService, PlaybackStateCompat.ACTION_SKIP_TO_NEXT))
-            addAction(R.drawable.ic_outline_close_24, "stop", MediaButtonReceiver.buildMediaButtonPendingIntent(this@DownloadContentBackgroundPlayerService, PlaybackStateCompat.ACTION_STOP))
+            // 次の曲
+            simpleAddAction(
+                R.drawable.ic_outline_skip_next_24,
+                "next",
+                NotificationMediaButtonReceiver.ACTION_SKIP_TO_NEXT
+            )
+            // 終了
+            simpleAddAction(
+                R.drawable.ic_outline_close_24,
+                "stop",
+                NotificationMediaButtonReceiver.ACTION_STOP
+            )
         }.build()
         startForeground(NOTIFICATION_ID, notificationManagerCompat)
-    }
-
-    /**
-     * 最後に再生した動画IDを返す
-     *
-     * @return 再生したことない場合はnull
-     * */
-    private suspend fun getLatestPlayVideoId(): String? {
-        val setting = dataStore.data.first()
-        return setting[SettingKeyObject.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_LATEST_PLAYING_ID]
     }
 
     /**
@@ -310,7 +396,7 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
     /**
      * [CommonVideoData]を[MediaDescriptionCompat]へ変換する
      *
-     * @param commonVideoData コンテンツ情報
+     * @param commonVideoData 動画情報
      * @return [MediaDescriptionCompat]
      * */
     private suspend fun createMediaDescription(commonVideoData: CommonVideoData): MediaDescriptionCompat {
@@ -329,11 +415,22 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
 
     companion object {
 
+        /** putExtra のキーにこれを入れて、値には動画IDをしていすることでその動画から再生を始めます */
+        const val REQUEST_START_VIDEO_ID = "request_start_video_id"
+
         /**
          * バックグラウンド再生を始める
+         *
+         * @param context [Context]
+         * @param startVideoIdIndex ここに動画IDを入れるとその動画から再生を始めます
          * */
-        fun startService(context: Context) {
-            ContextCompat.startForegroundService(context, Intent(context, DownloadContentBackgroundPlayerService::class.java))
+        fun startService(context: Context, startVideoId: String? = null) {
+            ContextCompat.startForegroundService(
+                context,
+                Intent(context, DownloadContentBackgroundPlayerService::class.java).apply {
+                    putExtra(REQUEST_START_VIDEO_ID, startVideoId)
+                }
+            )
         }
 
     }

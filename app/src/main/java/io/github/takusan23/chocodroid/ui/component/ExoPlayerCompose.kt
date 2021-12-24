@@ -153,7 +153,7 @@ class ExoPlayerComposeController(
         // リピートモード等設定読み出し
         coroutineScope.launch {
             val setting = context.dataStore.data.first()
-            setRepeatMode(setting[SettingKeyObject.PLAYER_REPEAT_PLAY] ?: false)
+            setRepeatMode(setting[SettingKeyObject.PLAYER_REPEAT_MODE] ?: false)
         }
     }
 
@@ -197,7 +197,7 @@ class ExoPlayerComposeController(
         exoPlayer.repeatMode = if (isRepeat) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
         this.isRepeatEnable.value = isRepeat
         coroutineScope.launch {
-            context.dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_PLAY] = isRepeat }
+            context.dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_MODE] = isRepeat }
         }
     }
 

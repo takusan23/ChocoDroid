@@ -7,8 +7,8 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -77,17 +77,43 @@ fun DownloadButton(
 }
 
 /**
+ * 動画一覧から開くメニューのダウンロードボタン
+ *
+ * @param modifier [Modifier]
+ * @param onClick 押したとき
+ * */
+@Composable
+fun DownloadBackgroundPlayerButton(
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    LeftStartTextButton(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        content = {
+            Icon(painter = painterResource(id = R.drawable.chocodroid_background_player), contentDescription = null)
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(id = R.string.download_content_backrgound_player_video_id_play))
+        }
+    )
+}
+
+/**
  * 音楽モード開始ボタン
  *
  * @param onClick 押したとき
  * */
 @Composable
-fun DownloadContentBackgroundPlayIconButton(
+fun DownloadContentBackgroundPlayTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    IconButton(
+    TextButton(
         modifier = modifier,
         onClick = onClick
-    ) { Icon(painter = painterResource(id = R.drawable.chocodroid_background_player), contentDescription = null) }
+    ) {
+        Icon(painter = painterResource(id = R.drawable.chocodroid_background_player), contentDescription = null)
+        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(id = R.string.download_content_backrgound_player))
+    }
 }

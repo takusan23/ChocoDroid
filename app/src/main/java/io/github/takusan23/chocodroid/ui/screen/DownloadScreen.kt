@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
-import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayIconButton
+import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayTextButton
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
@@ -49,7 +49,7 @@ fun DownloadScreen(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    DownloadContentBackgroundPlayIconButton(modifier = Modifier.padding(end = 10.dp)) {
+                    DownloadContentBackgroundPlayTextButton(modifier = Modifier.padding(end = 10.dp)) {
                         DownloadContentBackgroundPlayerService.startService(context)
                     }
                 }

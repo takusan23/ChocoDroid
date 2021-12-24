@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
-import io.github.takusan23.chocodroid.ui.component.HistoryAllDeleteIconButton
+import io.github.takusan23.chocodroid.ui.component.HistoryAllDeleteTextButton
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
@@ -56,7 +56,7 @@ fun HistoryScreen(
         content = {
             Column(modifier = Modifier.padding(it)) {
                 // 削除ボタン
-                HistoryAllDeleteIconButton(
+                HistoryAllDeleteTextButton(
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(end = 10.dp),

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.github.takusan23.chocodroid">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -51,6 +52,7 @@
 
         <receiver
             android:name="androidx.media.session.MediaButtonReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
@@ -60,7 +62,8 @@
         <service
             android:name=".service.DownloadContentBackgroundPlayerService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>

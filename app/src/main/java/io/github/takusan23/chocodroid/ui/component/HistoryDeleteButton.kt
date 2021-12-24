@@ -7,8 +7,8 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -26,7 +26,7 @@ import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
  * @param onDelete 削除押したときに呼ばれる
  * */
 @Composable
-fun HistoryAllDeleteIconButton(
+fun HistoryAllDeleteTextButton(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     onDelete: suspend () -> Unit,
@@ -35,7 +35,7 @@ fun HistoryAllDeleteIconButton(
     val context = LocalContext.current
 
     // 消すボタン
-    IconButton(
+    TextButton(
         modifier = modifier,
         onClick = {
             SnackbarComposeTool.showSnackbar(
@@ -47,7 +47,11 @@ fun HistoryAllDeleteIconButton(
                 onActionPerformed = onDelete
             )
         },
-        content = { Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null) },
+        content = {
+            Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null)
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(id = R.string.delete_all))
+        },
     )
 }
 

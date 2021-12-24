@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
 import io.github.takusan23.chocodroid.service.ContentDownloadService
+import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.viewmodel.VideoListMenuScreenViewModel
 import kotlinx.coroutines.launch
@@ -58,6 +59,15 @@ fun VideoListMenuScreen(
                             Toast.makeText(context, context.getString(R.string.copy_successful), Toast.LENGTH_SHORT).show()
                             onClose()
                         }
+                    }
+                )
+                DownloadBackgroundPlayerButton(
+                    modifier = paddingModifier,
+                    onClick = {
+                        DownloadContentBackgroundPlayerService.startService(
+                            context = context,
+                            startVideoId = data.videoId
+                        )
                     }
                 )
                 DownloadContentDeleteButton(

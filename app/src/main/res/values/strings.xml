@@ -67,4 +67,5 @@
     <string name="favorite_channel">Favorite channel</string>
     <string name="open_url">Open URL</string>
     <string name="download_content_backrgound_player">Background music playback</string>
+    <string name="download_content_backrgound_player_video_id_play">Start background playback from this video</string>
 </resources>

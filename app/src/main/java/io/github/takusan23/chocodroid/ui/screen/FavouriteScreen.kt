@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.AddFavoriteFolderScreenInitData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteChListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteTopScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteVideoListScreen
@@ -29,7 +31,7 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 fun FavouriteScreen(
     viewModel: MainScreenViewModel,
     navController: NavHostController,
-    onBottomSheetNavigate: (String) -> Unit,
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     // 画面遷移
     val favouriteNavController = rememberNavController()
@@ -44,7 +46,7 @@ fun FavouriteScreen(
                         // フォルダ、チャンネル一覧
                         FavoriteTopScreen(
                             onNavigate = { route -> favouriteNavController.navigate(route) },
-                            onFabClick = { route -> onBottomSheetNavigate(route) },
+                            onFabClick = { onBottomSheetNavigate(AddFavoriteFolderScreenInitData()) },
                             onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) },
                             onChannelClick = { channelId -> navController.navigate(NavigationLinkList.getChannelScreenLink(channelId)) }
                         )

@@ -12,14 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.AddFavoriteFolderScreen
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.QualityChangeScreen
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreen
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -27,14 +20,14 @@ import kotlinx.coroutines.launch
  * BottomSheetのナビゲーション。画面遷移
  *
  * @param mainScreenViewModel メイン画面ViewModel
- * @param bottomSheetNavHostController 画面遷移コントローラー
+ * @param bottomSheetInitData 画面遷移データ。nullでも落ちません
  * @param modalBottomSheetState ボトムシート制御用
  * */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChocoDroidBottomSheetNavigation(
     mainScreenViewModel: MainScreenViewModel,
-    bottomSheetNavHostController: NavHostController = rememberNavController(),
+    bottomSheetInitData: BottomSheetInitData?,
     modalBottomSheetState: ModalBottomSheetState,
 ) {
     val scope = rememberCoroutineScope()
@@ -53,26 +46,28 @@ fun ChocoDroidBottomSheetNavigation(
                     .background(color = Color.Gray, RoundedCornerShape(50))
             )
             // 画面遷移
-            NavHost(navController = bottomSheetNavHostController, startDestination = ChocoDroidBottomSheetNavigationLinkList.QualityChange) {
+            when (bottomSheetInitData?.screen) {
+                // お気に入り追加
+                BottomSheetInitData.BottomSheetScreenList.AddFavoriteFolder -> {
+                    AddFavoriteFolderScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
+                }
                 // 画質変更
-                composable(ChocoDroidBottomSheetNavigationLinkList.QualityChange) {
+                BottomSheetInitData.BottomSheetScreenList.QualityChange -> {
                     QualityChangeScreen(
                         mainScreenViewModel = mainScreenViewModel,
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
                 }
-                // お気に入り追加
-                composable(ChocoDroidBottomSheetNavigationLinkList.AddFavoriteFolder) {
-                    AddFavoriteFolderScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
-                }
                 // メニュー
-                composable(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenuTemplate()) {
-                    val videoListMenuData = ChocoDroidBottomSheetNavigationLinkList.decodeVideoListMenu(it.arguments!!)
-
+                BottomSheetInitData.BottomSheetScreenList.VideoListMenu -> {
                     VideoListMenuScreen(
-                        data = videoListMenuData,
+                        data = bottomSheetInitData as VideoListMenuScreenInitData,
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
+                }
+                else -> {
+                    // The initial value must have an associated anchor. 対策。何もない状態だとエラーが出るので適当においておく
+                    Spacer(modifier = Modifier.size(10.dp))
                 }
             }
         }

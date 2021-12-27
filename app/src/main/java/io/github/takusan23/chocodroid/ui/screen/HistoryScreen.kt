@@ -24,8 +24,8 @@ import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.HistoryAllDeleteTextButton
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.viewmodel.HistoryScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -35,7 +35,7 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  * @param mainViewModel メイン画面のViewModel
  * @param historyScreenViewModel 履歴画面のViewModel
  * @param navController メイン画面のNavController
- * @param onBottomSheetNavigate BottomSheet引き出すやつ
+ * @param onBottomSheetNavigate BottomSheet画面遷移
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +43,7 @@ fun HistoryScreen(
     mainViewModel: MainScreenViewModel,
     historyScreenViewModel: HistoryScreenViewModel = viewModel(),
     navController: NavHostController,
-    onBottomSheetNavigate: (String) -> Unit,
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     val historyList = historyScreenViewModel.historyDBDataListFlow.collectAsState(initial = listOf())
     val snackbarHostState = remember { SnackbarHostState() }
@@ -70,11 +70,11 @@ fun HistoryScreen(
                         videoList = historyList.value,
                         onClick = { mainViewModel.loadWatchPage(it) },
                         onMenuClick = {
-                            onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(VideoListMenuData(
+                            onBottomSheetNavigate(VideoListMenuScreenInitData(
                                 it.videoId,
                                 it.videoTitle,
                                 isHistory = true
-                            )))
+                            ))
                         }
                     )
                 } else {

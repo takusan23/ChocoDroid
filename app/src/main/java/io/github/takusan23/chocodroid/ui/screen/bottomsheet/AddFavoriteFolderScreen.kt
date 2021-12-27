@@ -130,3 +130,10 @@ private suspend fun addFavoriteFolder(context: Context, folderName: String) {
     val dao = FavoriteDB.getInstance(context).favoriteDao()
     dao.insert(folderDBEntity)
 }
+
+/**
+ * [AddFavoriteFolderScreen]を表示する際に使うデータをまとめたデータクラス
+ *
+ * 特に無いけど
+ * */
+class AddFavoriteFolderScreenInitData : BottomSheetInitData(BottomSheetScreenList.AddFavoriteFolder)

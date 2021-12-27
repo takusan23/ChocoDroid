@@ -18,7 +18,6 @@ import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.FavoriteChCarouselItem
 import io.github.takusan23.chocodroid.ui.component.FavoriteFolderVideoCarouselItem
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
 import io.github.takusan23.chocodroid.viewmodel.FavoriteFolderScreenViewModel
 
 /**
@@ -28,13 +27,13 @@ import io.github.takusan23.chocodroid.viewmodel.FavoriteFolderScreenViewModel
  * @param onChannelClick お気に入りチャンネル一覧のアイコンを押したときに呼ばれます。
  * @param onNavigate 画面遷移をしてほしいときに呼ばれます
  * @param onVideoLoad 動画を読み込んでほしいときに呼ばれます。動画IDが渡されます
- * @param onFabClick Fabを押したら呼ばれる。[ChocoDroidBottomSheetNavigationLinkList.AddFavoriteFolder]が入ります
+ * @param onFabClick Fabを押したら呼ばれる。
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteTopScreen(
     viewModel: FavoriteFolderScreenViewModel = viewModel(),
-    onFabClick: (String) -> Unit,
+    onFabClick: () -> Unit,
     onChannelClick: (String) -> Unit,
     onVideoLoad: (String) -> Unit,
     onNavigate: (String) -> Unit,
@@ -47,7 +46,7 @@ fun FavoriteTopScreen(
 
     M3Scaffold(
         floatingActionButton = {
-            LargeFloatingActionButton(onClick = { onFabClick(ChocoDroidBottomSheetNavigationLinkList.AddFavoriteFolder) }) {
+            SmallFloatingActionButton(onClick = onFabClick) {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_create_24), contentDescription = null)
             }
         },

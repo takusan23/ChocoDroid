@@ -19,7 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.QualityChangeScreenInitData
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlinx.coroutines.delay
@@ -40,7 +41,7 @@ fun VideoControlUI(
     controller: ExoPlayerComposeController,
     state: MiniPlayerState,
     mediaUrlData: MediaUrlData,
-    onBottomSheetNavigate: (String) -> Unit,
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -112,7 +113,7 @@ fun VideoControlUI(
                                 if (mediaUrlData.quality != null) {
                                     QualityChangeButton(
                                         text = mediaUrlData.quality!!,
-                                        onClick = { onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.QualityChange) }
+                                        onClick = { onBottomSheetNavigate(QualityChangeScreenInitData()) }
                                     )
                                 }
                                 RepeatButton(

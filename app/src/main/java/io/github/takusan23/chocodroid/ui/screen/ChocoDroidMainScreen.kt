@@ -11,10 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
-import io.github.takusan23.chocodroid.ui.tool.SetActivitySleepComposeApp
-import io.github.takusan23.chocodroid.ui.tool.SetNavigationBarColor
-import io.github.takusan23.chocodroid.ui.tool.SetStatusBarColor
-import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
+import io.github.takusan23.chocodroid.ui.tool.*
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -37,8 +34,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val scope = rememberCoroutineScope()
             // 画面遷移。ナビゲーション
             val navController = rememberNavController()
-            // BottomSheetの画面遷移
-            val bottomSheetNavHostController = rememberNavController()
+            // BottomSheetの画面遷移用Flow
+            val bottomSheetInitData = viewModel.bottomSheetNavigation.collectAsState()
             // 再生中の動画情報
             val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
             // コンテンツURL
@@ -47,6 +44,11 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val errorData = viewModel.errorMessageFlow.collectAsState(initial = null)
             // BottomSheetの状態
             val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+
+            // BottomSheetをバックキーで閉じれるように。isVisibleのときのみバックキーを監視
+            if (modalBottomSheetState.isVisible) {
+                SetBackKeyEvent { scope.launch { modalBottomSheetState.hide() } }
+            }
 
             // 動画ミニプレイヤー
             val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateValue.End) {
@@ -106,7 +108,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             controller = exoPlayerComposeController,
                             state = miniPlayerState,
                             onBottomSheetNavigate = { route ->
-                                bottomSheetNavHostController.navigate(route)
+                                viewModel.navigateInitData(route)
                                 scope.launch { modalBottomSheetState.show() }
                             }
                         )
@@ -125,9 +127,10 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 },
                 bottomSheetContent = {
                     // ボトムシートの内容
+                    val initData = bottomSheetInitData.value
                     ChocoDroidBottomSheetNavigation(
                         mainScreenViewModel = viewModel,
-                        bottomSheetNavHostController = bottomSheetNavHostController,
+                        bottomSheetInitData = initData,
                         modalBottomSheetState = modalBottomSheetState
                     )
                 },
@@ -137,7 +140,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                         navController = navController,
                         mainScreenViewModel = viewModel,
                         onBottomSheetNavigate = { route ->
-                            bottomSheetNavHostController.navigate(route)
+                            viewModel.navigateInitData(route)
                             scope.launch { modalBottomSheetState.show() }
                         }
                     )

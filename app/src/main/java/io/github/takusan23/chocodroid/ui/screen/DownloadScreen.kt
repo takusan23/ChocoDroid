@@ -14,8 +14,8 @@ import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerSer
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayTextButton
 import io.github.takusan23.chocodroid.ui.component.VideoList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.viewmodel.DownloadScreenVideModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -33,7 +33,7 @@ fun DownloadScreen(
     mainScreenViewModel: MainScreenViewModel,
     navController: NavHostController,
     downloadScreenVideModel: DownloadScreenVideModel,
-    onBottomSheetNavigate: (String) -> Unit,
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -58,11 +58,11 @@ fun DownloadScreen(
                     videoList = videoList.value,
                     onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
                     onMenuClick = { videoData ->
-                        onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(VideoListMenuData(
+                        onBottomSheetNavigate(VideoListMenuScreenInitData(
                             videoData.videoId,
                             videoData.videoTitle,
                             isDownloadContent = true
-                        )))
+                        ))
                     }
                 )
             }

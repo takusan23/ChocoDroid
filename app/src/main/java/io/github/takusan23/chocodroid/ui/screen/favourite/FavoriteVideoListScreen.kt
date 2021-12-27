@@ -25,8 +25,7 @@ import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.ui.component.BackButtonSmallTopBar
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.ChocoDroidBottomSheetNavigationLinkList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 import io.github.takusan23.chocodroid.viewmodel.FavoriteVideoListViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewModelFactory
@@ -44,7 +43,7 @@ import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewMod
 fun FavoriteVideoListScreen(
     folderId: Int,
     onVideoLoad: (String) -> Unit,
-    onBottomSheetNavigate: (String) -> Unit,
+    onBottomSheetNavigate: (VideoListMenuScreenInitData) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -72,11 +71,11 @@ fun FavoriteVideoListScreen(
                         videoList = videoList.value,
                         onClick = onVideoLoad,
                         onMenuClick = { data ->
-                            onBottomSheetNavigate(ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu(VideoListMenuData(
+                            onBottomSheetNavigate(VideoListMenuScreenInitData(
                                 data.videoId,
                                 data.videoTitle,
                                 folderId
-                            )))
+                            ))
                         }
                     )
                 } else {

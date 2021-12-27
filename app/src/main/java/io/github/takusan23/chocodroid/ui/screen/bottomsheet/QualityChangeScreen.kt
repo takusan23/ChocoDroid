@@ -44,10 +44,12 @@ fun QualityChangeScreen(
                 currentQualityLabel = currentQualityData.value?.quality!!,
                 qualityLabelList = watchPageResponseJSONData.value!!.contentUrlList.map { it.quality!! },
                 onQualityClick = { qualityLabel ->
-                    mainScreenViewModel.getMediaUrl(qualityLabel)
+                    mainScreenViewModel.selectMediaUrl(qualityLabel)
                     onClose()
                 }
             )
         }
     }
 }
+
+class QualityChangeScreenInitData() : BottomSheetInitData(BottomSheetScreenList.QualityChange)

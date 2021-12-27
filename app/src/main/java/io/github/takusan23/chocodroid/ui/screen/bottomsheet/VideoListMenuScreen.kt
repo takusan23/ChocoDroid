@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
  * 動画一覧から開くメニュー。いろいろボタンがあるVer
  *
  * @param viewModel Composeにデータベース処理とか書いていいの？よくわからんからViewModelに書いてる
- * @param data メニューに渡すデータクラス。[ChocoDroidBottomSheetNavigationLinkList.getVideoListMenu]等を参照
+ * @param data メニューに渡すデータクラス
  * @param snackbarHostState Snackbarだすやつ
  * @param onClose 閉じてほしいときに呼ばれる
  * */
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VideoListMenuScreen(
     viewModel: VideoListMenuScreenViewModel = viewModel(),
-    data: VideoListMenuData,
+    data: VideoListMenuScreenInitData,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onClose: () -> Unit,
 ) {
@@ -159,3 +159,20 @@ fun VideoListMenuScreen(
         }
     )
 }
+
+/**
+ * [VideoListMenuScreen]を表示する際に渡すデータ
+ *
+ * @param videoId 動画ID
+ * @param videoTitle 動画タイトル
+ * @param folderId お気に入りフォルダ内の動画の場合はフォルダIDを入れる
+ * @param isDownloadContent ダウンロード済みコンテンツの場合はtrue
+ * @param isHistory 履歴一覧から表示の場合はtrue。履歴削除ボタンを表示します
+ */
+data class VideoListMenuScreenInitData(
+    val videoId: String,
+    val videoTitle: String,
+    val folderId: Int? = null,
+    val isDownloadContent: Boolean = false,
+    val isHistory: Boolean = false,
+) : BottomSheetInitData(BottomSheetScreenList.VideoListMenu)

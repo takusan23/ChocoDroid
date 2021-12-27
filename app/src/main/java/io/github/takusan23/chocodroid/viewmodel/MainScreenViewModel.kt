@@ -10,6 +10,7 @@ import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.DownloadContentManager
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.chocodroid.tool.WebViewJavaScriptEngine
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import io.github.takusan23.internet.html.WatchPageHTML
@@ -36,6 +37,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
 
     private val _watchPageData = MutableStateFlow<WatchPageData?>(null)
     private val _mediaUrlDataFlow = MutableStateFlow<MediaUrlData?>(null)
+    private val _bottomSheetNavFlow = MutableStateFlow<BottomSheetInitData?>(null)
 
     /** ローカルに保持してる解析アルゴリズム。flowで更新されるはず */
     private var localAlgorithmData: Triple<String?, AlgorithmFuncNameData?, List<AlgorithmInvokeData>?>? = null
@@ -51,6 +53,9 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
 
     /** 動画パス、生放送HLSアドレス等を入れたデータクラス流すFlow */
     val mediaUrlDataFlow = _mediaUrlDataFlow as StateFlow<MediaUrlData?>
+
+    /** ボトムシートの画面遷移を管理するFlow */
+    val bottomSheetNavigation = _bottomSheetNavFlow as StateFlow<BottomSheetInitData?>
 
     init {
         viewModelScope.launch {
@@ -98,7 +103,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
                     withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
                 }
             } else watchPageData
-            getMediaUrl()
+            selectMediaUrl()
             _isLoadingFlow.value = false
 
             // 2回目以降のアルゴリズムの解析をスキップするために解読情報を永続化する
@@ -140,7 +145,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
      *
      * @param quality 画質
      * */
-    fun getMediaUrl(quality: String = "360p") {
+    fun selectMediaUrl(quality: String = "360p") {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(quality)
         }
@@ -194,6 +199,11 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
                 closePlayer()
             }
         }
+    }
+
+    /** [BottomSheetInitData]をセットしてボトムシートの画面遷移を行う */
+    fun navigateInitData(initData: BottomSheetInitData) {
+        _bottomSheetNavFlow.value = initData
     }
 
 }

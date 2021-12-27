@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.SettingScreen
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
@@ -27,7 +28,7 @@ import io.github.takusan23.internet.api.SearchAPI
 fun ChocoDroidNavigation(
     mainScreenViewModel: MainScreenViewModel,
     navController: NavHostController = rememberNavController(),
-    onBottomSheetNavigate: (String) -> Unit = {},
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit = {},
 ) {
 
     // 画面遷移

@@ -1,7 +1,5 @@
 package io.github.takusan23.chocodroid.ui.component
 
-import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.service.ContentDownloadService
 import io.github.takusan23.chocodroid.ui.screen.videodetail.*
+import io.github.takusan23.chocodroid.ui.tool.SetBackKeyEvent
 import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -131,27 +128,13 @@ private fun SetPressBackKeyToMiniPlayer(
     miniPlayerState: MiniPlayerState?,
     navHostController: NavHostController,
 ) {
-    val context = LocalContext.current
     val currentNavEntry = navHostController.currentBackStackEntryAsState()
 
-    /** 戻るキーコールバック */
-    val backCallback = remember {
-        object : OnBackPressedCallback(false) {
-            override fun handleOnBackPressed() {
-                miniPlayerState?.setState(MiniPlayerStateValue.MiniPlayer)
+    if (currentNavEntry.value?.destination?.route == VideoDetailNavigationLinkList.VideoDetailDescriptionScreen && miniPlayerState?.currentState?.value == MiniPlayerStateValue.Default) {
+        SetBackKeyEvent(
+            onBackPress = {
+                miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
             }
-        }
+        )
     }
-    // 戻るキーコールバックを有効にするか。動画説明画面でミニプレイヤーじゃない場合は有効にする
-    backCallback.isEnabled = currentNavEntry.value?.destination?.route == VideoDetailNavigationLinkList.VideoDetailDescriptionScreen && miniPlayerState?.currentState?.value == MiniPlayerStateValue.Default
-    // 戻るキーコールバックを登録して、Composeが破棄されたら解除する
-    DisposableEffect(key1 = Unit, effect = {
-        if (context is ComponentActivity) {
-            context.onBackPressedDispatcher.addCallback(backCallback)
-        }
-        onDispose {
-            backCallback.remove()
-        }
-    })
-
 }

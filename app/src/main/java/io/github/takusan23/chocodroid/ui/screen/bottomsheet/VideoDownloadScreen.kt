@@ -1,16 +1,18 @@
-package io.github.takusan23.chocodroid.ui.screen.videodetail
+package io.github.takusan23.chocodroid.ui.screen.bottomsheet
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material3.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,32 +22,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.data.DownloadRequestData
+import io.github.takusan23.chocodroid.service.ContentDownloadService
 import io.github.takusan23.chocodroid.ui.component.AndroidSnowConeSwitch
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 import kotlin.math.roundToInt
 
 /**
- * 動画詳細のダウンロード画面
+ * 動画ダウンロード画面
  *
- * @param isOnlineContent ダウンロード済みコンテンツの場合はtrue
+ * @param initData ボトムシートデータクラス
+ * */
+@Composable
+fun VideoDownloadScreen(initData: VideoDownloadScreenInitData) {
+    val context = LocalContext.current
+
+    VideoDownloadScreen(
+        watchPageData = initData.watchPageData,
+        onDownloadClick = { ContentDownloadService.startDownloadService(context, it) }
+    )
+}
+
+/**
+ * 動画ダウンロード画面
+ *
+ * @param onDownloadClick ダウンロードボタンを押したとき
  * @param watchPageData 動画情報
- * @param onDownloadClick 動画ダウンロードボタンを押したときに呼ばれる。渡されるデータは画質の指定など
- * @param onDeleteClick 削除ボタン押したときに呼ばれる。渡されるデータは動画ID
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VideoDetailDownloadScreen(
+private fun VideoDownloadScreen(
     watchPageData: WatchPageData,
-    onDownloadClick: (DownloadRequestData) -> Unit = {},
-    onDeleteClick: (String) -> Unit = {},
+    onDownloadClick: (DownloadRequestData) -> Unit,
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     M3Scaffold(
-        snackbarHostState = snackbarHostState,
+        modifier = Modifier.fillMaxHeight(0.5f),
         content = {
             Box(modifier = Modifier.padding(it)) {
                 Column(
@@ -229,3 +241,12 @@ private fun AudioOnlySwitch(
         )
     }
 }
+
+/**
+ * [VideoDownloadScreen]を表示する際に使うデータクラス
+ *
+ * @param watchPageData 視聴ページ情報
+ * */
+data class VideoDownloadScreenInitData(
+    val watchPageData: WatchPageData,
+) : BottomSheetInitData(BottomSheetScreenList.VideoDownload)

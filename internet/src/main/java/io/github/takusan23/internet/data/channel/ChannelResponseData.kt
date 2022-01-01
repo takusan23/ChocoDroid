@@ -137,8 +137,8 @@ data class GridVideoRenderer(
     val videoId: String,
     val thumbnail: Thumbnail,
     val title: Title,
-    val publishedTimeText: PublishedTimeText,
-    val viewCountText: ViewCountText,
+    val publishedTimeText: PublishedTimeText? = null,
+    val viewCountText: ViewCountText? = null,
     val thumbnailOverlays: List<ThumbnailOverlays>,
 )
 
@@ -154,7 +154,7 @@ data class ThumbnailOverlayTimeStatusRenderer(
 
 @Serializable
 data class Text(
-    val simpleText: String,
+    val simpleText: String? = null,
 )
 
 @Serializable

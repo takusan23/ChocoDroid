@@ -1,25 +1,20 @@
 package io.github.takusan23.chocodroid.ui.component
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.github.takusan23.chocodroid.service.ContentDownloadService
-import io.github.takusan23.chocodroid.ui.screen.videodetail.*
-import io.github.takusan23.chocodroid.ui.tool.SetBackKeyEvent
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
@@ -29,23 +24,22 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
  *
  * @param watchPageData 視聴ページレスポンスデータ
  * @param mainViewModel メイン画面ViewModel
- * @param miniPlayerState ミニプレイヤー操作用
- * @param navHostController 動画詳細とかメニュー切り替え
  * @param mainNavHostController メイン画面のNavController
+ * @param miniPlayerState ミニプレイヤー操作
+ * @param onBottomSheetNavigate ボトムシート表示のときに呼ばれる
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoDetailScreen(
     watchPageData: WatchPageData,
     mainViewModel: MainScreenViewModel,
     miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
-    navHostController: NavHostController = rememberNavController(),
     mainNavHostController: NavHostController = rememberNavController(),
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit = {},
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    // 動画説明文を展開するか
+    val isExpandedDescription = remember { mutableStateOf(false) }
 
-    // 戻るキーでミニプレイヤーにできるように
-    SetPressBackKeyToMiniPlayer(miniPlayerState = miniPlayerState, navHostController = navHostController)
     // BottomNavの色を出す
     val bottomNavColor = calcM3ElevationColor(
         colorScheme = MaterialTheme.colorScheme,
@@ -53,88 +47,46 @@ fun VideoDetailScreen(
         elevation = 3.dp
     )
 
-    Surface(
-        color = bottomNavColor,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Row {
-            // NavigationRail
-            VideoDetailNavigationRail(
-                navHostController = navHostController,
-                watchPageData = watchPageData
-            )
-
-            Surface(
+    M3Scaffold {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = bottomNavColor
+        ) {
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                color = Color.White,
-                shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-            ) {
-                NavHost(navController = navHostController, startDestination = VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) {
-                    // 動画説明
-                    composable(VideoDetailNavigationLinkList.VideoDetailDescriptionScreen) {
-                        VideoDetailDescriptionScreen(
+                    .padding(start = 10.dp, end = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                content = {
+                    // 動画情報カード
+                    item {
+                        VideoDetailInfoCard(
+                            Modifier.padding(top = 10.dp),
                             watchPageData = watchPageData,
-                            onNavigation = {
-                                miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
+                            onNavigate = {
                                 mainNavHostController.navigate(it)
-                            }
+                                miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
+                            },
+                            isExpanded = isExpandedDescription.value,
+                            onOpenClick = { isExpandedDescription.value = it }
                         )
                     }
-                    // メニュー画面
-                    composable(VideoDetailNavigationLinkList.VideoDetailMenuScreen) {
-                        VideoDetailMenuScreen(watchPageData = watchPageData)
-                    }
-                    // お気に入り追加
-                    composable(VideoDetailNavigationLinkList.VideoDetailAddFavoriteScreen) {
-                        VideoDetailAddFavoriteScreen(watchPageData = watchPageData)
+                    // メニュー
+                    item {
+                        VideoDetailMenu(
+                            watchPageData = watchPageData,
+                            onMenuClick = onBottomSheetNavigate
+                        )
                     }
                     // 関連動画
-                    composable(VideoDetailNavigationLinkList.VideoDetailRelatedVideos) {
-                        VideoDetailRelatedVideoScreen(
+                    item {
+                        VideoDetailRecommendVideoList(
                             watchPageData = watchPageData,
-                            onClick = { mainViewModel.loadWatchPage(it) }
-                        )
-                    }
-                    // ダウンロード
-                    composable(VideoDetailNavigationLinkList.VideoDetailDownloadScreen) {
-                        VideoDetailDownloadScreen(
-                            watchPageData = watchPageData,
-                            onDownloadClick = { data -> ContentDownloadService.startDownloadService(context, data) },
-                            onDeleteClick = { mainViewModel.deleteDownloadContent(it) }
+                            onClick = { mainViewModel.loadWatchPage(it) },
+                            onMenuClick = onBottomSheetNavigate
                         )
                     }
                 }
-            }
+            )
         }
-    }
-}
-
-/**
- * バックキーでミニプレイヤーへ遷移する関数
- *
- * 動画説明文[VideoDetailNavigationLinkList.VideoDetailDescriptionScreen]で、プレイヤーの状態が[MiniPlayerStateValue.Default]のときは
- *
- * バックキーで遷移できるようにします。それ以外の場合はバックキーのコールバックを無効にします。
- *
- * 多分ContextがActivityじゃないと動かない
- *
- * @param miniPlayerState ミニプレイヤー操作用
- * @param navHostController 今の画面を取得するのに使う
- * */
-@Composable
-private fun SetPressBackKeyToMiniPlayer(
-    miniPlayerState: MiniPlayerState?,
-    navHostController: NavHostController,
-) {
-    val currentNavEntry = navHostController.currentBackStackEntryAsState()
-
-    if (currentNavEntry.value?.destination?.route == VideoDetailNavigationLinkList.VideoDetailDescriptionScreen && miniPlayerState?.currentState?.value == MiniPlayerStateValue.Default) {
-        SetBackKeyEvent(
-            onBackPress = {
-                miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
-            }
-        )
     }
 }

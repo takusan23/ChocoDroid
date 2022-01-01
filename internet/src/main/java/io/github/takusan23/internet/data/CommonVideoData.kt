@@ -37,8 +37,8 @@ open class CommonVideoData(
         videoId = gridVideoRenderer.videoId,
         videoTitle = gridVideoRenderer.title.runs[0].text,
         duration = gridVideoRenderer.thumbnailOverlays[0].thumbnailOverlayTimeStatusRenderer!!.text.simpleText,
-        watchCount = gridVideoRenderer.viewCountText.simpleText,
-        publishDate = gridVideoRenderer.publishedTimeText.simpleText,
+        watchCount = gridVideoRenderer.viewCountText?.simpleText ?: "",
+        publishDate = gridVideoRenderer.publishedTimeText?.simpleText,
         ownerName = "",
         thumbnailUrl = gridVideoRenderer.thumbnail.thumbnails.last().url,
     )

@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
  * 動画一覧から開くメニュー。いろいろボタンがあるVer
  *
  * @param viewModel Composeにデータベース処理とか書いていいの？よくわからんからViewModelに書いてる
- * @param data メニューに渡すデータクラス
+ * @param initData メニューに渡すデータクラス
  * @param snackbarHostState Snackbarだすやつ
  * @param onClose 閉じてほしいときに呼ばれる
  * */
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VideoListMenuScreen(
     viewModel: VideoListMenuScreenViewModel = viewModel(),
-    data: VideoListMenuScreenInitData,
+    initData: VideoListMenuScreenInitData,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onClose: () -> Unit,
 ) {
@@ -45,17 +45,17 @@ fun VideoListMenuScreen(
     val paddingModifier = Modifier.padding(start = 5.dp, top = 5.dp, end = 5.dp)
 
     VideoListMenuScreen(
-        videoTitle = data.videoTitle,
+        videoTitle = initData.videoTitle,
         snackbarHostState = snackbarHostState,
         content = {
 
-            if (data.isDownloadContent) {
+            if (initData.isDownloadContent) {
                 // ダウンロードのときのみ
                 ExportDeviceMediaFolderButton(
                     modifier = paddingModifier,
                     onClick = {
                         scope.launch {
-                            viewModel.copyFileToVideoOrMusicFolder(data.videoId)
+                            viewModel.copyFileToVideoOrMusicFolder(initData.videoId)
                             Toast.makeText(context, context.getString(R.string.copy_successful), Toast.LENGTH_SHORT).show()
                             onClose()
                         }
@@ -66,7 +66,7 @@ fun VideoListMenuScreen(
                     onClick = {
                         DownloadContentBackgroundPlayerService.startService(
                             context = context,
-                            startVideoId = data.videoId
+                            startVideoId = initData.videoId
                         )
                     }
                 )
@@ -74,7 +74,7 @@ fun VideoListMenuScreen(
                     modifier = paddingModifier,
                     snackbarHostState = snackbarHostState,
                     onDeleteClick = {
-                        viewModel.deleteDownloadContent(data.videoId)
+                        viewModel.deleteDownloadContent(initData.videoId)
                         onClose()
                     }
                 )
@@ -84,7 +84,7 @@ fun VideoListMenuScreen(
                     modifier = paddingModifier,
                     onClick = {
                         ContentDownloadService.startDownloadService(context, DownloadRequestData(
-                            videoId = data.videoId,
+                            videoId = initData.videoId,
                             isAudioOnly = false,
                             quality = null
                         ))
@@ -93,13 +93,13 @@ fun VideoListMenuScreen(
             }
 
             // 履歴一覧のときのみ
-            if (data.isHistory) {
+            if (initData.isHistory) {
                 HistoryDeleteButton(
                     modifier = paddingModifier,
                     snackbarHostState = snackbarHostState,
                     onDelete = {
                         scope.launch {
-                            viewModel.deleteHistoryFromVideoId(data.videoId)
+                            viewModel.deleteHistoryFromVideoId(initData.videoId)
                             onClose()
                         }
                     }
@@ -107,11 +107,11 @@ fun VideoListMenuScreen(
             }
 
             // お気に入り削除ボタン
-            data.folderId?.let { folderId ->
+            initData.folderId?.let { folderId ->
                 FavoriteVideoDeleteButton(
                     modifier = paddingModifier,
                     snackbarHostState = snackbarHostState,
-                    videoId = data.videoId,
+                    videoId = initData.videoId,
                     folderId = folderId,
                     onDeleteClick = { videoId, folderId ->
                         viewModel.deleteFavoriteVideoItem(videoId, folderId)

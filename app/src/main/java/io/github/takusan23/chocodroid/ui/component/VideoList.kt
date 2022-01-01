@@ -85,7 +85,7 @@ fun VideoList(
  * 動画一覧で使う各項目のコンポーネント
  *
  * @param commonVideoData 動画情報
- * @param onClick 押したら呼ばれる
+ * @param onClick 押したら呼ばれる。引数は動画ID
  * @param onMenuClick メニュー押したとき。nullにした場合はメニューを非表示にします
  * */
 @Composable

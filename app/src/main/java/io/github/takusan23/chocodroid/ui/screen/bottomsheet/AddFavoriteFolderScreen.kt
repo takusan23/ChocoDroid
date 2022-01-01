@@ -1,6 +1,5 @@
 package io.github.takusan23.chocodroid.ui.screen.bottomsheet
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -13,16 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.database.db.FavoriteDB
-import io.github.takusan23.chocodroid.database.entity.FavoriteFolderDBEntity
+import io.github.takusan23.chocodroid.viewmodel.AddFavoriteFolderViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -34,11 +32,11 @@ import kotlinx.coroutines.launch
  * */
 @Composable
 fun AddFavoriteFolderScreen(
+    videoToFavoriteFolderViewModel: AddFavoriteFolderViewModel = viewModel(),
     onClose: () -> Unit,
 ) {
     val textValue = remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     AddFavoriteFolderScreen(
         textValue = textValue.value,
@@ -46,7 +44,7 @@ fun AddFavoriteFolderScreen(
         onCreate = { folderName ->
             scope.launch {
                 // DBへ追加
-                addFavoriteFolder(context, folderName)
+                videoToFavoriteFolderViewModel.addFolder(folderName)
                 // 閉じる
                 onClose()
             }
@@ -117,18 +115,6 @@ fun AddFavoriteFolderScreen(
             }
         )
     }
-}
-
-/**
- * DBにフォルダを追加する
- *
- * @param context Context
- * @param folderName フォルダ名
- * */
-private suspend fun addFavoriteFolder(context: Context, folderName: String) {
-    val folderDBEntity = FavoriteFolderDBEntity(folderName = folderName)
-    val dao = FavoriteDB.getInstance(context).favoriteDao()
-    dao.insert(folderDBEntity)
 }
 
 /**

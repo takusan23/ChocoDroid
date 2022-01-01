@@ -22,6 +22,12 @@ open class BottomSheetInitData(val screen: BottomSheetScreenList) {
 
         /** 動画メニュー表示 */
         VideoListMenu,
+
+        /** お気に入りフォルダへ追加 */
+        AddVideoToFavoriteFolder,
+
+        /** ダウンロード画面 */
+        VideoDownload,
     }
 
 }

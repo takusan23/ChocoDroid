@@ -57,6 +57,10 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                     viewModel.closePlayer()
                 }
             }
+            // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
+            if (miniPlayerState.currentState.value == MiniPlayerStateValue.Default) {
+                SetBackKeyEvent { miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer) }
+            }
 
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
@@ -108,7 +112,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             controller = exoPlayerComposeController,
                             state = miniPlayerState,
                             onBottomSheetNavigate = { route ->
-                                viewModel.navigateInitData(route)
+                                viewModel.navigateBottomSheet(route)
                                 scope.launch { modalBottomSheetState.show() }
                             }
                         )
@@ -122,6 +126,10 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             miniPlayerState = miniPlayerState,
                             mainViewModel = viewModel,
                             mainNavHostController = navController,
+                            onBottomSheetNavigate = {
+                                viewModel.navigateBottomSheet(it)
+                                scope.launch { modalBottomSheetState.show() }
+                            }
                         )
                     }
                 },
@@ -140,7 +148,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                         navController = navController,
                         mainScreenViewModel = viewModel,
                         onBottomSheetNavigate = { route ->
-                            viewModel.navigateInitData(route)
+                            viewModel.navigateBottomSheet(route)
                             scope.launch { modalBottomSheetState.show() }
                         }
                     )

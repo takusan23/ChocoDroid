@@ -202,7 +202,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
     }
 
     /** [BottomSheetInitData]をセットしてボトムシートの画面遷移を行う */
-    fun navigateInitData(initData: BottomSheetInitData) {
+    fun navigateBottomSheet(initData: BottomSheetInitData) {
         _bottomSheetNavFlow.value = initData
     }
 

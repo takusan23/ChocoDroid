@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -104,12 +101,16 @@ fun DownloadBackgroundPlayerButton(
  * @param onClick 押したとき
  * */
 @Composable
-fun DownloadContentBackgroundPlayTextButton(
+fun DownloadContentBackgroundPlayButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    TextButton(
+    Button(
         modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
         onClick = onClick
     ) {
         Icon(painter = painterResource(id = R.drawable.chocodroid_background_player), contentDescription = null)

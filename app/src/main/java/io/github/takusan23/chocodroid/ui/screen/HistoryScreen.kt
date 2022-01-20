@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
-import io.github.takusan23.chocodroid.ui.component.HistoryAllDeleteTextButton
+import io.github.takusan23.chocodroid.ui.component.HistoryAllDeleteButton
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
@@ -54,37 +56,45 @@ fun HistoryScreen(
         snackbarHostState = snackbarHostState,
         topBar = { ChocoBridgeBar(viewModel = mainViewModel, navHostController = navController) },
         content = {
-            Column(modifier = Modifier.padding(it)) {
-                // 削除ボタン
-                HistoryAllDeleteTextButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(end = 10.dp),
-                    snackbarHostState = snackbarHostState,
-                    onDelete = { historyScreenViewModel.deleteAllDB() }
-                )
-                // 一覧表示
-                Divider()
-                if (historyList.value.isNotEmpty()) {
-                    VideoList(
-                        videoList = historyList.value,
-                        onClick = { mainViewModel.loadWatchPage(it) },
-                        onMenuClick = {
-                            onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                it.videoId,
-                                it.videoTitle,
-                                isHistory = true
-                            ))
-                        }
+            Surface(
+                modifier = Modifier.padding(it),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column {
+                    // 削除ボタン
+                    HistoryAllDeleteButton(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(end = 10.dp),
+                        snackbarHostState = snackbarHostState,
+                        onDelete = { historyScreenViewModel.deleteAllDB() }
                     )
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                        content = {
-                            Text(text = stringResource(id = R.string.history_empty))
-                        }
-                    )
+                    // 一覧表示
+                    if (historyList.value.isNotEmpty()) {
+                        Surface(
+                            modifier = Modifier.padding(top = 10.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                            content = {
+                                VideoList(
+                                    videoList = historyList.value,
+                                    onClick = { mainViewModel.loadWatchPage(it) },
+                                    onMenuClick = {
+                                        onBottomSheetNavigate(VideoListMenuScreenInitData(
+                                            it.videoId,
+                                            it.videoTitle,
+                                            isHistory = true
+                                        ))
+                                    }
+                                )
+                            }
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) { Text(text = stringResource(id = R.string.history_empty)) }
+                    }
                 }
             }
         }

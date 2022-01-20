@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
@@ -48,39 +49,40 @@ fun VideoDetailInfoCard(
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(20.dp),
         content = {
             Column(modifier = Modifier.padding(10.dp)) {
                 Row {
                     Column(modifier = Modifier.weight(1f)) {
-                        VideoDetailIconText(
-                            modifier = Modifier.padding(top = 5.dp),
-                            iconResId = R.drawable.ic_outline_today_24,
-                            text = "${stringResource(id = R.string.publish_date)} : $publishDate"
-                        )
                         Text(
                             modifier = Modifier.padding(top = 5.dp),
                             fontSize = 20.sp,
                             text = videoDetails.title,
+                            fontWeight = FontWeight.Bold
+                        )
+                        VideoDetailIconText(
+                            modifier = Modifier.padding(top = 5.dp),
+                            iconResId = R.drawable.ic_outline_today_24,
+                            text = "${stringResource(id = R.string.publish_date)} : $publishDate"
                         )
                         VideoDetailIconText(
                             modifier = Modifier.padding(top = 5.dp),
                             iconResId = R.drawable.ic_outline_play_arrow_24,
                             text = "${stringResource(id = R.string.watch_count)} : ${videoDetails.viewCount}"
                         )
-                        // 動画説明文
-                        if (isExpanded) {
-                            Text(
-                                modifier = Modifier.padding(top = 5.dp),
-                                fontSize = 15.sp,
-                                text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
-                            )
-                        }
                     }
                     IconButton(
                         modifier = Modifier.padding(top = 10.dp),
                         onClick = { onOpenClick(!isExpanded) }
                     ) { Icon(painter = painterResource(id = if (isExpanded) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24), contentDescription = null) }
+                }
+                // 動画説明文
+                if (isExpanded) {
+                    Text(
+                        modifier = Modifier.padding(top = 5.dp),
+                        fontSize = 15.sp,
+                        text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
+                    )
                 }
                 RoundedImageButton(
                     modifier = Modifier
@@ -121,7 +123,7 @@ fun VideoDetailMenu(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(20.dp),
         content = {
             Row {
                 buttonList.forEach { (stringResId, iconResId, data) ->
@@ -159,10 +161,9 @@ fun VideoDetailRecommendVideoList(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(10.dp),
+        color = Color.Transparent,
         content = {
-            Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
+            Column {
                 relatedVideoList.forEach {
                     VideoListItem(
                         commonVideoData = it,

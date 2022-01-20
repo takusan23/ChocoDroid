@@ -1,9 +1,11 @@
 package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -12,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
-import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayTextButton
+import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayButton
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
@@ -47,24 +49,35 @@ fun DownloadScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    DownloadContentBackgroundPlayTextButton(modifier = Modifier.padding(end = 10.dp)) {
-                        DownloadContentBackgroundPlayerService.startService(context)
-                    }
-                }
-                Divider()
-                VideoList(
-                    videoList = videoList.value,
-                    onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
-                    onMenuClick = { videoData ->
-                        onBottomSheetNavigate(VideoListMenuScreenInitData(
-                            videoData.videoId,
-                            videoData.videoTitle,
-                            isDownloadContent = true
-                        ))
+                    horizontalArrangement = Arrangement.End,
+                    content = {
+                        DownloadContentBackgroundPlayButton(modifier = Modifier.padding(end = 10.dp)) {
+                            DownloadContentBackgroundPlayerService.startService(context)
+                        }
                     }
                 )
+                if (videoList.value.isNotEmpty()) {
+                    Surface(
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .fillMaxHeight(),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                        content = {
+                            VideoList(
+                                videoList = videoList.value,
+                                onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
+                                onMenuClick = { videoData ->
+                                    onBottomSheetNavigate(VideoListMenuScreenInitData(
+                                        videoData.videoId,
+                                        videoData.videoTitle,
+                                        isDownloadContent = true
+                                    ))
+                                }
+                            )
+                        }
+                    )
+                }
             }
         }
     )

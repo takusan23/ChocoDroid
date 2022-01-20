@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -26,7 +23,7 @@ import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
  * @param onDelete 削除押したときに呼ばれる
  * */
 @Composable
-fun HistoryAllDeleteTextButton(
+fun HistoryAllDeleteButton(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     onDelete: suspend () -> Unit,
@@ -35,8 +32,12 @@ fun HistoryAllDeleteTextButton(
     val context = LocalContext.current
 
     // 消すボタン
-    TextButton(
+    Button(
         modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
         onClick = {
             SnackbarComposeTool.showSnackbar(
                 scope = scope,

@@ -4,9 +4,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,7 +28,7 @@ import kotlinx.coroutines.launch
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FirstSettingScreen(
+fun MasterSettingScreen(
     onNavigate: (String) -> Unit,
 ) {
     // DataStoreからFlowで受け取る
@@ -36,7 +38,14 @@ fun FirstSettingScreen(
     val dataStoreFlow = context.dataStore.data.collectAsState(initial = null)
 
     M3Scaffold(
-        topBar = { LargeTopAppBar(title = { Text(text = stringResource(id = R.string.setting)) }) },
+        topBar = {
+            LargeTopAppBar(
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = Color.Transparent
+                ),
+                title = { Text(text = stringResource(id = R.string.setting)) }
+            )
+        },
         content = {
             LazyColumn(
                 content = {

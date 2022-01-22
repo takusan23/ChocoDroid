@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,10 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -21,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,6 +87,49 @@ fun FavoriteFolderVideoCarouselItem(
 }
 
 /**
+ * お気に入りフォルダ追加ボタン
+ *
+ * @param modifier [Modifier]
+ * @param onClick 押したときに呼ばれる
+ * */
+@Composable
+fun CreateFavoriteFolderItem(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Surface(
+        modifier = modifier,
+        interactionSource = remember { MutableInteractionSource() },
+        indication = rememberRipple(),
+        color = Color.Transparent,
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        content = {
+            Column(
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(100.dp),
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(alignment = Alignment.CenterHorizontally),
+                    painter = painterResource(id = R.drawable.ic_outline_create_24),
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = null,
+                )
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    textAlign = TextAlign.Center,
+                    text = stringResource(id = R.string.add_favorite_folder),
+                )
+            }
+        }
+    )
+}
+
+/**
  * カルーセル内の各項目
  *
  * @param videoId 動画ID
@@ -109,6 +151,7 @@ private fun FavoriteFolderVideoCarouselRowItem(
     Surface(
         interactionSource = remember { MutableInteractionSource() },
         indication = rememberRipple(),
+        color = Color.Transparent,
         onClick = { onClick(videoId) }
     ) {
         Column(

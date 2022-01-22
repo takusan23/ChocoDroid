@@ -32,7 +32,7 @@ fun ChocoDroidBottomSheetNavigation(
 ) {
     val scope = rememberCoroutineScope()
 
-    Surface {
+    Surface(color = MaterialTheme.colorScheme.primaryContainer) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally

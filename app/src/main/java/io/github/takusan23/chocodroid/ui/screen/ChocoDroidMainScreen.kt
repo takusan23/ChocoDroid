@@ -69,9 +69,9 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 colorScheme = MaterialTheme.colorScheme,
                 color = MaterialTheme.colorScheme.surface,
                 elevation = 3.dp
-            ) else MaterialTheme.colorScheme.surface)
+            ) else MaterialTheme.colorScheme.primaryContainer)
             // ステータスバーの色
-            SetStatusBarColor(color = MaterialTheme.colorScheme.surface)
+            SetStatusBarColor(color = MaterialTheme.colorScheme.primaryContainer)
 
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
@@ -135,10 +135,9 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 },
                 bottomSheetContent = {
                     // ボトムシートの内容
-                    val initData = bottomSheetInitData.value
                     ChocoDroidBottomSheetNavigation(
                         mainScreenViewModel = viewModel,
-                        bottomSheetInitData = initData,
+                        bottomSheetInitData = bottomSheetInitData.value,
                         modalBottomSheetState = modalBottomSheetState
                     )
                 },

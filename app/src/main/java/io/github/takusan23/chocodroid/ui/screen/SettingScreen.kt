@@ -6,8 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.screen.setting.AboutSettingScreen
-import io.github.takusan23.chocodroid.ui.screen.setting.FirstSettingScreen
 import io.github.takusan23.chocodroid.ui.screen.setting.LicenseSettingScreen
+import io.github.takusan23.chocodroid.ui.screen.setting.MasterSettingScreen
 import io.github.takusan23.chocodroid.ui.screen.setting.SettingNavigationLinkList
 
 /**
@@ -21,7 +21,7 @@ fun SettingScreen() {
     NavHost(navController = navController, startDestination = SettingNavigationLinkList.FirstScreen) {
         // 設定一覧
         composable(SettingNavigationLinkList.FirstScreen) {
-            FirstSettingScreen(onNavigate = { navController.navigate(it) })
+            MasterSettingScreen(onNavigate = { navController.navigate(it) })
         }
         // このアプリについて
         composable(SettingNavigationLinkList.AboutAppScreen) {

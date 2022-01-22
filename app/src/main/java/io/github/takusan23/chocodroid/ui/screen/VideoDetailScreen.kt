@@ -60,7 +60,7 @@ fun VideoDetailScreen(
                     // 動画情報カード
                     item {
                         VideoDetailInfoCard(
-                            Modifier.padding(top = 10.dp),
+                            modifier = Modifier.padding(top = 10.dp),
                             watchPageData = watchPageData,
                             onNavigate = {
                                 mainNavHostController.navigate(it)

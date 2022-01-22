@@ -31,30 +31,32 @@ fun AndroidSnowConeSwitch(
     isEnable: Boolean,
     onValueChange: (Boolean) -> Unit,
 ) {
-    val backgroundColor = animateColorAsState(targetValue = if (isEnable) androidx.compose.material3.MaterialTheme.colorScheme.primary else Color.DarkGray)
+    val backgroundColor = animateColorAsState(targetValue = if (isEnable) MaterialTheme.colorScheme.primary else Color.DarkGray)
+
     Surface(
         modifier = modifier
             .height(30.dp)
             .width(60.dp),
         color = backgroundColor.value,
         shape = RoundedCornerShape(50),
-        onClick = { onValueChange(!isEnable) }
-    ) {
-        BoxWithConstraints {
-            val offsetXAnim = animateDpAsState(targetValue = if (isEnable) (maxWidth / 2) else 0.dp)
-            val foregroundColor = animateColorAsState(targetValue = if (isEnable) MaterialTheme.colorScheme.background else Color.LightGray)
-            Surface(
-                modifier = Modifier
-                    .padding(3.dp)
-                    .fillMaxHeight()
-                    .offset(offsetXAnim.value, 0.dp)
-                    .aspectRatio(1f),
-                color = foregroundColor.value,
-                shape = RoundedCornerShape(50),
-                content = { }
-            )
+        onClick = { onValueChange(!isEnable) },
+        content = {
+            BoxWithConstraints {
+                val offsetXAnim = animateDpAsState(targetValue = if (isEnable) (maxWidth / 2) else 0.dp)
+                val foregroundColor = animateColorAsState(targetValue = if (isEnable) MaterialTheme.colorScheme.background else Color.LightGray)
+                Surface(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .fillMaxHeight()
+                        .offset(offsetXAnim.value, 0.dp)
+                        .aspectRatio(1f),
+                    color = foregroundColor.value,
+                    shape = RoundedCornerShape(50),
+                    content = { }
+                )
+            }
         }
-    }
+    )
 }
 
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)

@@ -1,9 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,45 +53,43 @@ fun HistoryScreen(
         snackbarHostState = snackbarHostState,
         topBar = { ChocoBridgeBar(viewModel = mainViewModel, navHostController = navController) },
         content = {
-            Surface(
-                modifier = Modifier.padding(it),
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Column {
-                    // 削除ボタン
-                    HistoryAllDeleteButton(
+
+            Column {
+                // 削除ボタン
+                HistoryAllDeleteButton(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(end = 10.dp),
+                    snackbarHostState = snackbarHostState,
+                    onDelete = { historyScreenViewModel.deleteAllDB() }
+                )
+                // 一覧表示
+                if (historyList.value.isNotEmpty()) {
+                    Surface(
                         modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(end = 10.dp),
-                        snackbarHostState = snackbarHostState,
-                        onDelete = { historyScreenViewModel.deleteAllDB() }
+                            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                            .fillMaxHeight(),
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                        content = {
+                            VideoList(
+                                videoList = historyList.value,
+                                onClick = { mainViewModel.loadWatchPage(it) },
+                                onMenuClick = {
+                                    onBottomSheetNavigate(VideoListMenuScreenInitData(
+                                        it.videoId,
+                                        it.videoTitle,
+                                        isHistory = true
+                                    ))
+                                }
+                            )
+                        }
                     )
-                    // 一覧表示
-                    if (historyList.value.isNotEmpty()) {
-                        Surface(
-                            modifier = Modifier.padding(top = 10.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                            content = {
-                                VideoList(
-                                    videoList = historyList.value,
-                                    onClick = { mainViewModel.loadWatchPage(it) },
-                                    onMenuClick = {
-                                        onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                            it.videoId,
-                                            it.videoTitle,
-                                            isHistory = true
-                                        ))
-                                    }
-                                )
-                            }
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) { Text(text = stringResource(id = R.string.history_empty)) }
-                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) { Text(text = stringResource(id = R.string.history_empty)) }
                 }
             }
         }

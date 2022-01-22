@@ -34,6 +34,7 @@ import io.github.takusan23.chocodroid.setting.dataStore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 
+
 /**
  * SurfaceViewとExoPlayer
  *

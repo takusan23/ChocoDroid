@@ -4,6 +4,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -55,9 +56,12 @@ private fun QualityListItem(
     isSelected: Boolean = false,
 ) {
     Surface(
+        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
         onClick = onClick,
         interactionSource = remember { MutableInteractionSource() },
         indication = rememberRipple(),
+        shape = RoundedCornerShape(20.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
         contentColor = if (isSelected) MaterialTheme.colorScheme.primary else contentColorFor(MaterialTheme.colorScheme.surface)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

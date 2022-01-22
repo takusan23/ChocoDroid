@@ -46,7 +46,7 @@ fun FavouriteScreen(
                         // フォルダ、チャンネル一覧
                         FavoriteTopScreen(
                             onNavigate = { route -> favouriteNavController.navigate(route) },
-                            onFabClick = { onBottomSheetNavigate(AddFavoriteFolderScreenInitData()) },
+                            onAddClick = { onBottomSheetNavigate(AddFavoriteFolderScreenInitData()) },
                             onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) },
                             onChannelClick = { channelId -> navController.navigate(NavigationLinkList.getChannelScreenLink(channelId)) }
                         )

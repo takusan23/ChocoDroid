@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,6 +14,7 @@ import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeBar
 import io.github.takusan23.chocodroid.ui.component.DownloadContentBackgroundPlayButton
+import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
@@ -42,7 +42,7 @@ fun DownloadScreen(
     // 動画一覧を取得する
     val videoList = downloadScreenVideModel.downloadContentFlow.collectAsState(initial = listOf())
 
-    Scaffold(
+    M3Scaffold(
         topBar = { ChocoBridgeBar(viewModel = mainScreenViewModel, navHostController = navController) },
         content = {
             Column(modifier = Modifier.padding(it)) {
@@ -59,9 +59,9 @@ fun DownloadScreen(
                 if (videoList.value.isNotEmpty()) {
                     Surface(
                         modifier = Modifier
-                            .padding(top = 10.dp)
+                            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
                             .fillMaxHeight(),
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
                         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                         content = {
                             VideoList(

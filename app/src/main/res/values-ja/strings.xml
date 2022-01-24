@@ -68,4 +68,9 @@
     <string name="open_url">URLを開く</string>
     <string name="download_content_backrgound_player">バックグラウンド音楽再生</string>
     <string name="download_content_backrgound_player_video_id_play">この動画からバックグラウンド再生を始める</string>
+    <string name="search_sort">検索の並び替え</string>
+    <string name="search_sort_relevance">"関連度順 "</string>
+    <string name="search_sort_post_date">"投稿日時順 "</string>
+    <string name="search_sort_view_count">"再生数順 "</string>
+    <string name="search_sort_review">レビュー順</string>
 </resources>

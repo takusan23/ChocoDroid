@@ -48,7 +48,7 @@ fun FavoriteTopScreen(
         content = {
             LazyColumn(content = {
                 // お気に入りチャンネルのカルーセル
-                if (favoriteChList.value != null) {
+                if (favoriteChList.value?.isNotEmpty() == true) {
                     item {
                         FavoriteChCarouselItem(
                             channelList = favoriteChList.value!!,

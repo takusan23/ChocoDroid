@@ -133,7 +133,7 @@ fun VideoListMenuScreen(
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VideoListMenuScreen(
+private fun VideoListMenuScreen(
     videoTitle: String,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable ColumnScope.() -> Unit,

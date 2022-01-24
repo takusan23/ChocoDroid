@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
-import io.github.takusan23.chocodroid.ui.tool.calcM3ElevationColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
@@ -40,53 +39,47 @@ fun VideoDetailScreen(
     // 動画説明文を展開するか
     val isExpandedDescription = remember { mutableStateOf(false) }
 
-    // BottomNavの色を出す
-    val bottomNavColor = calcM3ElevationColor(
-        colorScheme = MaterialTheme.colorScheme,
-        color = MaterialTheme.colorScheme.surface,
-        elevation = 3.dp
-    )
-
     M3Scaffold {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = bottomNavColor
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                content = {
-                    // 動画情報カード
-                    item {
-                        VideoDetailInfoCard(
-                            modifier = Modifier.padding(top = 10.dp),
-                            watchPageData = watchPageData,
-                            onNavigate = {
-                                mainNavHostController.navigate(it)
-                                miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
-                            },
-                            isExpanded = isExpandedDescription.value,
-                            onOpenClick = { isExpandedDescription.value = it }
-                        )
+            color = MaterialTheme.colorScheme.primaryContainer,
+            content = {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    content = {
+                        // 動画情報カード
+                        item {
+                            VideoDetailInfoCard(
+                                modifier = Modifier.padding(top = 10.dp),
+                                watchPageData = watchPageData,
+                                onNavigate = {
+                                    mainNavHostController.navigate(it)
+                                    miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer)
+                                },
+                                isExpanded = isExpandedDescription.value,
+                                onOpenClick = { isExpandedDescription.value = it }
+                            )
+                        }
+                        // メニュー
+                        item {
+                            VideoDetailMenu(
+                                watchPageData = watchPageData,
+                                onMenuClick = onBottomSheetNavigate
+                            )
+                        }
+                        // 関連動画
+                        item {
+                            VideoDetailRecommendVideoList(
+                                watchPageData = watchPageData,
+                                onClick = { mainViewModel.loadWatchPage(it) },
+                                onMenuClick = onBottomSheetNavigate
+                            )
+                        }
                     }
-                    // メニュー
-                    item {
-                        VideoDetailMenu(
-                            watchPageData = watchPageData,
-                            onMenuClick = onBottomSheetNavigate
-                        )
-                    }
-                    // 関連動画
-                    item {
-                        VideoDetailRecommendVideoList(
-                            watchPageData = watchPageData,
-                            onClick = { mainViewModel.loadWatchPage(it) },
-                            onMenuClick = onBottomSheetNavigate
-                        )
-                    }
-                }
-            )
-        }
+                )
+            }
+        )
     }
 }

@@ -36,4 +36,7 @@ object SettingKeyObject {
 
     /** ダウンロード用バックグラウンド再生で、単発リピートモードが有効かどうか */
     val DOWNLOAD_CONTENT_BACKGROUND_PLAYER_REPEAT_MODE = booleanPreferencesKey("download_content_background_player_repeat_mode")
+
+    /** 検索の並び替え */
+    val SEARCH_SORT_TYPE = stringPreferencesKey("search_sort_type")
 }

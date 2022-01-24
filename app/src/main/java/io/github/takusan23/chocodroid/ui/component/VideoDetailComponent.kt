@@ -48,7 +48,7 @@ fun VideoDetailInfoCard(
 
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = MaterialTheme.colorScheme.inversePrimary,
         shape = RoundedCornerShape(20.dp),
         content = {
             Column(modifier = Modifier.padding(10.dp)) {
@@ -120,13 +120,15 @@ fun VideoDetailMenu(
         Triple(R.string.download, R.drawable.chocodroid_download, VideoDownloadScreenInitData(watchPageData))
     )
 
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(20.dp),
-        content = {
-            Row {
-                buttonList.forEach { (stringResId, iconResId, data) ->
+    Row {
+        buttonList.forEach { (stringResId, iconResId, data) ->
+            Surface(
+                modifier = modifier
+                    .padding(5.dp)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                shape = RoundedCornerShape(20.dp),
+                content = {
                     VideoDetailMenuItem(
                         modifier = Modifier.weight(1f),
                         stringResId = stringResId,
@@ -134,9 +136,10 @@ fun VideoDetailMenu(
                         onClick = { data?.let { onMenuClick(it) } }
                     )
                 }
-            }
+            )
         }
-    )
+    }
+
 }
 
 /**

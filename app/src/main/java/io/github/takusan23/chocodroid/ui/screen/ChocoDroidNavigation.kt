@@ -13,7 +13,6 @@ import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
-import io.github.takusan23.internet.api.SearchAPI
 
 /**
  * ナビゲーション。画面遷移。
@@ -33,15 +32,15 @@ fun ChocoDroidNavigation(
 
     // 画面遷移
     NavHost(navController = navController, startDestination = NavigationLinkList.FavouriteScreen) {
-        composable(NavigationLinkList.getSearchScreenLink("{query}", "{sort}")) {
+        composable(NavigationLinkList.getSearchScreenLink("{query}")) {
             // 検索画面
             val searchQuery = it.arguments?.getString("query")!!
-            val sort = it.arguments?.getString("sort") ?: SearchAPI.PARAMS_SORT_RELEVANCE
             val application = (LocalContext.current as ComponentActivity).application
             SearchScreen(
-                viewModel = viewModel(factory = SearchScreenViewModelFactory(application, searchQuery, sort)),
+                viewModel = viewModel(factory = SearchScreenViewModelFactory(application, searchQuery)),
                 onBack = { navController.popBackStack() },
-                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) }
+                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
+                onBottomSheetNavigate = onBottomSheetNavigate
             )
         }
         composable(NavigationLinkList.FavouriteScreen) {

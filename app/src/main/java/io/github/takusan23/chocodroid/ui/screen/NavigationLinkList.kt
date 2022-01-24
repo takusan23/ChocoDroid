@@ -1,7 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.navigation.navOptions
-import io.github.takusan23.internet.api.SearchAPI
 
 /**
  * 遷移先一覧
@@ -20,9 +19,8 @@ object NavigationLinkList {
      * 検索画面。
      *
      * @param query 検索ワードを
-     * @param sort 並び順。[SearchAPI.PARAMS_SORT_RELEVANCE]を参照して
      * */
-    fun getSearchScreenLink(query: String, sort: String = SearchAPI.PARAMS_SORT_RELEVANCE) = "$SearchScreen?query=${query}&sort=${sort}"
+    fun getSearchScreenLink(query: String) = "$SearchScreen?query=${query}"
 
     /** 履歴画面 */
     const val HistoryScreen = "history"

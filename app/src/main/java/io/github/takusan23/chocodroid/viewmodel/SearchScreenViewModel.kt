@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 /**
  * 検索結果で使うViewModel
  * */
-class SearchScreenViewModel(application: Application, private val query: String, private val sort: String) : BaseAndroidViewModel(application) {
+class SearchScreenViewModel(application: Application, private val query: String) : BaseAndroidViewModel(application) {
     private val context = application.applicationContext
 
     /** 非公式検索APIを叩く */
@@ -23,7 +23,9 @@ class SearchScreenViewModel(application: Application, private val query: String,
 
     private val _searchResultListFlow = MutableStateFlow<List<CommonVideoData>>(listOf())
     private val _queryFlow = MutableStateFlow(query)
-    private val _sortFlow = MutableStateFlow(sort)
+
+    /** 並び順 */
+    private val sortFlow = context.dataStore.data.map { it[SettingKeyObject.SEARCH_SORT_TYPE] ?: SearchAPI.PARAMS_SORT_RELEVANCE }
 
     /** これ以上追加読み込みしない */
     private var isEOL = false
@@ -34,9 +36,6 @@ class SearchScreenViewModel(application: Application, private val query: String,
     /** 検索ワード */
     val queryFlow = _queryFlow as StateFlow<String>
 
-    /** 並び順 */
-    val sortFlow = _sortFlow as StateFlow<String>
-
     init {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             // DataStoreにAPIキーが保存されているかも
@@ -45,7 +44,7 @@ class SearchScreenViewModel(application: Application, private val query: String,
             // 初期化
             searchAPI.init(apiKey)
             // 検索する
-            search(query, sort)
+            search(query, sortFlow.first())
         }
         // APIキーを保存しておく
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
@@ -55,12 +54,18 @@ class SearchScreenViewModel(application: Application, private val query: String,
                 }
             }
         }
+        viewModelScope.launch(errorHandler + Dispatchers.Default) {
+            // ソート順が変更されるたびに再検索をかける
+            sortFlow.collectIndexed { index, value ->
+                println(value)
+            }
+        }
     }
 
     /** 再検索をする */
     fun reSearch() {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
-            search(_queryFlow.value, _sortFlow.value)
+            search(_queryFlow.value, sortFlow.first())
         }
     }
 
@@ -107,14 +112,6 @@ class SearchScreenViewModel(application: Application, private val query: String,
      * */
     fun setQuery(query: String) {
         _queryFlow.value = query
-    }
-
-    /**
-     * ソート条件をセット
-     * @param sort [SearchAPI.PARAMS_SORT_REVIEW]など
-     * */
-    fun setSort(sort: String) {
-        _sortFlow.value = sort
     }
 
 }

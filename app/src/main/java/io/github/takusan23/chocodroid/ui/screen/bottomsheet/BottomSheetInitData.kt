@@ -12,6 +12,7 @@ package io.github.takusan23.chocodroid.ui.screen.bottomsheet
  * @param screen 何の画面を表示させるのか
  * */
 open class BottomSheetInitData(val screen: BottomSheetScreenList) {
+
     /** ナビゲーション先の定義 */
     enum class BottomSheetScreenList {
         /** お気に入りフォルダ作成 */
@@ -28,6 +29,9 @@ open class BottomSheetInitData(val screen: BottomSheetScreenList) {
 
         /** ダウンロード画面 */
         VideoDownload,
+
+        /** ソート変更 */
+        SearchSortChange,
     }
 
 }

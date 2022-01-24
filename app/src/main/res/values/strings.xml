@@ -68,4 +68,9 @@
     <string name="open_url">Open URL</string>
     <string name="download_content_backrgound_player">Background music playback</string>
     <string name="download_content_backrgound_player_video_id_play">Start background playback from this video</string>
+    <string name="search_sort">Sort search</string>
+    <string name="search_sort_relevance">Relevance order</string>
+    <string name="search_sort_post_date">Post date and time order</string>
+    <string name="search_sort_view_count">In order of number of views</string>
+    <string name="search_sort_review">Review order</string>
 </resources>

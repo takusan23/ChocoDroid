@@ -47,7 +47,7 @@ fun ChocoDroidBottomSheetNavigation(
             )
             // 画面遷移
             when (bottomSheetInitData?.screen) {
-                // お気に入り追加
+                // お気に入りフォルダ作成
                 BottomSheetInitData.BottomSheetScreenList.AddFavoriteFolder -> {
                     AddFavoriteFolderScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
                 }
@@ -65,11 +65,17 @@ fun ChocoDroidBottomSheetNavigation(
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
                 }
+                // お気に入りフォルダへ追加
                 BottomSheetInitData.BottomSheetScreenList.AddVideoToFavoriteFolder -> {
                     AddVideoToFavoriteFolderScreen(initData = bottomSheetInitData as AddVideoToFavoriteFolderScreenInitData)
                 }
+                // 動画ダウンロード
                 BottomSheetInitData.BottomSheetScreenList.VideoDownload -> {
                     VideoDownloadScreen(initData = bottomSheetInitData as VideoDownloadScreenInitData)
+                }
+                // 検索並び替え
+                BottomSheetInitData.BottomSheetScreenList.SearchSortChange -> {
+                    SearchSortScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
                 }
                 else -> {
                     // The initial value must have an associated anchor. 対策。何もない状態だとエラーが出るので適当においておく

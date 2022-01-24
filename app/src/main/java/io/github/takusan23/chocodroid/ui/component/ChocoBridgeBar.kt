@@ -96,7 +96,7 @@ fun ChocoBridgeBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(10.dp),
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.inversePrimary,
         shape = RoundedCornerShape(20.dp),
     ) {
         Column {

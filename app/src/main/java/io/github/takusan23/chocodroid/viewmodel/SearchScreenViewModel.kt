@@ -56,13 +56,13 @@ class SearchScreenViewModel(application: Application, private val query: String)
         }
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             // ソート順が変更されるたびに再検索をかける
-            sortFlow.collectIndexed { index, value ->
-                println(value)
-            }
+            sortFlow
+                .drop(1) // 最初のデータは捨てる（最初はここでは検索しない）
+                .collect { reSearch() }
         }
     }
 
-    /** 再検索をする */
+    /** 再検索をする。ペンギン */
     fun reSearch() {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             search(_queryFlow.value, sortFlow.first())

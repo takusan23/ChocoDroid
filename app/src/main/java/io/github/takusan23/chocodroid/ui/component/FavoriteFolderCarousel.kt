@@ -69,19 +69,22 @@ fun FavoriteFolderVideoCarouselItem(
                 contentAlignment = Alignment.Center
             ) { Text(text = stringResource(id = R.string.favorite_folder_video_empty)) }
         } else {
-            LazyRow(content = {
-                items(favoriteVideoList) {
-                    // 各UI
-                    FavoriteFolderVideoCarouselRowItem(
-                        videoId = it.videoId,
-                        videoTitle = it.videoTitle,
-                        duration = it.duration ?: "--:--",
-                        ownerName = it.ownerName,
-                        thumbnailUrl = it.thumbnailUrl,
-                        onClick = onVideoClick
-                    )
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                content = {
+                    items(favoriteVideoList) {
+                        // 各アイテム
+                        FavoriteFolderVideoCarouselRowItem(
+                            videoId = it.videoId,
+                            videoTitle = it.videoTitle,
+                            duration = it.duration ?: "--:--",
+                            ownerName = it.ownerName,
+                            thumbnailUrl = it.thumbnailUrl,
+                            onClick = onVideoClick
+                        )
+                    }
                 }
-            })
+            )
         }
     }
 }
@@ -154,11 +157,7 @@ private fun FavoriteFolderVideoCarouselRowItem(
         color = Color.Transparent,
         onClick = { onClick(videoId) }
     ) {
-        Column(
-            modifier = Modifier
-                .width(IntrinsicSize.Min)
-                .padding(start = 10.dp)
-        ) {
+        Column(modifier = Modifier.width(IntrinsicSize.Min)) {
             // Glideの代わりにCoilを試す
             Box(modifier = Modifier.padding(5.dp)) {
                 Image(
@@ -173,7 +172,7 @@ private fun FavoriteFolderVideoCarouselRowItem(
                         }
                     ),
                     contentScale = ContentScale.Crop,
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 Text(
                     modifier = Modifier

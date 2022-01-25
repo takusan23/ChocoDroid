@@ -19,6 +19,12 @@ fun VideoPlayerUI(
     mediaUrlData: MediaUrlData,
     controller: ExoPlayerComposeController = rememberExoPlayerComposeController(),
 ) {
+
+    LaunchedEffect(key1 = watchPageData, block = {
+        // 動画情報変わった場合にコンテンツURLも変わったらシーク位置を0
+        controller.seek(0L)
+    })
+
     LaunchedEffect(key1 = mediaUrlData, block = {
         // 生放送/オフライン再生とストリーミングで分岐
         if (mediaUrlData.mixTrackUrl != null) {
@@ -28,6 +34,7 @@ fun VideoPlayerUI(
             controller.setMediaSourceVideoAudioUriSupportVer(mediaUrlData.videoTrackUrl!!, mediaUrlData.audioTrackUrl!!)
         }
     })
+
     // SurfaceView設置とリソース開放用意
     ExoPlayerComposeUI(controller = controller)
     DisposableEffect(key1 = Unit, effect = { onDispose { controller.destroy() } })

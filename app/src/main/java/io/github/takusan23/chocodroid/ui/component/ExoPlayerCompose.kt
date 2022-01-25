@@ -173,13 +173,19 @@ class ExoPlayerComposeController(
      * ExoPlayerに映像と音声をセットする。
      *
      * ビデオトラックとオーディオトラックが別のURLの場合に使ってね。
+     *
+     * @param audioTrackUri 音声トラックURL
+     * @param videoTrackUri 動画トラックURL
      * */
     fun setMediaSourceVideoAudioUriSupportVer(videoTrackUri: String, audioTrackUri: String) {
+        // シーク前位置
+        val prevPos = exoPlayer.currentPosition
         val videoSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(videoTrackUri))
         val audioSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(audioTrackUri))
         val mergeSource = MergingMediaSource(videoSource, audioSource)
         exoPlayer.setMediaSource(mergeSource)
         exoPlayer.prepare()
+        exoPlayer.seekTo(prevPos)
     }
 
     /**

@@ -39,4 +39,7 @@ object SettingKeyObject {
 
     /** 検索の並び替え */
     val SEARCH_SORT_TYPE = stringPreferencesKey("search_sort_type")
+
+    /** 前回選択した画質。動画バージョン */
+    val PLAYER_QUALITY_VIDEO = stringPreferencesKey("player_quality_video")
 }

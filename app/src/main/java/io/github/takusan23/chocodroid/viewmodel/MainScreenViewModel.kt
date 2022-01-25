@@ -19,10 +19,7 @@ import io.github.takusan23.internet.magic.UnlockMagic
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -143,11 +140,16 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
      *
      * 取得した値はFlowで流します
      *
-     * @param quality 画質
+     * @param quality 画質。省略時は前回見ていた画質、それがない場合は360p、それもない場合は最高画質
      * */
-    fun selectMediaUrl(quality: String = "360p") {
+    fun selectMediaUrl(quality: String? = null) {
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
-            _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(quality)
+            // 前回の画質。ない場合は 360p
+            val prevQuality = quality ?: context.dataStore.data.map { it[SettingKeyObject.PLAYER_QUALITY_VIDEO] }.first() ?: "360p"
+            // 画質を選んでURLをFlowで流す
+            _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(prevQuality)
+            // 保存する
+            context.dataStore.edit { it[SettingKeyObject.PLAYER_QUALITY_VIDEO] = prevQuality }
         }
     }
 

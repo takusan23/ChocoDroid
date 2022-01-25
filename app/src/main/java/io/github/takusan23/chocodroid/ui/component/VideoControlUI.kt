@@ -43,6 +43,9 @@ fun VideoControlUI(
     mediaUrlData: MediaUrlData,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
+    // ダブルタップのシーク量。変更可能にする
+    val doubleTapSeekValue = 5_000L
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     // プレイヤー押したらプレイヤーUIを非表示にしたいので
@@ -56,6 +59,8 @@ fun VideoControlUI(
 
     // プレイヤーのUIの大きさがほしいのでBoxWithなんたらをつかう
     BoxWithConstraints {
+        val playerWidth = this.maxWidth.value
+
         // まとめて色を変えられる
         Surface(
             contentColor = Color.White, // アイコンとかテキストの色をまとめて指定
@@ -67,6 +72,13 @@ fun VideoControlUI(
                         onTap = {
                             isShowPlayerUI.value = !isShowPlayerUI.value
                         },
+                        onDoubleTap = {
+                            val currentPos = controller.currentPosition.value
+                            val currentX = it.x
+                            // 左半分で前シーク 右半分で次シーク
+                            val isNextSeek = (playerWidth / 2) < currentX
+                            controller.seek(if (isNextSeek) currentPos + doubleTapSeekValue else currentPos - doubleTapSeekValue)
+                        }
                     )
                 }
         ) {

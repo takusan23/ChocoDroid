@@ -50,7 +50,7 @@ object UnlockMagic {
      *
      * なので、現状はAndroid側でJavaScriptを実行してこっちに戻すって感じ？。一つのモジュールで完結させたかったんだけどなぁ
      *
-     * 動画である必要があります。生放送では実行しないでください。
+     * プログレッシブ形式で配信されている動画でのみ利用してください。HLS/Dash形式のときは使いません。
      *
      * @param runJavaScriptResult 実行するべきJavaScriptコードが渡されるのでAndroidのWebViewで実行して、戻り値をください
      * @param urlParamFixJSCode [DecryptData.urlParamFixJSCode]を渡して

@@ -31,8 +31,12 @@ data class WatchPageData(
         return SerializationTool.jsonSerialization.encodeToString(watchPageResponseJSONData)
     }
 
-    /** 生放送時はtrue */
-    fun isLiveStream() = watchPageResponseJSONData.videoDetails.isLive ?: false
+    /** HLS / Dash 形式で配信されている動画の場合はtrue。必然的に生放送時もtrueになります */
+    fun isHTTPStreaming() = watchPageResponseJSONData.streamingData.hlsManifestUrl != null
+            || watchPageResponseJSONData.streamingData.dashManifestUrl != null
+
+    /** ライブ配信の場合はtrue */
+    fun isLiveContent() = watchPageResponseJSONData.videoDetails.isLive == true
 
     /**
      * 指定した画質の[MediaUrlData]を返す
@@ -41,7 +45,8 @@ data class WatchPageData(
      *
      * @param quality 画質
      * */
-    fun getMediaUrlDataFromQuality(quality: String? = "360p") = contentUrlList.find { it.quality == quality } ?: contentUrlList.first()
+    fun getMediaUrlDataFromQuality(quality: String? = "360p") = contentUrlList
+        .find { it.quality == quality } ?: contentUrlList.first()
 
     companion object {
 

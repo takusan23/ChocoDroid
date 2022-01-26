@@ -154,7 +154,7 @@ fun VideoControlUI(
                         }
 
                         // 生放送時はシークバー出さない
-                        if (!watchPageData.isLiveStream()) {
+                        if (!watchPageData.isLiveContent()) {
                             Row(
                                 modifier = Modifier.align(Alignment.BottomCenter),
                                 verticalAlignment = Alignment.CenterVertically

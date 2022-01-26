@@ -12,14 +12,14 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("", null, null, null)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("IDqw8ICZnxE", null, null, null)
 
-            if (watchPageData.isLiveStream()) {
+            if (watchPageData.isHTTPStreaming()) {
                 println("生放送 HLS アドレス")
-                println(watchPageData.contentUrlList.first().mixTrackUrl)
-            } else {
+                println(watchPageData.watchPageResponseJSONData.streamingData.hlsManifestUrl)
                 println("MPEG-DASH アドレス")
                 println(watchPageData.watchPageResponseJSONData.streamingData.dashManifestUrl)
+            } else {
                 println("動画URL")
                 watchPageData.contentUrlList.forEach { mediaUrlData ->
                     println(mediaUrlData.quality)

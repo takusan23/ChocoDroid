@@ -95,7 +95,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
              *
              * ここらへんどうにかしたい
              * */
-            _watchPageData.value = if (!watchPageData.isLiveStream()) {
+            _watchPageData.value = if (!watchPageData.isHTTPStreaming()) {
                 UnlockMagic.fixUrlParam(watchPageData, decryptData.urlParamFixJSCode) { evalCode ->
                     withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
                 }

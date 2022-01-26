@@ -107,7 +107,7 @@ class DownloadContentManager(private val context: Context) {
         return WatchPageData(
             watchPageInitialJSONData = initialJSONData,
             watchPageResponseJSONData = responseJSONData,
-            contentUrlList = listOf(MediaUrlData(mixTrackUrl = dbItem.contentPath)),
+            contentUrlList = listOf(MediaUrlData(urlType = MediaUrlData.MediaUrlType.TYPE_OFFLINE, mixTrackUrl = dbItem.contentPath)),
             type = "download"
         )
     }

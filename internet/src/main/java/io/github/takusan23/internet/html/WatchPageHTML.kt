@@ -117,8 +117,19 @@ object WatchPageHTML {
     private fun getContentUrlList(watchPageJSONResponseData: WatchPageResponseJSONData, decryptData: DecryptData): List<MediaUrlData> {
         // 生放送時
         return when {
+            // 生放送
             watchPageJSONResponseData.videoDetails.isLive == true -> {
-                listOf(MediaUrlData(mixTrackUrl = watchPageJSONResponseData.streamingData.hlsManifestUrl!!))
+                listOf(MediaUrlData(
+                    urlType = MediaUrlData.MediaUrlType.TYPE_HLS,
+                    mixTrackUrl = watchPageJSONResponseData.streamingData.hlsManifestUrl!!
+                ))
+            }
+            // dashManifestUrlがある場合はそれを採用（多分adaptiveFormatsが404を返す？）
+            watchPageJSONResponseData.streamingData.dashManifestUrl != null -> {
+                listOf(MediaUrlData(
+                    urlType = MediaUrlData.MediaUrlType.TYPE_DASH,
+                    mixTrackUrl = watchPageJSONResponseData.streamingData.dashManifestUrl
+                ))
             }
             else -> {
                 // 音声ファイル選ぶ
@@ -131,9 +142,21 @@ object WatchPageHTML {
                         // 復号化が必要な場合は復号する
                         if (adaptiveFormat.signatureCipher != null) {
                             val url = decryptData.decryptURL(adaptiveFormat.signatureCipher)
-                            MediaUrlData(url, audioTrackUrl, adaptiveFormat.qualityLabel, null)
+                            MediaUrlData(
+                                urlType = MediaUrlData.MediaUrlType.TYPE_PROGRESSIVE,
+                                videoTrackUrl = url,
+                                audioTrackUrl = audioTrackUrl,
+                                quality = adaptiveFormat.qualityLabel,
+                                mixTrackUrl = null
+                            )
                         } else {
-                            MediaUrlData(adaptiveFormat.url, audioTrackUrl, adaptiveFormat.qualityLabel, null)
+                            MediaUrlData(
+                                urlType = MediaUrlData.MediaUrlType.TYPE_PROGRESSIVE,
+                                videoTrackUrl = adaptiveFormat.url,
+                                audioTrackUrl = audioTrackUrl,
+                                quality = adaptiveFormat.qualityLabel,
+                                mixTrackUrl = null
+                            )
                         }
                     }
             }

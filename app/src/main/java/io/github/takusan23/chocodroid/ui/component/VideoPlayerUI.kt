@@ -26,13 +26,18 @@ fun VideoPlayerUI(
          *
          * わからないレベルで進めておく。これで初回のめっちゃ長い読み込みが解決する？
          */
-        controller.seek(10L)
+        if (!watchPageData.isHTTPStreaming()) {
+            controller.seek(10L)
+        }
     })
 
     LaunchedEffect(key1 = mediaUrlData, block = {
-        // 生放送/オフライン再生とストリーミングで分岐
+        println(mediaUrlData)
+        // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
+        // ない場合は映像、音声トラックをそれぞれ渡す
         if (mediaUrlData.mixTrackUrl != null) {
-            controller.setMediaSourceUri(mediaUrlData.mixTrackUrl!!)
+            val isDash = mediaUrlData.urlType == MediaUrlData.MediaUrlType.TYPE_DASH
+            controller.setMediaSourceUri(mediaUrlData.mixTrackUrl!!, isDash)
         } else {
             // 動画URLを読み込む
             controller.setMediaSourceVideoAudioUriSupportVer(mediaUrlData.videoTrackUrl!!, mediaUrlData.audioTrackUrl!!)

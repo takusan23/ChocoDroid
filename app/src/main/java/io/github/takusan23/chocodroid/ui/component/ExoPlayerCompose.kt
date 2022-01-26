@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -28,6 +27,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.TransferListener
+import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.video.VideoSize
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
@@ -161,10 +161,17 @@ class ExoPlayerComposeController(
     /**
      * ExoPlayerに動画をセットする。主に生放送用
      *
-     * @param uri URL。HLSも行ける
+     * @param uri HLSのManifestへのURLもしくは、DashのManifestへのURL
+     * @param isDash Dash形式の場合はtrue
      * */
-    fun setMediaSourceUri(uri: String) {
-        val mediaItem = MediaItem.fromUri(uri.toUri())
+    fun setMediaSourceUri(uri: String, isDash: Boolean) {
+        val mediaItem = MediaItem.Builder().apply {
+            setUri(uri)
+            // DashのURLに拡張子ついてないせいか解読できないみたいなのでヒントを与える
+            if (isDash) {
+                setMimeType(MimeTypes.APPLICATION_MPD)
+            }
+        }.build()
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
     }

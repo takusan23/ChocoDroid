@@ -19,10 +19,14 @@ fun VideoPlayerUI(
     mediaUrlData: MediaUrlData,
     controller: ExoPlayerComposeController = rememberExoPlayerComposeController(),
 ) {
-
+    // 動画情報変わった場合にコンテンツURLも変わったらシーク位置を0
     LaunchedEffect(key1 = watchPageData, block = {
-        // 動画情報変わった場合にコンテンツURLも変わったらシーク位置を0
-        controller.seek(0L)
+        /**
+         * ダブルタップシークを実装した際に、初回ロード中にダブルタップすることで即時再生されることを発見したので、
+         *
+         * わからないレベルで進めておく。これで初回のめっちゃ長い読み込みが解決する？
+         */
+        controller.seek(10L)
     })
 
     LaunchedEffect(key1 = mediaUrlData, block = {

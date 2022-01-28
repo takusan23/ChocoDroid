@@ -2,17 +2,15 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
 
@@ -37,23 +35,120 @@ fun MiniPlayerCompose(
     playerContent: @Composable (BoxScope.() -> Unit),
     detailContent: @Composable (BoxScope.() -> Unit),
 ) {
+    // ミニプレイヤーになるまでのしきい値。どこまで下にスワイプしたらミニプレイヤーにするかどうか
+    val miniPlayerSlideValue = 500f
+    // ミニプレイヤー時の横幅パーセント
+    val miniPlayerWidthPercent = 0.7f
+
+    // 現在の状態
+    val currentState = remember { mutableStateOf(MiniPlayerStateType.Default) }
+    // 現在のミニプレーヤーの横幅（パーセント）
+    val currentPlayerWidthPercent = remember { mutableStateOf(1f) }
+    // ミニプレイヤーの位置。translationなんたらみたいなやつ
+    val offsetX = remember { mutableStateOf(0f) }
+    val offsetY = remember { mutableStateOf(0f) }
+    // ドラッグ中かどうか
+    val isDragging = remember { mutableStateOf(false) }
+    // 終了可能な場合はtrue
+    val isAvailableEndOfLife = remember { mutableStateOf(false) }
+
     // 親Viewの大きさを取るのに使った。
     BoxWithConstraints(modifier = modifier) {
-        val boxWidth = constraints.maxWidth
-        val boxHeight = constraints.maxHeight
+        // 全体の幅
+        val boxWidth = constraints.maxWidth.toFloat()
+        // 全体の高さ
+        val boxHeight = constraints.maxHeight.toFloat()
 
-        // ミニプレイヤー時の高さ
-        val miniPlayerHeight = ((boxWidth / 2) / 16) * 9
+        // アニメーションするオフセット値。これを実際のオフセットに入れる（もう一つの方は位置を保持しておくためのもの）
+        val animOffsetX = animateFloatAsState(targetValue = when {
+            // ミニプレイヤータップ時。通常時に戻します
+            !isDragging.value && currentState.value == MiniPlayerStateType.Default -> 0f
+            // 何もなければ現状のオフセットを使う
+            else -> offsetX.value
+        }, finishedListener = { offsetX.value = it })
+
+        val animOffsetY = animateFloatAsState(targetValue = when {
+            // ミニプレイヤータップ時。通常時に戻します
+            !isDragging.value && currentState.value == MiniPlayerStateType.Default -> 0f
+            // 終了アニメーション始まります
+            !isDragging.value && isAvailableEndOfLife.value -> boxHeight
+            else -> offsetY.value // 何もなければ現状のオフセットを使う
+        }, finishedListener = { offsetY.value = it })
 
         Box(modifier = Modifier) {
-
             // 後ろに描画するものがあれば
             backgroundContent()
 
-            // ミニプレイヤーの位置。translationなんたらみたいなやつ
-            val offsetX = remember { mutableStateOf(0f) }
-            val offsetY = remember { mutableStateOf(0f) }
+            Column(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .offset { IntOffset(x = animOffsetX.value.roundToInt(), y = animOffsetY.value.roundToInt()) } // 位置
+                        .background(Color.Black)
+                        .fillMaxWidth(currentPlayerWidthPercent.value)
+                        .aspectRatio(1.7f) // 16:9を維持
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDragStart = { isDragging.value = true },
+                                onDragCancel = { isDragging.value = false },
+                                onDragEnd = { isDragging.value = false },
+                                onDrag = { change, dragAmount ->
+                                    change.consumed.downChange = false
+                                    val dragY = dragAmount.y
+                                    // 0以下だと画面外なので対策
+                                    offsetY.value = maxOf(offsetY.value + dragY, 0f)
+                                    // 一定まで移動させたらミニプレーヤーへ遷移
+                                    if (currentState.value != MiniPlayerStateType.MiniPlayer) {
+                                        // パーセント再計算
+                                        currentPlayerWidthPercent.value = maxOf(miniPlayerWidthPercent, 1f - (offsetY.value / miniPlayerSlideValue))
+                                        // 状態変更
+                                        currentState.value = if (currentPlayerWidthPercent.value == miniPlayerWidthPercent) MiniPlayerStateType.MiniPlayer else MiniPlayerStateType.Default
+                                        // ちょっとずつY軸もずらすことで真ん中へ
+                                        offsetX.value = (boxWidth / 2) * (1f - currentPlayerWidthPercent.value)
+                                    } else {
+                                        val playerWidth = boxWidth * currentPlayerWidthPercent.value
+                                        // ミニプレイヤー時はY軸の操作も可能にする。画面外対策コード
+                                        offsetX.value = if (offsetX.value + dragAmount.x in 0f..(boxWidth - playerWidth)) {
+                                            offsetX.value + dragAmount.x
+                                        } else offsetX.value
+                                    }
+                                    // 画面外に入れたら終了
+                                    val playerWidth = boxWidth * currentPlayerWidthPercent.value
+                                    val playerHeight = (playerWidth / 16) * 9
+                                    isAvailableEndOfLife.value = offsetY.value >= (boxHeight - playerHeight)
+                                }
+                            )
+                        }
+/*
+                        .pointerInput(Unit) {
+                            forEachGesture {
+                                awaitPointerEventScope {
+                                    val event = waitForUpOrCancellation()
+                                    println(" はい：${event?.type}")
+                                }
+                            }
+                        }
+*/
+                        .pointerInput(Unit) {
+                            detectTapGestures(onLongPress = {
+                                currentPlayerWidthPercent.value = 1f
+                                currentState.value = MiniPlayerStateType.Default
+                            })
+                        },
+                    content = playerContent
+                )
 
+                // 動画説明文
+                if (currentState.value == MiniPlayerStateType.Default) {
+                    Box(
+                        modifier = Modifier
+                            .alpha(currentPlayerWidthPercent.value), // 薄くしていく。重そう
+                        content = detailContent
+                    )
+                }
+            }
+
+
+/*
             // 現在ミニプレイヤーかどうか
             val isCurrentMiniPlayer = state.currentState.value == MiniPlayerStateType.MiniPlayer
             // 現在終了モードか
@@ -173,6 +268,7 @@ fun MiniPlayerCompose(
                     }
                 }
             }
+*/
         }
     }
 }
@@ -196,6 +292,8 @@ class MiniPlayerState(
 
     /** ドラッグ操作無効時はtrue */
     val isDisableDragGesture = mutableStateOf(false)
+
+    val offsetX = mutableStateOf(0f)
 
     /** プレイヤーの状態を更新する */
     fun setState(toState: MiniPlayerStateType) {

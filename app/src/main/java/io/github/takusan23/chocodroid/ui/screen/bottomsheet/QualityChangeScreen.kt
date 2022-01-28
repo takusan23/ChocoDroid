@@ -26,7 +26,7 @@ fun QualityChangeScreen(
     mainScreenViewModel: MainScreenViewModel,
     onClose: () -> Unit,
 ) {
-    val currentQualityData = mainScreenViewModel.mediaUrlDataFlow.collectAsState()
+    val currentQualityData = mainScreenViewModel.mediaUrlData.collectAsState()
     val watchPageResponseJSONData = mainScreenViewModel.watchPageResponseDataFlow.collectAsState()
 
     Column(

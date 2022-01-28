@@ -248,8 +248,7 @@ fun rememberExoPlayerComposeController(isDefaultAutoPlay: Boolean = false): ExoP
     val context = LocalContext.current
     return rememberSaveable(
         saver = ExoPlayerComposeController.Saver(context, isDefaultAutoPlay),
-    ) {
-        ExoPlayerComposeController(context, isDefaultAutoPlay)
-    }
+        init = { ExoPlayerComposeController(context, isDefaultAutoPlay) },
+    )
 
 }

@@ -7,6 +7,8 @@ package io.github.takusan23.internet.data.watchpage
  *
  * [audioTrackUrl]/[videoTrackUrl]がnullの場合は[mixTrackUrl]に値が設定されています。
  *
+ * @param urlType 配信形式。[MediaUrlType]参照
+ * @param quality 画質
  * @param videoTrackUrl 映像トラックのURL
  * @param audioTrackUrl 音声トラックのURL
  * @param mixTrackUrl 生放送時はhlsアドレス、動画の場合でもDashManifestが存在する場合は[videoTrackUrl]ではなくこちらを読み込んでください

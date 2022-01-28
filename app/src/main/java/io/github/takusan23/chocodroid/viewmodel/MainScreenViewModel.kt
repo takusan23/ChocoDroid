@@ -33,8 +33,9 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
     private val context = application.applicationContext
 
     private val _watchPageData = MutableStateFlow<WatchPageData?>(null)
-    private val _mediaUrlDataFlow = MutableStateFlow<MediaUrlData?>(null)
-    private val _bottomSheetNavFlow = MutableStateFlow<BottomSheetInitData?>(null)
+    private val _mediaUrlData = MutableStateFlow<MediaUrlData?>(null)
+    private val _bottomSheetNav = MutableStateFlow<BottomSheetInitData?>(null)
+    private val _isFullscreenMode = MutableStateFlow(false)
 
     /** ローカルに保持してる解析アルゴリズム。flowで更新されるはず */
     private var localAlgorithmData: Triple<String?, AlgorithmFuncNameData?, List<AlgorithmInvokeData>?>? = null
@@ -49,10 +50,13 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
     val watchPageResponseDataFlow = _watchPageData as StateFlow<WatchPageData?> // 初期値nullだけどnull流したくないので
 
     /** 動画パス、生放送HLSアドレス等を入れたデータクラス流すFlow */
-    val mediaUrlDataFlow = _mediaUrlDataFlow as StateFlow<MediaUrlData?>
+    val mediaUrlData = _mediaUrlData as StateFlow<MediaUrlData?>
 
     /** ボトムシートの画面遷移を管理するFlow */
-    val bottomSheetNavigation = _bottomSheetNavFlow as StateFlow<BottomSheetInitData?>
+    val bottomSheetNavigation = _bottomSheetNav as StateFlow<BottomSheetInitData?>
+
+    /** 全画面モード？ */
+    val isFullscreenMode = _isFullscreenMode as StateFlow<Boolean>
 
     init {
         viewModelScope.launch {
@@ -129,7 +133,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
             val watchPageData = downloadContentManager.getWatchPageData(videoId)
             // Composeへデータを流す
             _watchPageData.value = watchPageData
-            _mediaUrlDataFlow.value = _watchPageData.value?.contentUrlList?.first()
+            _mediaUrlData.value = _watchPageData.value?.contentUrlList?.first()
             // 視聴履歴インクリメント
             downloadContentManager.incrementLocalWatchCount(videoId)
         }
@@ -147,7 +151,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
             // 前回の画質。ない場合は 360p
             val prevQuality = quality ?: context.dataStore.data.map { it[SettingKeyObject.PLAYER_QUALITY_VIDEO] }.first() ?: "360p"
             // 画質を選んでURLをFlowで流す
-            _mediaUrlDataFlow.value = _watchPageData.value?.getMediaUrlDataFromQuality(prevQuality)
+            _mediaUrlData.value = _watchPageData.value?.getMediaUrlDataFromQuality(prevQuality)
             // 保存する
             context.dataStore.edit { it[SettingKeyObject.PLAYER_QUALITY_VIDEO] = prevQuality }
         }
@@ -158,7 +162,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
      * */
     fun closePlayer() {
         _watchPageData.value = null
-        _mediaUrlDataFlow.value = null
+        _mediaUrlData.value = null
     }
 
     /**
@@ -205,7 +209,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
 
     /** [BottomSheetInitData]をセットしてボトムシートの画面遷移を行う */
     fun navigateBottomSheet(initData: BottomSheetInitData) {
-        _bottomSheetNavFlow.value = initData
+        _bottomSheetNav.value = initData
     }
 
 }

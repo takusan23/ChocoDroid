@@ -32,7 +32,6 @@ fun VideoPlayerUI(
     })
 
     LaunchedEffect(key1 = mediaUrlData, block = {
-        println(mediaUrlData)
         // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
         // ない場合は映像、音声トラックをそれぞれ渡す
         if (mediaUrlData.mixTrackUrl != null) {

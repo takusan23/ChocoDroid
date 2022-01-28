@@ -28,13 +28,11 @@ import kotlin.math.roundToInt
  * @param playerContent プレイヤー部分に描画するもの。プレイヤー
  * @param detailContent 動画説明文の部分
  * @param state プレイヤーの状態を公開するために使う。状態変更コールバック関数もこいつにある
- * @param isFullScreenMode 全画面モードにするならtrueに
  * */
 @Composable
 fun MiniPlayerCompose(
     modifier: Modifier = Modifier,
     state: MiniPlayerState = rememberMiniPlayerState(),
-    isFullScreenMode: Boolean = false,
     backgroundContent: @Composable () -> Unit,
     playerContent: @Composable (BoxScope.() -> Unit),
     detailContent: @Composable (BoxScope.() -> Unit),
@@ -57,9 +55,9 @@ fun MiniPlayerCompose(
             val offsetY = remember { mutableStateOf(0f) }
 
             // 現在ミニプレイヤーかどうか
-            val isCurrentMiniPlayer = state.currentState.value == MiniPlayerStateValue.MiniPlayer
+            val isCurrentMiniPlayer = state.currentState.value == MiniPlayerStateType.MiniPlayer
             // 現在終了モードか
-            val isCurrentEndMode = state.currentState.value == MiniPlayerStateValue.End
+            val isCurrentEndMode = state.currentState.value == MiniPlayerStateType.End
             // パーセンテージ。offsetYの値が変わると自動で変わる
             val progress = offsetY.value / (boxHeight - miniPlayerHeight)
             // ミニプレイヤーの大きさをFloatで。1fから0.5fまで
@@ -83,9 +81,9 @@ fun MiniPlayerCompose(
 
             // ミニプレイヤーの状態を高階関数で提供する
             val currentState = when {
-                isCurrentMiniPlayer && !isCurrentEndMode -> MiniPlayerStateValue.MiniPlayer // ミニプレイヤー時
-                isCurrentEndMode -> MiniPlayerStateValue.End // 終了時
-                else -> MiniPlayerStateValue.Default // 通常時
+                isCurrentMiniPlayer && !isCurrentEndMode -> MiniPlayerStateType.MiniPlayer // ミニプレイヤー時
+                isCurrentEndMode -> MiniPlayerStateType.End // 終了時
+                else -> MiniPlayerStateType.Default // 通常時
             }
             // 更新を通知
             LaunchedEffect(key1 = currentState, block = { state.onStateChange(currentState) })
@@ -101,10 +99,13 @@ fun MiniPlayerCompose(
                 //  verticalArrangement = Arrangement.Bottom, // 下に行くように
                 horizontalAlignment = Alignment.End,// 右に行くように
             ) {
-                if (isFullScreenMode) {
+                if (state.currentState.value == MiniPlayerStateType.Fullscreen) {
                     // 全画面再生時は動画説明文は表示しないので
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .background(Color.Black)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center,
                         content = playerContent
                     )
                 } else {
@@ -145,13 +146,13 @@ fun MiniPlayerCompose(
                                     // スワイプ速度が渡される
                                     state.currentState.value = when {
                                         progress < 0.5f -> {
-                                            MiniPlayerStateValue.Default
+                                            MiniPlayerStateType.Default
                                         }
                                         progress in 0.5f..1f -> {
-                                            MiniPlayerStateValue.MiniPlayer
+                                            MiniPlayerStateType.MiniPlayer
                                         }
                                         else -> {
-                                            MiniPlayerStateValue.End
+                                            MiniPlayerStateType.End
                                         }
                                     }
                                     isDragging.value = false
@@ -180,12 +181,12 @@ fun MiniPlayerCompose(
  * ミニプレイヤー操作用クラス？
  * rememberなんちゃらState()をパクりたかった
  *
- * @param initialValue 最初の状態。[MiniPlayerStateValue]参照
+ * @param initialValue 最初の状態。[MiniPlayerStateType]参照
  * @param onStateChange 状態が変更されたら呼ばれる関数。同じ値の場合は呼ばれません
  * */
 class MiniPlayerState(
-    initialValue: Int = MiniPlayerStateValue.Default,
-    val onStateChange: (Int) -> Unit,
+    initialValue: MiniPlayerStateType = MiniPlayerStateType.Default,
+    val onStateChange: (MiniPlayerStateType) -> Unit,
 ) {
     /** プレイヤーの状態 */
     var currentState = mutableStateOf(initialValue)
@@ -197,7 +198,7 @@ class MiniPlayerState(
     val isDisableDragGesture = mutableStateOf(false)
 
     /** プレイヤーの状態を更新する */
-    fun setState(toState: Int) {
+    fun setState(toState: MiniPlayerStateType) {
         currentState.value = toState
     }
 
@@ -215,8 +216,8 @@ class MiniPlayerState(
          * @param onStateChange 復元後の変更コールバック
          * */
         fun Saver(
-            currentState: Int = MiniPlayerStateValue.Default,
-            onStateChange: (Int) -> Unit,
+            currentState: MiniPlayerStateType = MiniPlayerStateType.Default,
+            onStateChange: (MiniPlayerStateType) -> Unit,
         ): Saver<MiniPlayerState, *> = Saver(
             save = { currentState },
             restore = { restoreState -> MiniPlayerState(restoreState, onStateChange) }
@@ -236,27 +237,28 @@ class MiniPlayerState(
  * */
 @Composable
 fun rememberMiniPlayerState(
-    initialState: Int = MiniPlayerStateValue.Default,
-    onStateChange: (Int) -> Unit = {},
+    initialState: MiniPlayerStateType = MiniPlayerStateType.Default,
+    onStateChange: (MiniPlayerStateType) -> Unit = {},
 ): MiniPlayerState {
     return rememberSaveable(
         saver = MiniPlayerState.Saver(initialState, onStateChange),
-    ) {
-        MiniPlayerState(initialState, onStateChange)
-    }
+        init = { MiniPlayerState(initialState, onStateChange) },
+    )
 }
 
-object MiniPlayerStateValue {
-    /** デフォルトプレイヤーならこれ */
-    const val Default = 0
+enum class MiniPlayerStateType {
+    /** 通常時 */
+    Default,
 
-    /** ミニプレイヤーのときはこれ */
-    const val MiniPlayer = 1
+    /** ミニプレーヤー */
+    MiniPlayer,
 
-    /** プレイヤーが終了したらこれ */
-    const val End = 2
+    /** 終了時 */
+    End,
 
-    /** DisposableEffectが呼ばれたらこれ */
-    const val Destroy = 4
+    /** フルスクリーン */
+    Fullscreen,
 
+    /** 破棄したら */
+    Destroy,
 }

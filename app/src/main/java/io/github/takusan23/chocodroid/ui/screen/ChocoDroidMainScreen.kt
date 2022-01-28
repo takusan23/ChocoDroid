@@ -39,27 +39,27 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // 再生中の動画情報
             val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
             // コンテンツURL
-            val mediaUrlData = viewModel.mediaUrlDataFlow.collectAsState(initial = null)
+            val mediaUrlData = viewModel.mediaUrlData.collectAsState(initial = null)
             // エラーが流れてくるFlow
             val errorData = viewModel.errorMessageFlow.collectAsState(initial = null)
             // BottomSheetの状態
             val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+            // 動画ミニプレイヤー
+            val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateType.End) {
+                // 終了したら
+                if (it == MiniPlayerStateType.End) {
+                    viewModel.closePlayer()
+                }
+            }
 
             // BottomSheetをバックキーで閉じれるように。isVisibleのときのみバックキーを監視
             if (modalBottomSheetState.isVisible) {
                 SetBackKeyEvent { scope.launch { modalBottomSheetState.hide() } }
             }
 
-            // 動画ミニプレイヤー
-            val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateValue.End) {
-                // 終了したら
-                if (it == MiniPlayerStateValue.End) {
-                    viewModel.closePlayer()
-                }
-            }
             // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
-            if (miniPlayerState.currentState.value == MiniPlayerStateValue.Default) {
-                SetBackKeyEvent { miniPlayerState.setState(MiniPlayerStateValue.MiniPlayer) }
+            if (miniPlayerState.currentState.value == MiniPlayerStateType.Default) {
+                SetBackKeyEvent { miniPlayerState.setState(MiniPlayerStateType.MiniPlayer) }
             }
 
             // スリープモード制御
@@ -75,7 +75,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
-                miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateValue.Default else MiniPlayerStateValue.End)
+                miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateType.Default else MiniPlayerStateType.End)
             })
 
             // Snackbar出す
@@ -110,6 +110,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             watchPageData = watchPageResponseData.value!!,
                             mediaUrlData = mediaUrlData.value!!,
                             controller = exoPlayerComposeController,
+                            miniPlayerState = miniPlayerState,
                             state = miniPlayerState,
                             onBottomSheetNavigate = { route ->
                                 viewModel.navigateBottomSheet(route)

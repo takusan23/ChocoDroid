@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
  * @param state ミニプレイヤー操作用
  * @param mediaUrlData ストリーミング情報
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移をしてほしいときに呼ばれる
+ * @param miniPlayerState ミニプレーヤーの状態変更するやつ
  * */
 @Composable
 fun VideoControlUI(
@@ -42,12 +43,14 @@ fun VideoControlUI(
     state: MiniPlayerState,
     mediaUrlData: MediaUrlData,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
+    miniPlayerState: MiniPlayerState,
 ) {
     // ダブルタップのシーク量。変更可能にする
     val doubleTapSeekValue = 5_000L
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
     // プレイヤー押したらプレイヤーUIを非表示にしたいので
     val isShowPlayerUI = remember { mutableStateOf(true) }
 
@@ -95,12 +98,12 @@ fun VideoControlUI(
                                     scope.launch {
                                         // 操作しない100ms後に実行
                                         delay(100L)
-                                        state.setState(if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) MiniPlayerStateValue.Default else MiniPlayerStateValue.MiniPlayer)
+                                        state.setState(if (state.currentState.value == MiniPlayerStateType.MiniPlayer) MiniPlayerStateType.Default else MiniPlayerStateType.MiniPlayer)
                                     }
                                 },
                                 content = {
                                     Icon(
-                                        painter = painterResource(id = if (state.currentState.value == MiniPlayerStateValue.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
+                                        painter = painterResource(id = if (state.currentState.value == MiniPlayerStateType.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
                                         contentDescription = null
                                     )
                                 }
@@ -194,6 +197,12 @@ fun VideoControlUI(
                                 Text(
                                     modifier = Modifier.padding(5.dp),
                                     text = TimeFormatTool.videoDurationToFormatText(controller.duration.value / 1000),
+                                )
+                                // 全画面ボタン
+                                FullscreenButton(
+                                    modifier = Modifier.padding(5.dp),
+                                    isFullscreen = miniPlayerState.currentState.value == MiniPlayerStateType.Fullscreen,
+                                    onFullscreenChange = { miniPlayerState.setState(if (it) MiniPlayerStateType.Fullscreen else MiniPlayerStateType.Default) }
                                 )
                             }
                         }

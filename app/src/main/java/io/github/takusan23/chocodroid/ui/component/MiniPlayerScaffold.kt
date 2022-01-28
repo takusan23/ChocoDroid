@@ -72,8 +72,8 @@ fun MiniPlayerScaffold(
                     MiniPlayerCompose(
                         modifier = Modifier.padding(bottom = bottomPadding), // 沈んでるので
                         state = miniPlayerState,
-                        backgroundContent = { },
                         playerContent = playerContent,
+                        backgroundContent = { },
                         detailContent = { detailContent() }
                     )
                 },

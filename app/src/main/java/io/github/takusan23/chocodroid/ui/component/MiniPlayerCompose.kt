@@ -10,8 +10,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.IntOffset
+import io.github.takusan23.chocodroid.ui.tool.detectBackComponentTapGestures
 import kotlin.math.roundToInt
 
 /**
@@ -38,7 +39,7 @@ fun MiniPlayerCompose(
     // ミニプレイヤーになるまでのしきい値。どこまで下にスワイプしたらミニプレイヤーにするかどうか
     val miniPlayerSlideValue = 500f
     // ミニプレイヤー時の横幅パーセント
-    val miniPlayerWidthPercent = 0.7f
+    val miniPlayerWidthPercent = 0.5f
 
     // 現在の状態
     val currentState = remember { mutableStateOf(MiniPlayerStateType.Default) }
@@ -118,21 +119,12 @@ fun MiniPlayerCompose(
                                 }
                             )
                         }
-/*
                         .pointerInput(Unit) {
-                            forEachGesture {
-                                awaitPointerEventScope {
-                                    val event = waitForUpOrCancellation()
-                                    println(" はい：${event?.type}")
-                                }
-                            }
-                        }
-*/
-                        .pointerInput(Unit) {
-                            detectTapGestures(onLongPress = {
-                                currentPlayerWidthPercent.value = 1f
+                            // ミニプレイヤー押したら元に戻す
+                            detectBackComponentTapGestures {
                                 currentState.value = MiniPlayerStateType.Default
-                            })
+                                currentPlayerWidthPercent.value = 1f
+                            }
                         },
                     content = playerContent
                 )

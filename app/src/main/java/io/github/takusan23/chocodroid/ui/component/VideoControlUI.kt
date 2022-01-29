@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -149,7 +151,10 @@ fun VideoControlUI(
                             Image(
                                 modifier = Modifier
                                     .size(60.dp)
-                                    .clickable { controller.exoPlayer.playWhenReady = !controller.exoPlayer.playWhenReady },
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = rememberRipple(bounded = false, radius = 30.dp)
+                                    ) { controller.exoPlayer.playWhenReady = !controller.exoPlayer.playWhenReady },
                                 painter = painterResource(id = if (controller.exoPlayer.playWhenReady) R.drawable.ic_outline_pause_24 else R.drawable.ic_outline_play_arrow_24),
                                 colorFilter = ColorFilter.tint(Color.White),
                                 contentDescription = null

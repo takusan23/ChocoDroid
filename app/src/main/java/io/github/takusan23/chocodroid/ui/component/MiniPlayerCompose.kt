@@ -42,8 +42,8 @@ fun MiniPlayerCompose(
     val miniPlayerWidthPercent = 0.5f
 
     // 現在の状態
-    val currentState = remember { mutableStateOf(MiniPlayerStateType.Default) }
-    // 現在のミニプレーヤーの横幅（パーセント）
+    val currentState = state.currentState /*remember { mutableStateOf(MiniPlayerStateType.Default) }*/
+    // 現在のミニプレーヤーの横幅（パーセント） 1f ～ miniPlayerWidthPercent の範囲
     val currentPlayerWidthPercent = remember { mutableStateOf(1f) }
     // ミニプレイヤーの位置。translationなんたらみたいなやつ
     val offsetX = remember { mutableStateOf(0f) }
@@ -52,6 +52,26 @@ fun MiniPlayerCompose(
     val isDragging = remember { mutableStateOf(false) }
     // 終了可能な場合はtrue
     val isAvailableEndOfLife = remember { mutableStateOf(false) }
+
+    // 1fから0.5f までのパーセンテージを 1fから0f へ変換する
+    LaunchedEffect(key1 = currentPlayerWidthPercent.value, block = {
+        state.progress.value = (currentPlayerWidthPercent.value / miniPlayerWidthPercent) - 1f
+    })
+
+    /** プレイヤーを元に戻す関数 */
+    fun toDefaultPlayer() {
+        currentState.value = MiniPlayerStateType.Default
+        currentPlayerWidthPercent.value = 1f
+    }
+
+    /** ドラッグ操作が終了した際に呼ぶ */
+    fun setDragCancel() {
+        // ミニプレイヤー遷移中なら戻す
+        if (currentState.value != MiniPlayerStateType.MiniPlayer) {
+            toDefaultPlayer()
+        }
+        isDragging.value = false
+    }
 
     // 親Viewの大きさを取るのに使った。
     BoxWithConstraints(modifier = modifier) {
@@ -80,7 +100,7 @@ fun MiniPlayerCompose(
             // 後ろに描画するものがあれば
             backgroundContent()
 
-            Column(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 Box(
                     modifier = Modifier
                         .offset { IntOffset(x = animOffsetX.value.roundToInt(), y = animOffsetY.value.roundToInt()) } // 位置
@@ -90,8 +110,8 @@ fun MiniPlayerCompose(
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = { isDragging.value = true },
-                                onDragCancel = { isDragging.value = false },
-                                onDragEnd = { isDragging.value = false },
+                                onDragCancel = { setDragCancel() },
+                                onDragEnd = { setDragCancel() },
                                 onDrag = { change, dragAmount ->
                                     change.consumed.downChange = false
                                     val dragY = dragAmount.y
@@ -122,8 +142,7 @@ fun MiniPlayerCompose(
                         .pointerInput(Unit) {
                             // ミニプレイヤー押したら元に戻す
                             detectBackComponentTapGestures {
-                                currentState.value = MiniPlayerStateType.Default
-                                currentPlayerWidthPercent.value = 1f
+                                toDefaultPlayer()
                             }
                         },
                     content = playerContent
@@ -133,6 +152,7 @@ fun MiniPlayerCompose(
                 if (currentState.value == MiniPlayerStateType.Default) {
                     Box(
                         modifier = Modifier
+                            .offset { IntOffset(0, ((boxWidth / 16) * 9).roundToInt()) }
                             .alpha(currentPlayerWidthPercent.value), // 薄くしていく。重そう
                         content = detailContent
                     )
@@ -277,25 +297,10 @@ class MiniPlayerState(
     val onStateChange: (MiniPlayerStateType) -> Unit,
 ) {
     /** プレイヤーの状態 */
-    var currentState = mutableStateOf(initialValue)
+    val currentState = mutableStateOf(initialValue)
 
     /** プレイヤーの遷移状態。 */
     val progress = mutableStateOf(0f)
-
-    /** ドラッグ操作無効時はtrue */
-    val isDisableDragGesture = mutableStateOf(false)
-
-    val offsetX = mutableStateOf(0f)
-
-    /** プレイヤーの状態を更新する */
-    fun setState(toState: MiniPlayerStateType) {
-        currentState.value = toState
-    }
-
-    /** ドラッグ操作を無効にする場合はtrue */
-    fun isDisableDraggableGesture(isDisabled: Boolean) {
-        isDisableDragGesture.value = isDisabled
-    }
 
     companion object {
 

@@ -41,7 +41,7 @@ fun MiniPlayerScaffold(
     bottomSheetContent: @Composable() (ColumnScope.() -> Unit) = {},
     content: @Composable () -> Unit,
 ) {
-    val alpha = kotlin.math.max(miniPlayerState.progress.value, 0f)
+    val alpha = 1f - kotlin.math.max(miniPlayerState.progress.value, 0f)
 
     // ボトムシート
     ModalBottomSheetLayout(

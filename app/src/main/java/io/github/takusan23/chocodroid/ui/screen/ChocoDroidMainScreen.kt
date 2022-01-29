@@ -59,7 +59,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
             if (miniPlayerState.currentState.value == MiniPlayerStateType.Default) {
-                SetBackKeyEvent { miniPlayerState.setState(MiniPlayerStateType.MiniPlayer) }
+                SetBackKeyEvent { miniPlayerState.currentState.value = MiniPlayerStateType.MiniPlayer }
             }
 
             // スリープモード制御
@@ -75,7 +75,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
-                miniPlayerState.setState(if (watchPageResponseData.value != null) MiniPlayerStateType.Default else MiniPlayerStateType.End)
+                miniPlayerState.currentState.value = if (watchPageResponseData.value != null) MiniPlayerStateType.Default else MiniPlayerStateType.End
             })
 
             // Snackbar出す

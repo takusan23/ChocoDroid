@@ -100,7 +100,7 @@ fun VideoControlUI(
                                     scope.launch {
                                         // 操作しない100ms後に実行
                                         delay(100L)
-                                        state.currentState.value = if (state.currentState.value == MiniPlayerStateType.MiniPlayer) MiniPlayerStateType.Default else MiniPlayerStateType.MiniPlayer
+                                        state.setState(if (state.currentState.value == MiniPlayerStateType.MiniPlayer) MiniPlayerStateType.Default else MiniPlayerStateType.MiniPlayer)
                                     }
                                 },
                                 content = {
@@ -207,7 +207,7 @@ fun VideoControlUI(
                                 FullscreenButton(
                                     modifier = Modifier.padding(5.dp),
                                     isFullscreen = miniPlayerState.currentState.value == MiniPlayerStateType.Fullscreen,
-                                    onFullscreenChange = { miniPlayerState.currentState.value = if (it) MiniPlayerStateType.Fullscreen else MiniPlayerStateType.Default }
+                                    onFullscreenChange = { miniPlayerState.setState(if (it) MiniPlayerStateType.Fullscreen else MiniPlayerStateType.Default) }
                                 )
                             }
                         }

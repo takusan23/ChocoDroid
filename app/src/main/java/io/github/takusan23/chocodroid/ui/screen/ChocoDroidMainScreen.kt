@@ -45,9 +45,9 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // BottomSheetの状態
             val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
             // 動画ミニプレイヤー
-            val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateType.End) {
+            val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateType.EndOrHide) {
                 // 終了したら
-                if (it == MiniPlayerStateType.End) {
+                if (it == MiniPlayerStateType.EndOrHide) {
                     viewModel.closePlayer()
                 }
             }
@@ -59,7 +59,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
             if (miniPlayerState.currentState.value == MiniPlayerStateType.Default) {
-                SetBackKeyEvent { miniPlayerState.currentState.value = MiniPlayerStateType.MiniPlayer }
+                SetBackKeyEvent { miniPlayerState.setState(MiniPlayerStateType.MiniPlayer) }
             }
 
             // スリープモード制御
@@ -75,7 +75,9 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
-               // miniPlayerState.currentState.value = if (watchPageResponseData.value != null) MiniPlayerStateType.Default else MiniPlayerStateType.End
+                miniPlayerState.setState(if (watchPageResponseData.value != null) {
+                    MiniPlayerStateType.Default
+                } else MiniPlayerStateType.EndOrHide)
             })
 
             // Snackbar出す

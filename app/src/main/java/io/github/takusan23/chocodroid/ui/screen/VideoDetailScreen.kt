@@ -56,7 +56,7 @@ fun VideoDetailScreen(
                                 watchPageData = watchPageData,
                                 onNavigate = {
                                     mainNavHostController.navigate(it)
-                                    miniPlayerState.currentState.value = MiniPlayerStateType.MiniPlayer
+                                    miniPlayerState.setState(MiniPlayerStateType.MiniPlayer)
                                 },
                                 isExpanded = isExpandedDescription.value,
                                 onOpenClick = { isExpandedDescription.value = it }

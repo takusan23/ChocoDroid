@@ -51,7 +51,7 @@ fun MiniPlayerScaffold(
         content = {
             Scaffold(
                 modifier = modifier,
-                bottomBar = { if (alpha > 0.01f) Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
+                bottomBar = { if (alpha > 0.5f) Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
                 content = {
                     // topBar / bottomBar 分のPaddingを足す
                     Box(modifier = Modifier.padding(it)) {

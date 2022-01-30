@@ -77,8 +77,7 @@ fun HistoryScreen(
                                 onClick = { mainViewModel.loadWatchPage(it) },
                                 onMenuClick = {
                                     onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                        it.videoId,
-                                        it.videoTitle,
+                                        commonVideoData = it,
                                         isHistory = true
                                     ))
                                 }

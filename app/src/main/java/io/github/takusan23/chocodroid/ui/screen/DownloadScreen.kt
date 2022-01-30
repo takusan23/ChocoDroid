@@ -69,8 +69,7 @@ fun DownloadScreen(
                                 onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
                                 onMenuClick = { videoData ->
                                     onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                        videoData.videoId,
-                                        videoData.videoTitle,
+                                        commonVideoData = videoData,
                                         isDownloadContent = true
                                     ))
                                 }

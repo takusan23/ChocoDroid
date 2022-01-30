@@ -141,7 +141,11 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                     ChocoDroidBottomSheetNavigation(
                         mainScreenViewModel = viewModel,
                         bottomSheetInitData = bottomSheetInitData.value,
-                        modalBottomSheetState = modalBottomSheetState
+                        modalBottomSheetState = modalBottomSheetState,
+                        onBottomSheetNavigate = {
+                            viewModel.navigateBottomSheet(it)
+                            scope.launch { modalBottomSheetState.show() }
+                        }
                     )
                 },
                 content = {

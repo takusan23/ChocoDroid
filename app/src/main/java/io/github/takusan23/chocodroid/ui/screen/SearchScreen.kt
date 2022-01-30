@@ -93,7 +93,7 @@ fun SearchScreen(
                         videoList = videoList.value,
                         onRefresh = { scope.launch { viewModel.reSearch() } },
                         onClick = onClick,
-                        onMenuClick = { onBottomSheetNavigate(VideoListMenuScreenInitData(it.videoId, it.videoTitle)) }
+                        onMenuClick = { onBottomSheetNavigate(VideoListMenuScreenInitData(it)) }
                     )
                 }
             )

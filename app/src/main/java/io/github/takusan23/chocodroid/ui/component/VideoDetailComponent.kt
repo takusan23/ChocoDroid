@@ -171,7 +171,7 @@ fun VideoDetailRecommendVideoList(
                     VideoListItem(
                         commonVideoData = it,
                         onClick = onClick,
-                        onMenuClick = { onMenuClick(VideoListMenuScreenInitData(it.videoId, it.videoTitle)) }
+                        onMenuClick = { onMenuClick(VideoListMenuScreenInitData(it)) }
                     )
                 }
             }

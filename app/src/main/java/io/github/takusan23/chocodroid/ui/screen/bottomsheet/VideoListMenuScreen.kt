@@ -22,6 +22,7 @@ import io.github.takusan23.chocodroid.service.ContentDownloadService
 import io.github.takusan23.chocodroid.service.DownloadContentBackgroundPlayerService
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.viewmodel.VideoListMenuScreenViewModel
+import io.github.takusan23.internet.data.CommonVideoData
 import kotlinx.coroutines.launch
 
 /**
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
  * @param initData メニューに渡すデータクラス
  * @param snackbarHostState Snackbarだすやつ
  * @param onClose 閉じてほしいときに呼ばれる
+ * @param onBottomSheetNavigate ボトムシートを出してほしいときに呼ばれる
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +40,7 @@ fun VideoListMenuScreen(
     viewModel: VideoListMenuScreenViewModel = viewModel(),
     initData: VideoListMenuScreenInitData,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
     onClose: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -45,9 +48,28 @@ fun VideoListMenuScreen(
     val paddingModifier = Modifier.padding(start = 5.dp, top = 5.dp, end = 5.dp)
 
     VideoListMenuScreen(
-        videoTitle = initData.videoTitle,
+        videoTitle = initData.commonVideoData.videoTitle,
         snackbarHostState = snackbarHostState,
         content = {
+
+            // お気に入りフォルダ追加
+            FavoriteItemAddButton(paddingModifier) {
+                onBottomSheetNavigate(AddVideoToFavoriteFolderScreenInitData(initData.commonVideoData))
+            }
+
+            // お気に入り削除ボタン
+            initData.folderId?.let { folderId ->
+                FavoriteVideoDeleteButton(
+                    modifier = paddingModifier,
+                    snackbarHostState = snackbarHostState,
+                    videoId = initData.commonVideoData.videoId,
+                    folderId = folderId,
+                    onDeleteClick = { videoId, folderId ->
+                        viewModel.deleteFavoriteVideoItem(videoId, folderId)
+                        onClose()
+                    }
+                )
+            }
 
             if (initData.isDownloadContent) {
                 // ダウンロードのときのみ
@@ -55,7 +77,7 @@ fun VideoListMenuScreen(
                     modifier = paddingModifier,
                     onClick = {
                         scope.launch {
-                            viewModel.copyFileToVideoOrMusicFolder(initData.videoId)
+                            viewModel.copyFileToVideoOrMusicFolder(initData.commonVideoData.videoId)
                             Toast.makeText(context, context.getString(R.string.copy_successful), Toast.LENGTH_SHORT).show()
                             onClose()
                         }
@@ -66,7 +88,7 @@ fun VideoListMenuScreen(
                     onClick = {
                         DownloadContentBackgroundPlayerService.startService(
                             context = context,
-                            startVideoId = initData.videoId
+                            startVideoId = initData.commonVideoData.videoId
                         )
                     }
                 )
@@ -74,7 +96,7 @@ fun VideoListMenuScreen(
                     modifier = paddingModifier,
                     snackbarHostState = snackbarHostState,
                     onDeleteClick = {
-                        viewModel.deleteDownloadContent(initData.videoId)
+                        viewModel.deleteDownloadContent(initData.commonVideoData.videoId)
                         onClose()
                     }
                 )
@@ -84,7 +106,7 @@ fun VideoListMenuScreen(
                     modifier = paddingModifier,
                     onClick = {
                         ContentDownloadService.startDownloadService(context, DownloadRequestData(
-                            videoId = initData.videoId,
+                            videoId = initData.commonVideoData.videoId,
                             isAudioOnly = false,
                             quality = null
                         ))
@@ -99,23 +121,9 @@ fun VideoListMenuScreen(
                     snackbarHostState = snackbarHostState,
                     onDelete = {
                         scope.launch {
-                            viewModel.deleteHistoryFromVideoId(initData.videoId)
+                            viewModel.deleteHistoryFromVideoId(initData.commonVideoData.videoId)
                             onClose()
                         }
-                    }
-                )
-            }
-
-            // お気に入り削除ボタン
-            initData.folderId?.let { folderId ->
-                FavoriteVideoDeleteButton(
-                    modifier = paddingModifier,
-                    snackbarHostState = snackbarHostState,
-                    videoId = initData.videoId,
-                    folderId = folderId,
-                    onDeleteClick = { videoId, folderId ->
-                        viewModel.deleteFavoriteVideoItem(videoId, folderId)
-                        onClose()
                     }
                 )
             }
@@ -163,15 +171,13 @@ private fun VideoListMenuScreen(
 /**
  * [VideoListMenuScreen]を表示する際に渡すデータ
  *
- * @param videoId 動画ID
- * @param videoTitle 動画タイトル
+ * @param commonVideoData 動画情報データクラス
  * @param folderId お気に入りフォルダ内の動画の場合はフォルダIDを入れる
  * @param isDownloadContent ダウンロード済みコンテンツの場合はtrue
  * @param isHistory 履歴一覧から表示の場合はtrue。履歴削除ボタンを表示します
  */
 data class VideoListMenuScreenInitData(
-    val videoId: String,
-    val videoTitle: String,
+    val commonVideoData: CommonVideoData,
     val folderId: Int? = null,
     val isDownloadContent: Boolean = false,
     val isHistory: Boolean = false,

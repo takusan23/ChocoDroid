@@ -8,14 +8,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.database.db.FavoriteDB
 import io.github.takusan23.chocodroid.ui.component.LeftStartTextButton
 import io.github.takusan23.chocodroid.ui.tool.SnackbarComposeTool
 
@@ -36,7 +34,6 @@ fun FavoriteVideoDeleteButton(
     onDeleteClick: suspend (String, Int) -> Unit,
 ) {
     val context = LocalContext.current
-    val database = remember { FavoriteDB.getInstance(context) }
     val scope = rememberCoroutineScope()
 
     LeftStartTextButton(
@@ -54,6 +51,28 @@ fun FavoriteVideoDeleteButton(
             Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null)
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = stringResource(id = R.string.video_list_menu_delete_favorite))
+        }
+    )
+}
+
+/**
+ * 動画ボトムシートメニューのお気に入り追加ボタン
+ *
+ * @param modifier [Modifier]
+ * @param onClick 押したときに呼ばれる
+ * */
+@Composable
+fun FavoriteItemAddButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    LeftStartTextButton(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        content = {
+            Icon(painter = painterResource(id = R.drawable.ic_outline_folder_special_24), contentDescription = null)
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(id = R.string.add_favourite_list))
         }
     )
 }

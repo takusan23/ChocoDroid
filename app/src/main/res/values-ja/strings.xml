@@ -73,5 +73,5 @@
     <string name="search_sort_post_date">"投稿日時順 "</string>
     <string name="search_sort_view_count">"再生数順 "</string>
     <string name="search_sort_review">レビュー順</string>
-    <string name="miniplayer_close_area_text">Drag here to end the player</string>
+    <string name="miniplayer_close_area_text">プレイヤーを終了させるにはここにドラッグ</string>
 </resources>

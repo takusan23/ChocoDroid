@@ -72,9 +72,8 @@ fun FavoriteVideoListScreen(
                         onClick = onVideoLoad,
                         onMenuClick = { data ->
                             onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                data.videoId,
-                                data.videoTitle,
-                                folderId
+                                commonVideoData = data,
+                                folderId = folderId
                             ))
                         }
                     )

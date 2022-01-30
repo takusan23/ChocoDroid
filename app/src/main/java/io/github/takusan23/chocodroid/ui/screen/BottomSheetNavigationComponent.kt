@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
  * @param mainScreenViewModel メイン画面ViewModel
  * @param bottomSheetInitData 画面遷移データ。nullでも落ちません
  * @param modalBottomSheetState ボトムシート制御用
+ * @param onBottomSheetNavigate ボトムシートを出してほしいときに呼ばれる
  * */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -29,6 +30,7 @@ fun ChocoDroidBottomSheetNavigation(
     mainScreenViewModel: MainScreenViewModel,
     bottomSheetInitData: BottomSheetInitData?,
     modalBottomSheetState: ModalBottomSheetState,
+    onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -62,7 +64,8 @@ fun ChocoDroidBottomSheetNavigation(
                 BottomSheetInitData.BottomSheetScreenList.VideoListMenu -> {
                     VideoListMenuScreen(
                         initData = bottomSheetInitData as VideoListMenuScreenInitData,
-                        onClose = { scope.launch { modalBottomSheetState.hide() } }
+                        onClose = { scope.launch { modalBottomSheetState.hide() } },
+                        onBottomSheetNavigate = onBottomSheetNavigate
                     )
                 }
                 // お気に入りフォルダへ追加

@@ -53,7 +53,7 @@ fun AddVideoToFavoriteFolderScreen(
             onActionPerformed = {
                 // 追加
                 val isAdded = viewModel.addVideoToFavoriteFolder(
-                    folderId,
+                    folderId = folderId,
                     commonVideoData = initData.commonVideoData
                 )
                 val toastMessage = if (isAdded) context.getString(R.string.add_successful) else context.getString(R.string.already_added)

@@ -191,6 +191,9 @@ fun MiniPlayerCompose(
 
 /**
  * ミニプレイヤーをここにドラッグして削除のUI
+ *
+ * @param modifier [Modifier]
+ * @param isVisible 表示する場合はtrue
  * */
 @Composable
 private fun MiniPlayerDeleteArea(
@@ -201,7 +204,7 @@ private fun MiniPlayerDeleteArea(
     BoxWithConstraints(modifier = modifier) {
         // ミニプレイヤー時の高さだけ表示
         val miniPlayerWidth = maxWidth * miniPlayerWidthPercent
-        // 削除部分
+        // 終了UIの高さ
         val miniPlayerHeight = (miniPlayerWidth / 16) * 9
         // 表示 / 非表示 で高さが変わるやつ
         val deleteAreaHeight = animateDpAsState(targetValue = if (isVisible) miniPlayerHeight else 0.dp)

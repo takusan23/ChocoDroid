@@ -1,17 +1,27 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.tool.detectBackComponentTapGestures
 import kotlin.math.roundToInt
 
@@ -100,68 +110,122 @@ fun MiniPlayerCompose(
             else -> offsetY.value // 何もなければ現状のオフセットを使う
         }, finishedListener = { offsetY.value = it })
 
-        Box(modifier = Modifier) {
+        Box(modifier = Modifier.fillMaxSize()) {
+
             // 後ろに描画するものがあれば
             backgroundContent()
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                Box(
-                    modifier = Modifier
-                        .offset { IntOffset(x = animOffsetX.value.roundToInt(), y = animOffsetY.value.roundToInt()) } // 位置
-                        .background(Color.Black)
-                        .fillMaxWidth(currentPlayerWidthPercent.value)
-                        .aspectRatio(1.7f) // 16:9を維持
-                        .pointerInput(Unit) {
-                            detectDragGestures(
-                                onDragStart = { isDragging.value = true },
-                                onDragCancel = { setDragCancel() },
-                                onDragEnd = { setDragCancel() },
-                                onDrag = { change, dragAmount ->
-                                    change.consumed.downChange = false
-                                    val dragY = dragAmount.y
-                                    // 0以下だと画面外なので対策
-                                    offsetY.value = maxOf(offsetY.value + dragY, 0f)
-                                    // 一定まで移動させたらミニプレーヤーへ遷移
-                                    if (currentState.value != MiniPlayerStateType.MiniPlayer) {
-                                        // パーセント再計算
-                                        currentPlayerWidthPercent.value = maxOf(miniPlayerWidthPercent, 1f - (offsetY.value / miniPlayerSlideValue))
-                                        // 状態変更
-                                        currentState.value = if (currentPlayerWidthPercent.value == miniPlayerWidthPercent) MiniPlayerStateType.MiniPlayer else MiniPlayerStateType.Default
-                                        // ちょっとずつY軸もずらすことで真ん中へ
-                                        offsetX.value = (boxWidth / 2) * (1f - currentPlayerWidthPercent.value)
-                                    } else {
-                                        val playerWidth = boxWidth * currentPlayerWidthPercent.value
-                                        // ミニプレイヤー時はY軸の操作も可能にする。画面外対策コード
-                                        offsetX.value = if (offsetX.value + dragAmount.x in 0f..(boxWidth - playerWidth)) {
-                                            offsetX.value + dragAmount.x
-                                        } else offsetX.value
-                                    }
-                                    // 画面外に入れたら終了可能フラグを立てる
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(x = animOffsetX.value.roundToInt(), y = animOffsetY.value.roundToInt()) } // 位置
+                    .background(Color.Black)
+                    .fillMaxWidth(currentPlayerWidthPercent.value)
+                    .aspectRatio(1.7f) // 16:9を維持
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { isDragging.value = true },
+                            onDragCancel = { setDragCancel() },
+                            onDragEnd = { setDragCancel() },
+                            onDrag = { change, dragAmount ->
+                                change.consumed.downChange = false
+                                val dragY = dragAmount.y
+                                // 0以下だと画面外なので対策
+                                offsetY.value = maxOf(offsetY.value + dragY, 0f)
+                                // 一定まで移動させたらミニプレーヤーへ遷移
+                                if (currentState.value != MiniPlayerStateType.MiniPlayer) {
+                                    // パーセント再計算
+                                    currentPlayerWidthPercent.value = maxOf(miniPlayerWidthPercent, 1f - (offsetY.value / miniPlayerSlideValue))
+                                    // 状態変更
+                                    currentState.value = if (currentPlayerWidthPercent.value == miniPlayerWidthPercent) MiniPlayerStateType.MiniPlayer else MiniPlayerStateType.Default
+                                    // ちょっとずつY軸もずらすことで真ん中へ
+                                    offsetX.value = (boxWidth / 2) * (1f - currentPlayerWidthPercent.value)
+                                } else {
                                     val playerWidth = boxWidth * currentPlayerWidthPercent.value
-                                    val playerHeight = (playerWidth / 16) * 9
-                                    isAvailableEndOfLife.value = offsetY.value >= (boxHeight - playerHeight)
+                                    // ミニプレイヤー時はY軸の操作も可能にする。画面外対策コード
+                                    offsetX.value = if (offsetX.value + dragAmount.x in 0f..(boxWidth - playerWidth)) {
+                                        offsetX.value + dragAmount.x
+                                    } else offsetX.value
                                 }
-                            )
-                        }
-                        .pointerInput(Unit) {
-                            // ミニプレイヤー押したら元に戻すため
-                            // 親コンポーネントでもクリックイベントを受け取る独自のやつ
-                            detectBackComponentTapGestures {
-                                state.setState(MiniPlayerStateType.Default)
+                                // 画面外に入れたら終了可能フラグを立てる
+                                val playerWidth = boxWidth * currentPlayerWidthPercent.value
+                                val playerHeight = (playerWidth / 16) * 9
+                                isAvailableEndOfLife.value = offsetY.value >= (boxHeight - playerHeight)
                             }
-                        },
-                    content = playerContent
-                )
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        // ミニプレイヤー押したら元に戻すため
+                        // 親コンポーネントでもクリックイベントを受け取る独自のやつ
+                        detectBackComponentTapGestures {
+                            state.setState(MiniPlayerStateType.Default)
+                        }
+                    },
+                content = playerContent
+            )
 
-                // 動画説明文
-                if (currentState.value == MiniPlayerStateType.Default) {
+            // ここにドラッグしたら削除できますよ案内
+            MiniPlayerDeleteArea(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                isVisible = isDragging.value && currentState.value == MiniPlayerStateType.MiniPlayer,
+            )
+
+            // 動画説明文
+            if (currentState.value == MiniPlayerStateType.Default) {
+                Column {
+                    // 動画再生部分のスペース
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1.7f)
+                    )
                     Box(
                         modifier = Modifier
-                            .offset { IntOffset(0, ((boxWidth / 16) * 9).roundToInt()) }
                             .alpha(currentPlayerWidthPercent.value), // 薄くしていく。重そう
                         content = detailContent
                     )
                 }
+            }
+        }
+    }
+}
+
+/**
+ * ミニプレイヤーをここにドラッグして削除のUI
+ * */
+@Composable
+private fun MiniPlayerDeleteArea(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean = false,
+) {
+    // 親の大きさを取得
+    BoxWithConstraints(modifier = modifier) {
+        // ミニプレイヤー時の高さだけ表示
+        val miniPlayerWidth = maxWidth * miniPlayerWidthPercent
+        // 削除部分
+        val miniPlayerHeight = (miniPlayerWidth / 16) * 9
+        // 表示 / 非表示 で高さが変わるやつ
+        val deleteAreaHeight = animateDpAsState(targetValue = if (isVisible) miniPlayerHeight else 0.dp)
+
+        // ここにドラッグしてプレイヤー終了
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(deleteAreaHeight.value),
+            color = Color.Red.copy(alpha = 0.8f),
+            contentColor = Color.White,
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_outline_close_24),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(text = stringResource(id = R.string.miniplayer_close_area_text))
             }
         }
     }

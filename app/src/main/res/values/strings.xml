@@ -73,4 +73,5 @@
     <string name="search_sort_post_date">Post date and time order</string>
     <string name="search_sort_view_count">In order of number of views</string>
     <string name="search_sort_review">Review order</string>
+    <string name="miniplayer_close_area_text">Drag here to end the player</string>
 </resources>

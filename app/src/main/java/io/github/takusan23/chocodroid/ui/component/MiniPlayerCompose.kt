@@ -18,8 +18,6 @@ import kotlin.math.roundToInt
 /**
  * ミニプレイヤー。KotlinとComposeでできている
  *
- * たちみどろいどで使ってたやつ
- *
  * これを親にするのでプレイヤーの裏側になにか描画したい内容があれば[backgroundContent]を使ってください。
  *
  * @param modifier Modifier
@@ -53,7 +51,7 @@ fun MiniPlayerCompose(
     // 終了可能な場合はtrue
     val isAvailableEndOfLife = remember { mutableStateOf(false) }
 
-    // 1fから0.5f までのパーセンテージを 1fから0f へ変換する
+    // 1fから0.5f までのパーセンテージを 1fから0f へ変換して外部へ状態を提供する
     LaunchedEffect(key1 = currentPlayerWidthPercent.value, block = {
         state.progress.value = (currentPlayerWidthPercent.value / miniPlayerWidthPercent) - 1f
     })
@@ -140,7 +138,8 @@ fun MiniPlayerCompose(
                             )
                         }
                         .pointerInput(Unit) {
-                            // ミニプレイヤー押したら元に戻す
+                            // ミニプレイヤー押したら元に戻すため
+                            // 親コンポーネントでもクリックイベントを受け取る独自のやつ
                             detectBackComponentTapGestures {
                                 toDefaultPlayer()
                             }

@@ -119,7 +119,7 @@ fun VideoControlUI(
                             )
                         }
                         // ミニプレイヤー時はこれ以降表示しない
-                        if (state.progress.value < 0.5f) {
+                        if (state.progress.value > 0.5f) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -141,7 +141,7 @@ fun VideoControlUI(
                         }
                     }
                     // ミニプレイヤー時はこれ以降表示しない
-                    if (state.progress.value < 0.5f) {
+                    if (state.progress.value > 0.5f) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

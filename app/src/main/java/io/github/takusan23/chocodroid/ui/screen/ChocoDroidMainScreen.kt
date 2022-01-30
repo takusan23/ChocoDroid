@@ -75,7 +75,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {
-                miniPlayerState.currentState.value = if (watchPageResponseData.value != null) MiniPlayerStateType.Default else MiniPlayerStateType.End
+               // miniPlayerState.currentState.value = if (watchPageResponseData.value != null) MiniPlayerStateType.Default else MiniPlayerStateType.End
             })
 
             // Snackbar出す

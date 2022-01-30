@@ -64,12 +64,18 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
-            // ナビゲーションバーの色。BottomNavigationの色に合わせている。ボトムシート表示中は色を戻す
-            SetNavigationBarColor(color = if (!modalBottomSheetState.isVisible) calcM3ElevationColor(
-                colorScheme = MaterialTheme.colorScheme,
-                color = MaterialTheme.colorScheme.surface,
-                elevation = 3.dp
-            ) else MaterialTheme.colorScheme.primaryContainer)
+
+            // ナビゲーションバーの色
+            // BottomNavigationの色に合わせている。ボトムシート表示中とか標準プレイヤー時の色
+            SetNavigationBarColor(color = when {
+                modalBottomSheetState.isVisible -> MaterialTheme.colorScheme.primaryContainer
+                miniPlayerState.currentState.value == MiniPlayerStateType.Default -> MaterialTheme.colorScheme.primaryContainer
+                else -> calcM3ElevationColor(
+                    colorScheme = MaterialTheme.colorScheme,
+                    color = MaterialTheme.colorScheme.surface,
+                    elevation = 3.dp
+                )
+            })
             // ステータスバーの色
             SetStatusBarColor(color = MaterialTheme.colorScheme.primaryContainer)
 

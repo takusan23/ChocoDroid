@@ -29,12 +29,12 @@ jobs:
       
     # コマンドラインからAPKの作成。実行前に環境変数をGitHubActionsのSecretから取得
     - name: Building APK
-      run: |
+      env:
         ENV_SIGN_KEYSTORE_BASE64: ${{secrets.ENV_SIGN_KEYSTORE_BASE64}}
         ENV_SIGN_KEY_ALIAS: ${{secrets.ENV_SIGN_KEY_ALIAS}}
         ENV_SIGN_KEY_PASSWORD: ${{secrets.ENV_SIGN_KEY_PASSWORD}}
         ENV_SIGN_STORE_PASSWORD: ${{secrets.ENV_SIGN_STORE_PASSWORD}}
-        ./gradlew assembleRelease
+      run: ./gradlew assembleRelease
 
     # アーティファクトとして保存
     - name: Upload artifact

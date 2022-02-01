@@ -1,0 +1,39 @@
+name: Generate Release APK
+
+on:
+  # releaseブランチ更新時に起動する
+  push:
+    branches: [ release ]
+  # 手動実行ボタン
+  workflow_dispatch:
+    
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    # JDK導入
+    - uses: actions/checkout@v2
+    - name: set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
+    
+    # 権限を与える
+    - name: Grant permission gradlew
+      run: chmod +x gradlew
+      
+    # コマンドラインからAPKの作成。署名ファイル等は環境変数から持ってくる
+    - name: Building APK
+      run: ./gradlew assembleRelease
+
+    # アーティファクトとして保存
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release.apk
+        path: app/build/outputs/apk/release

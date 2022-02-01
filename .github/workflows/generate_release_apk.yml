@@ -27,9 +27,14 @@ jobs:
     - name: Grant permission gradlew
       run: chmod +x gradlew
       
-    # コマンドラインからAPKの作成。署名ファイル等は環境変数から持ってくる
+    # コマンドラインからAPKの作成。実行前に環境変数をGitHubActionsのSecretから取得
     - name: Building APK
-      run: ./gradlew assembleRelease
+      run: |
+        ENV_SIGN_KEYSTORE_BASE64: ${{secrets.ENV_SIGN_KEYSTORE_BASE64}}
+        ENV_SIGN_KEY_ALIAS: ${{secrets.ENV_SIGN_KEY_ALIAS}}
+        ENV_SIGN_KEY_PASSWORD: ${{secrets.ENV_SIGN_KEY_PASSWORD}}
+        ENV_SIGN_STORE_PASSWORD: ${{secrets.ENV_SIGN_STORE_PASSWORD}}
+        ./gradlew assembleRelease: ${{secrets.SECRET_HOGE}}
 
     # アーティファクトとして保存
     - name: Upload artifact

@@ -34,7 +34,7 @@ jobs:
         ENV_SIGN_KEY_ALIAS: ${{secrets.ENV_SIGN_KEY_ALIAS}}
         ENV_SIGN_KEY_PASSWORD: ${{secrets.ENV_SIGN_KEY_PASSWORD}}
         ENV_SIGN_STORE_PASSWORD: ${{secrets.ENV_SIGN_STORE_PASSWORD}}
-        ./gradlew assembleRelease: ${{secrets.SECRET_HOGE}}
+        ./gradlew assembleRelease
 
     # アーティファクトとして保存
     - name: Upload artifact

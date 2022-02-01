@@ -28,7 +28,7 @@ object AboutSettingScreen {
     const val TwitterId = "@takusan__23"
 
     /** 更新した日 */
-    const val UpdateReleaseDate = "2021-11-xx"
+    const val UpdateReleaseDate = "2022/02/02"
 }
 
 /**

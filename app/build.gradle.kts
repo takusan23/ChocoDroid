@@ -1,3 +1,5 @@
+import java.util.*
+
 val kotlinVersion: String by rootProject.extra
 val composeVersion: String by rootProject.extra
 
@@ -15,7 +17,7 @@ android {
         minSdk = 21
         targetSdk = 31
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.0 beta01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -30,12 +32,6 @@ android {
 
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -56,6 +52,49 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // APK作成と署名の設定
+    signingConfigs {
+        /**
+         * 予め GitHubActions の環境変数に入れておく
+         *
+         * ローカル環境で行う場合 (Windows cmd.exe)
+         *
+         * set ENV_SIGN_KEYSTORE_BASE64 = Base64エンコードした署名ファイル
+         * set ENV_SIGN_KEY_ALIAS = KeyAlias
+         * set ENV_SIGN_KEY_PASSWORD = KeyPassword
+         * set ENV_SIGN_STORE_PASSWORD = StorePassword
+         * */
+        create("release_signing_config") {
+            // 存在しない場合はとりあえずスルーする
+            if (System.getenv("ENV_SIGN_KEYSTORE_BASE64") != null) {
+                // GitHubActionsの環境変数に入れておいた署名ファイルがBase64でエンコードされているので戻す
+                System.getenv("ENV_SIGN_KEYSTORE_BASE64").let { base64 ->
+                    val decoder = Base64.getDecoder()
+                    // ルートフォルダに作成する
+                    File("keystore.jks").also { file ->
+                        file.createNewFile()
+                        file.writeBytes(decoder.decode(base64))
+                    }
+                }
+                // どうやら appフォルダ の中を見に行ってるみたいなのでプロジェクトのルートフォルダを指定する
+                storeFile = File(rootProject.projectDir, "keystore.jks")
+                keyAlias = System.getenv("ENV_SIGN_KEY_ALIAS")
+                keyPassword = System.getenv("ENV_SIGN_KEY_PASSWORD")
+                storePassword = System.getenv("ENV_SIGN_STORE_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            // 署名の設定を適用する
+            signingConfig = signingConfigs.getByName("release_signing_config")
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+
 }
 
 dependencies {

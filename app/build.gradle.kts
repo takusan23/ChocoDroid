@@ -82,7 +82,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
     // Compose + Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha02")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha04")
 
     // ExoPlayer。生放送用のHlsと、一部の動画はDashで配信されている
     implementation("com.google.android.exoplayer:exoplayer-core:2.16.1")

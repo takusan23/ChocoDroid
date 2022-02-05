@@ -74,4 +74,5 @@
     <string name="search_sort_view_count">"再生数順 "</string>
     <string name="search_sort_review">レビュー順</string>
     <string name="miniplayer_close_area_text">プレイヤーを終了させるにはここにドラッグ</string>
+    <string name="unavailable">利用できません</string>
 </resources>

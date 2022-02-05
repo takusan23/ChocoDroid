@@ -74,4 +74,5 @@
     <string name="search_sort_view_count">In order of number of views</string>
     <string name="search_sort_review">Review order</string>
     <string name="miniplayer_close_area_text">Drag here to end the player</string>
+    <string name="unavailable">unavailable</string>
 </resources>

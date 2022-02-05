@@ -113,6 +113,7 @@ dependencies {
     implementation("androidx.media:media:1.4.3")
 
     // Jetpack Compose
+    val composeVersion = "1.1.0-rc03"
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")

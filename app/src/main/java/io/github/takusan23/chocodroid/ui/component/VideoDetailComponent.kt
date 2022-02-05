@@ -105,6 +105,7 @@ fun VideoDetailInfoCard(
  * 動画情報で使うメニュー。ダウンロードとかお気に入り登録とか
  *
  * @param modifier [Modifier]
+ * @param watchPageData 視聴ページレスポンスデータ
  * @param onMenuClick 各メニュー押したら呼ばれる
  * */
 @Composable
@@ -113,28 +114,41 @@ fun VideoDetailMenu(
     watchPageData: WatchPageData,
     onMenuClick: (BottomSheetInitData) -> Unit,
 ) {
+    // プログレッシブ形式で配信してない場合はダウンロードボタンを塞ぐ
+    val isDisableDownloadButton = watchPageData.isHTTPStreaming()
+
     // ボタンリスト
     val buttonList = listOf(
         Triple(R.string.video_menu, R.drawable.ic_outline_more_vert_24, null),
         Triple(R.string.favourite, R.drawable.ic_outline_folder_special_24, AddVideoToFavoriteFolderScreenInitData(CommonVideoData(watchPageData.watchPageResponseJSONData))),
-        Triple(R.string.download, R.drawable.chocodroid_download, VideoDownloadScreenInitData(watchPageData))
+        Triple(R.string.download, R.drawable.chocodroid_download,
+            if (isDisableDownloadButton) null else VideoDownloadScreenInitData(watchPageData)
+        )
     )
 
     Row {
         buttonList.forEach { (stringResId, iconResId, data) ->
+
+            val isDisable = data == null
+
             Surface(
                 modifier = modifier
                     .padding(5.dp)
                     .weight(1f),
-                color = MaterialTheme.colorScheme.inversePrimary,
                 shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.inversePrimary,
                 content = {
-                    VideoDetailMenuItem(
-                        modifier = Modifier.weight(1f),
-                        stringResId = stringResId,
-                        iconResId = iconResId,
-                        onClick = { data?.let { onMenuClick(it) } }
-                    )
+                    if (isDisable) {
+                        // 無効時のボタン
+                        VideoDetailMenuDisableItem(modifier = Modifier.weight(1f))
+                    } else {
+                        VideoDetailMenuItem(
+                            modifier = Modifier.weight(1f),
+                            stringResId = stringResId,
+                            iconResId = iconResId,
+                            onClick = { data?.let { onMenuClick(it) } }
+                        )
+                    }
                 }
             )
         }
@@ -188,7 +202,12 @@ fun VideoDetailRecommendVideoList(
  * @param onClick 押したとき
  * */
 @Composable
-private fun VideoDetailMenuItem(modifier: Modifier, stringResId: Int, iconResId: Int, onClick: () -> Unit) {
+private fun VideoDetailMenuItem(
+    modifier: Modifier,
+    stringResId: Int,
+    iconResId: Int,
+    onClick: () -> Unit,
+) {
     Surface(
         modifier = modifier,
         color = Color.Transparent,
@@ -204,6 +223,21 @@ private fun VideoDetailMenuItem(modifier: Modifier, stringResId: Int, iconResId:
                 Text(text = stringResource(id = stringResId))
             }
         }
+    )
+}
+
+/**
+ * 利用できないメニューの項目
+ *
+ * @param modifier [Modifier]
+ * */
+@Composable
+private fun VideoDetailMenuDisableItem(modifier: Modifier) {
+    VideoDetailMenuItem(
+        modifier = modifier,
+        stringResId = R.string.unavailable,
+        iconResId = R.drawable.ic_baseline_block_24,
+        onClick = { }
     )
 }
 

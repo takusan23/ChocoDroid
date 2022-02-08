@@ -48,7 +48,7 @@
     <string name="source_code">Source code</string>
     <string name="twitter">Twitter</string>
     <string name="version">Version</string>
-    <string name="update_date">Update date</string>
+    <string name="build_update_date">Update date</string>
     <string name="add_favorite_folder">Add favorite folder</string>
     <string name="favorite_folder_empty">There is no favorite folder.</string>
     <string name="folder_name">Folder name</string>

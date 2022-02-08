@@ -30,6 +30,8 @@ android {
             }
         }
 
+        // ヒルド日時を Context#getString で参照可能にする
+        resValue("string", "build_date", System.currentTimeMillis().toString())
     }
 
     compileOptions {

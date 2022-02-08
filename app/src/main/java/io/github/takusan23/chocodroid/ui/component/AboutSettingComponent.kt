@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.chocodroid.ui.screen.setting.AboutSettingScreen
 
 /** このアプリについて のヘッダー部 */
@@ -46,55 +47,40 @@ fun AboutSettingHeader() {
 fun AboutSettingAppInfo() {
     val context = LocalContext.current
     val appInfo = remember { context.packageManager.getPackageInfo(context.packageName, 0) }
+    // アプリ更新日時、この値は string.xml ではなく build.gradle.kts によって作成されます。
+    val buildDate = TimeFormatTool.unixTimeToFormatText(stringResource(id = R.string.build_date).toLong())
 
-    Column {
-        Row(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .fillMaxWidth()
-        ) {
-            RoundedIconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 10.dp, end = 5.dp),
-                mainText = appInfo.versionName,
-                subText = stringResource(id = R.string.version),
-                iconPainter = painterResource(id = R.drawable.ic_outline_info_24),
-                onClick = { }
-            )
-            RoundedIconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 5.dp, end = 10.dp),
-                mainText = AboutSettingScreen.UpdateReleaseDate,
-                subText = stringResource(id = R.string.update_date),
-                iconPainter = painterResource(id = R.drawable.ic_outline_today_24),
-                onClick = { }
-            )
-        }
-        Row(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .fillMaxWidth()
-        ) {
-            RoundedIconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 10.dp, end = 5.dp),
-                mainText = stringResource(id = R.string.app_name),
-                subText = stringResource(id = R.string.source_code),
-                iconPainter = painterResource(id = R.drawable.ic_outline_open_in_browser_24),
-                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, AboutSettingScreen.SourceCodeGitHubUrl.toUri())) }
-            )
-            RoundedIconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 5.dp, end = 10.dp),
-                mainText = AboutSettingScreen.TwitterId,
-                subText = stringResource(id = R.string.twitter),
-                iconPainter = painterResource(id = R.drawable.ic_outline_open_in_browser_24),
-                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, AboutSettingScreen.TwitterUrl.toUri())) }
-            )
-        }
+    Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
+        RoundedIconButton(
+            modifier = Modifier,
+            mainText = appInfo.versionName,
+            subText = stringResource(id = R.string.version),
+            iconPainter = painterResource(id = R.drawable.ic_outline_info_24),
+        )
+        Spacer(modifier = Modifier.padding(5.dp))
+        RoundedIconButton(
+            modifier = Modifier,
+            mainText = buildDate,
+            subText = stringResource(id = R.string.build_update_date),
+            iconPainter = painterResource(id = R.drawable.ic_outline_today_24),
+        )
+        Spacer(modifier = Modifier.padding(5.dp))
+        RoundedIconButton(
+            modifier = Modifier,
+            mainText = stringResource(id = R.string.app_name),
+            subText = stringResource(id = R.string.source_code),
+            iconPainter = painterResource(id = R.drawable.ic_outline_open_in_browser_24),
+            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, AboutSettingScreen.SourceCodeGitHubUrl.toUri())) }
+        )
+        Spacer(modifier = Modifier.padding(5.dp))
+        RoundedIconButton(
+            modifier = Modifier,
+            mainText = AboutSettingScreen.TwitterId,
+            subText = stringResource(id = R.string.twitter),
+            iconPainter = painterResource(id = R.drawable.ic_outline_open_in_browser_24),
+            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, AboutSettingScreen.TwitterUrl.toUri())) }
+        )
+        Spacer(modifier = Modifier.padding(5.dp))
     }
+
 }

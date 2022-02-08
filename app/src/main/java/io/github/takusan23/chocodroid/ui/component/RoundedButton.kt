@@ -39,7 +39,7 @@ fun RoundedIconButton(
     mainText: String,
     subText: String,
     iconPainter: Painter,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) = RoundedButton(
     modifier = modifier,
     mainText = mainText,

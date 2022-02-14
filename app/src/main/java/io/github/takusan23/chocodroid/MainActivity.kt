@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
          * */
         if (savedInstanceState == null) {
             // 共有から起動
-            lunchFromShare()
+            launchFromShare()
             // ブラウザから起動
             launchFromBrowser()
         }
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /** 共有から起動したとき */
-    private fun lunchFromShare() {
+    private fun launchFromShare() {
         if (Intent.ACTION_SEND == intent.action) {
             val extras = intent.extras
             // URLを開く

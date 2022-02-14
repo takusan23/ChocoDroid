@@ -1,6 +1,5 @@
-package io.github.takusan23.internet.html
+package io.github.takusan23.internet.api
 
-import io.github.takusan23.internet.api.SearchAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 

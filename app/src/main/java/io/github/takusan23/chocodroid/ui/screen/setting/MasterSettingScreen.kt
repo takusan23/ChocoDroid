@@ -12,10 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.chocodroid.tool.DynamicColorLauncherIcon
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.SettingItem
 import io.github.takusan23.chocodroid.ui.component.SettingSwitchItem
@@ -35,7 +37,19 @@ fun MasterSettingScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = context.dataStore
+    // 設定内容が変わったら更新される
     val dataStoreFlow = context.dataStore.data.collectAsState(initial = null)
+
+    /**
+     * 設定内容をDataStoreへ保存する
+     *
+     * @param T 保存する型
+     * @param preferenceKey キー
+     * @param value 保存するデータ
+     * */
+    fun <T> editDataStore(preferenceKey: Preferences.Key<T>, value: T) {
+        scope.launch { dataStore.edit { it[preferenceKey] = value } }
+    }
 
     M3Scaffold(
         topBar = {
@@ -56,8 +70,21 @@ fun MasterSettingScreen(
                             description = stringResource(id = R.string.setting_enable_dynamic_color_description),
                             icon = painterResource(id = R.drawable.ic_outline_color_lens_24),
                             isEnable = dataStoreFlow.value?.get(SettingKeyObject.ENABLE_DYNAMIC_THEME) ?: false,
-                            onCheckedChange = { isEnable -> scope.launch { dataStore.edit { it[SettingKeyObject.ENABLE_DYNAMIC_THEME] = isEnable } } }
+                            onCheckedChange = { isEnable -> editDataStore(SettingKeyObject.ENABLE_DYNAMIC_THEME, isEnable) }
                         )
+                    }
+                    item {
+                        SettingSwitchItem(
+                            title = "ダイナミックカラー（動的テーマ）のアイコンを設定する",
+                            description = "Android 13以降のテーマアイコン機能を12へバックポートします",
+                            icon = painterResource(id = R.drawable.ic_outline_color_lens_24),
+                            isEnable = dataStoreFlow.value?.get(SettingKeyObject.ENABLE_DYNAMIC_COLOR_ICON) ?: false,
+                            onCheckedChange = { isEnable ->
+                                editDataStore(SettingKeyObject.ENABLE_DYNAMIC_COLOR_ICON, isEnable)
+                                DynamicColorLauncherIcon.setDynamicColorLauncherIcon(context, isEnable)
+                            }
+                        )
+
                     }
                     item {
                         SettingItem(

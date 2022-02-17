@@ -28,9 +28,6 @@ object SettingKeyObject {
     /** 単発リピート再生有効かどうか */
     val PLAYER_REPEAT_MODE = booleanPreferencesKey("player_repeat_mode")
 
-    /** Android 12以降で使えるダイナミックカラーを有効にするか */
-    val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
-
     /** 最後に再生した曲を保存する */
     val DOWNLOAD_CONTENT_BACKGROUND_PLAYER_LATEST_PLAYING_ID = stringPreferencesKey("download_content_background_player_latest_playing_id")
 
@@ -42,4 +39,12 @@ object SettingKeyObject {
 
     /** 前回選択した画質。動画バージョン */
     val PLAYER_QUALITY_VIDEO = stringPreferencesKey("player_quality_video")
+
+    /** 設定項目。別ファイルに切り出したほうが良さそう */
+
+    /** Android 12以降で使えるダイナミックカラーを有効にするか */
+    val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
+
+    /** 動的にアイコンを切り替える */
+    val ENABLE_DYNAMIC_COLOR_ICON = booleanPreferencesKey("enable_dynamic_color_icon")
 }

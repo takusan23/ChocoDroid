@@ -16,7 +16,7 @@ class HistoryScreenViewModel(application: Application) : BaseAndroidViewModel(ap
 
     /** 履歴一覧 */
     val historyDBDataListFlow = historyDB.historyDao().flowGetAll().map {
-        it.map { historyDBEntity -> historyDBEntity.convertToCommonVideoData(context) }
+        it.map { historyDBEntity -> historyDBEntity.convertToCommonVideoData() }
     }
 
     /** 履歴を全部消す */

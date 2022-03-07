@@ -264,7 +264,7 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
             exoPlayer.prepare()
             // MediaSessionのキュー
             mediaSession.setQueue(videoList.map {
-                val commonVideoData = it.toCommonVideoData(this)
+                val commonVideoData = it.convertCommonVideoData()
                 MediaSessionCompat.QueueItem(createMediaDescription(commonVideoData), it.id.toLong())
             })
             // 位置を出す。-1かもしれないのでmaxで大きい方を取る

@@ -1,10 +1,8 @@
 package io.github.takusan23.chocodroid.database.entity
 
-import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
@@ -47,13 +45,12 @@ data class DownloadContentDBEntity(
     /**
      * [CommonVideoData]形式へ変換する
      *
-     * @param context [Context]
      * @return [CommonVideoData]
      * */
-    fun toCommonVideoData(context: Context): CommonVideoData {
+    fun convertCommonVideoData(): CommonVideoData {
         val responseJSONData = WatchPageData.decodeWatchPageResponseDataFromString(watchPageResponseJSON)
         return CommonVideoData(responseJSONData).copy(
-            watchCount = "${context.getString(R.string.watch_count)} : ${localWatchCount}",
+            watchCount = localWatchCount.toString(),
             thumbnailUrl = "file://${thumbnailPath}",
         )
     }

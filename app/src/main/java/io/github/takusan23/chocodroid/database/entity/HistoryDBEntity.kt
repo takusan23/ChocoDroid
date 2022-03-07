@@ -1,10 +1,8 @@
 package io.github.takusan23.chocodroid.database.entity
 
-import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.CommonVideoData
 
 /**
@@ -37,14 +35,13 @@ data class HistoryDBEntity(
 
     /**
      * [CommonVideoData]へ変換する。一覧表示がこの形式なので
-     * @param context Context
      * @return [CommonVideoData]
      * */
-    fun convertToCommonVideoData(context: Context) = CommonVideoData(
+    fun convertToCommonVideoData() = CommonVideoData(
         videoId = videoId,
         videoTitle = title,
         duration = duration,
-        watchCount = "${context.getString(R.string.watch_count)} : $localWatchCount",
+        watchCount = localWatchCount.toString(),
         publishDate = publishedDate,
         ownerName = ownerName,
         thumbnailUrl = thumbnailUrl,

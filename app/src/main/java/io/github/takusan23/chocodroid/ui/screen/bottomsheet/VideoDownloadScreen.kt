@@ -5,8 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -166,7 +164,7 @@ private fun QualitySelectInput(currentQuality: String, qualityList: List<String>
                             onQualitySelect(qualityText)
                             isShowDropdown.value = false
                         },
-                        content = { Text(text = qualityText) }
+                        text = { Text(text = qualityText) }
                     )
                 }
             }

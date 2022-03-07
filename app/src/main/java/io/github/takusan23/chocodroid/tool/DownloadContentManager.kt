@@ -68,7 +68,7 @@ class DownloadContentManager(private val context: Context) {
     /** データベース内のデータを[CommonVideoData]の配列にして送る */
     fun collectDownloadContentToWatchPageData(): Flow<List<CommonVideoData>> {
         return collectDownloadContent()
-            .map { list -> list.map { dbItem -> dbItem.toCommonVideoData(context) } }
+            .map { list -> list.map { dbItem -> dbItem.convertCommonVideoData() } }
     }
 
     /**
@@ -120,7 +120,7 @@ class DownloadContentManager(private val context: Context) {
      * */
     suspend fun getCommonVideoData(videoId: String): CommonVideoData {
         val dbItem = downloadContentDB.downloadContentDao().getDownloadContentDataFromVideoId(videoId)
-        return dbItem.toCommonVideoData(context)
+        return dbItem.convertCommonVideoData()
     }
 
     /**

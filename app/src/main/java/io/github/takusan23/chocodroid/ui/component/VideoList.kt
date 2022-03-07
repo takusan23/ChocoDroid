@@ -169,6 +169,7 @@ fun VideoListItem(
                         .background(color = durationTextBackground, shape = RoundedCornerShape(2.dp))
                         .align(alignment = Alignment.BottomEnd),
                     color = Color.White,
+                    fontSize = 14.sp,
                     text = duration
                 )
             }
@@ -183,15 +184,22 @@ fun VideoListItem(
                     text = videoTitle,
                     maxLines = 2
                 )
-                Text(
-                    modifier = Modifier.padding(0.dp),
-                    fontSize = 14.sp,
-                    text = "$watchCount / $publishDate"
-                )
-                Text(
-                    modifier = Modifier.padding(0.dp),
-                    fontSize = 14.sp,
-                    text = ownerName
+                // 再生回数など
+                Row {
+                    VideoListItemMetaText(
+                        modifier = Modifier.padding(end = 10.dp),
+                        text = watchCount,
+                        iconResId = R.drawable.ic_outline_play_arrow_24
+                    )
+                    VideoListItemMetaText(
+                        modifier = Modifier.padding(end = 10.dp),
+                        text = publishDate,
+                        iconResId = R.drawable.ic_outline_today_24
+                    )
+                }
+                VideoListItemMetaText(
+                    text = ownerName,
+                    iconResId = R.drawable.ic_outline_account_box_24
                 )
             }
             if (onMenuClick != null) {
@@ -201,5 +209,37 @@ fun VideoListItem(
                 ) { Icon(painter = painterResource(id = R.drawable.ic_outline_more_vert_24), contentDescription = null) }
             }
         }
+    }
+}
+
+/**
+ * 各動画のメタデータ部分のコンポーネント
+ *
+ * テキストとアイコンの部分
+ *
+ * @param text 再生回数など
+ * @param iconResId アイコン
+ * */
+@Composable
+private fun VideoListItemMetaText(
+    modifier: Modifier = Modifier,
+    text: String,
+    iconResId: Int,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(id = iconResId),
+            contentDescription = null
+        )
+        Text(
+            modifier = Modifier.padding(start = 5.dp),
+            fontSize = 14.sp,
+            text = text,
+            maxLines = 1
+        )
     }
 }

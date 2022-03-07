@@ -68,6 +68,7 @@ fun ChocoBridgeBar(
  * @param isFocusTextBox テキストボックスにフォーカスが当たっていればtrue
  * @param focusRequester フォーカスのやつ
  * @param onFocusChange フォーカスが変わったら呼ばれる
+ * @param suggestContent サジェスト用に
  * */
 @Composable
 fun ChocoBridgeBar(
@@ -79,6 +80,7 @@ fun ChocoBridgeBar(
     onTextChange: (String) -> Unit,
     onSearchClick: (String) -> Unit,
     onFocusChange: (Boolean) -> Unit,
+    suggestContent: @Composable () -> Unit,
 ) {
     Surface(
         modifier = modifier
@@ -131,6 +133,7 @@ fun ChocoBridgeBar(
                     }
                 }
             }
+            suggestContent()
         }
     }
 }
@@ -148,26 +151,46 @@ fun ChocoBridgeItem(resIconId: Int, text: String, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         color = Color.Transparent,
-        content = { ChocoNavMenuTitle(resIconId, text) }
+        content = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.padding(10.dp),
+                    painter = painterResource(id = resIconId), contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.padding(10.dp),
+                    text = text
+                )
+            }
+        }
     )
 }
 
 /**
- * 文字とアイコンだけ
+ * 検索サジェスト用のレイアウト
  *
- * @param resIconId アイコンリソースID
- * @param text テキスト
+ * @param text サジェスト
+ * @param onClick 押したとき、検索ワードが入ってます
  * */
 @Composable
-private fun ChocoNavMenuTitle(resIconId: Int, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            modifier = Modifier.padding(10.dp),
-            painter = painterResource(id = resIconId), contentDescription = null
-        )
-        Text(
-            modifier = Modifier.padding(10.dp),
-            text = text
-        )
-    }
+fun ChocoBridgeSuggestItem(text: String, onClick: (String) -> Unit) {
+    Surface(
+        onClick = { onClick(text) },
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
+        content = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(10.dp),
+                    text = text
+                )
+                Icon(
+                    modifier = Modifier.padding(10.dp),
+                    painter = painterResource(id = R.drawable.ic_outline_arrow_forward_24), contentDescription = null
+                )
+            }
+        }
+    )
 }

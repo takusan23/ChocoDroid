@@ -75,9 +75,9 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
      *
      * 失敗しても失敗用Flowに流れます
      *
-     * @param videoId 動画ID
+     * @param videoIdOrHttpUrl 動画IDもしくは動画URL
      * */
-    fun loadWatchPage(videoId: String) {
+    fun loadWatchPage(videoIdOrHttpUrl: String) {
         // 叩く
         viewModelScope.launch(errorHandler + Dispatchers.Default) {
             _isLoadingFlow.value = true
@@ -90,7 +90,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
             val urlParamsFixJSCode = setting[SettingKeyObject.WATCH_PAGE_JS_PARAM_FIX_JS_CODE]
 
             // HTML解析とURL（復号処理含めて）取得
-            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage(videoId, baseJsURL, funcNameData, funcInvokeDataList, urlParamsFixJSCode)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage(videoIdOrHttpUrl, baseJsURL, funcNameData, funcInvokeDataList, urlParamsFixJSCode)
 
             /**
              * View（Compose）にデータを渡す

@@ -86,9 +86,7 @@ fun FavoriteTopScreen(
                         onClick = onAddClick
                     )
                 }
-            }
-
-            )
+            })
         }
     )
 }

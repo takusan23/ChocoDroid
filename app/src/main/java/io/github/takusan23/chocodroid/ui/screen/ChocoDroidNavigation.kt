@@ -79,9 +79,10 @@ fun ChocoDroidNavigation(
             )
         }
         composable(NavigationLinkList.ChocoDroidBridgeSearchScreen) {
-            ChocoDroidBridgeSearchScreen(
-                onBack = { navController.popBackStack() },
-                navController = navController
+            ChocoBridgeSearchScreen(
+                navController = navController,
+                bridgeSearchScreenViewModel = viewModel(),
+                mainViewModel = mainScreenViewModel
             )
         }
         composable(NavigationLinkList.SettingScreen) {

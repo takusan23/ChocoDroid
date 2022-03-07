@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,10 +58,13 @@ private fun QualityListItem(
     isSelected: Boolean = false,
 ) {
     Surface(
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-        onClick = onClick,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = onClick,
+            ),
         shape = RoundedCornerShape(20.dp),
         color = Color.Transparent,
         contentColor = if (isSelected) MaterialTheme.colorScheme.primary else contentColorFor(MaterialTheme.colorScheme.surface)

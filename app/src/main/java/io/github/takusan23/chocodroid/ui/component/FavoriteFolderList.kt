@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,11 +66,13 @@ private fun FavoriteFolderItem(
     Surface(
         modifier = Modifier
             .padding(top = 10.dp)
-            .fillMaxWidth(),
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
-        color = Color.Transparent,
-        onClick = { onClick(favoriteFolderDBEntity.id) }
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = { onClick(favoriteFolderDBEntity.id) },
+            ),
+        color = Color.Transparent
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(

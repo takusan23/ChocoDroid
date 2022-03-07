@@ -4,12 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -200,10 +198,6 @@ private fun DownloadSplitSlider(value: Int, onValueChange: (Int) -> Unit) {
                 modifier = Modifier.weight(1f),
                 value = value.toFloat(),
                 valueRange = 1f..10f,
-                colors = SliderDefaults.colors(
-                    thumbColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                    activeTrackColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
-                ),
                 onValueChange = { onValueChange(it.roundToInt()) }
             )
             Text(

@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,10 +35,10 @@ fun ChocoBridgeBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(10.dp)
+            .clickable(onClick = onClick),
         color = MaterialTheme.colorScheme.inversePrimary,
         shape = RoundedCornerShape(20.dp),
-        onClick = onClick
     ) {
         Row(
             modifier = Modifier
@@ -148,8 +149,9 @@ fun ChocoBridgeBar(
 @Composable
 fun ChocoBridgeItem(resIconId: Int, text: String, onClick: () -> Unit) {
     Surface(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         color = Color.Transparent,
         content = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -175,8 +177,9 @@ fun ChocoBridgeItem(resIconId: Int, text: String, onClick: () -> Unit) {
 @Composable
 fun ChocoBridgeSuggestItem(text: String, onClick: (String) -> Unit) {
     Surface(
-        onClick = { onClick(text) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick(text) },
         color = Color.Transparent,
         content = {
             Row(verticalAlignment = Alignment.CenterVertically) {

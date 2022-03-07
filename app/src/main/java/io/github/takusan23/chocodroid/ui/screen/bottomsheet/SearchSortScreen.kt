@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen.bottomsheet
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -88,11 +89,14 @@ private fun SearchSortTypeItem(
     onClick: (SearchSortScreenTool.SearchSortType) -> Unit,
 ) {
     Surface(
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = { onClick(type) },
+            ),
         color = Color.Transparent,
-        onClick = { onClick(type) },
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
         shape = RoundedCornerShape(20.dp),
         contentColor = if (isSelected) MaterialTheme.colorScheme.primary else contentColorFor(MaterialTheme.colorScheme.surface),
         content = {

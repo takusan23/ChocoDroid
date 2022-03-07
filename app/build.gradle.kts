@@ -115,7 +115,7 @@ dependencies {
     implementation("androidx.media:media:1.4.3")
 
     // Jetpack Compose
-    val composeVersion = "1.1.0-rc03"
+    val composeVersion = "1.1.1"
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
@@ -124,7 +124,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
     // Compose + Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha04")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha06")
 
     // ExoPlayer。生放送用のHlsと、一部の動画はDashで配信されている
     implementation("com.google.android.exoplayer:exoplayer-core:2.16.1")

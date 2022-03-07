@@ -2,6 +2,7 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -36,10 +37,10 @@ fun AndroidSnowConeSwitch(
     Surface(
         modifier = modifier
             .height(30.dp)
-            .width(60.dp),
+            .width(60.dp)
+            .clickable { onValueChange(!isEnable) },
         color = backgroundColor.value,
         shape = RoundedCornerShape(50),
-        onClick = { onValueChange(!isEnable) },
         content = {
             BoxWithConstraints {
                 val offsetXAnim = animateDpAsState(targetValue = if (isEnable) (maxWidth / 2) else 0.dp)

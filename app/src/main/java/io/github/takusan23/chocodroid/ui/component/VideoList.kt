@@ -2,6 +2,7 @@ package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -136,11 +137,14 @@ fun VideoListItem(
     onMenuClick: (() -> Unit)? = null,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = { onClick(videoId) }
+            ),
         color = Color.Transparent,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
-        onClick = { onClick(videoId) }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Glideの代わりにCoilを試す

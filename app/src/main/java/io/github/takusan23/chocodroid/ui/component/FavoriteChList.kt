@@ -1,4 +1,5 @@
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -62,10 +63,13 @@ private fun FavoriteChItemList(
     onMenuClick: (FavoriteChDBEntity) -> Unit,
 ) {
     Surface(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
-        color = Color.Transparent,
-        onClick = { onClick(favoriteChDBEntity.channelId) }
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = { onClick(favoriteChDBEntity.channelId) },
+            ),
+        color = Color.Transparent
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(

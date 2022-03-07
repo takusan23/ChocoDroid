@@ -3,6 +3,7 @@ package io.github.takusan23.chocodroid.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -101,11 +102,13 @@ fun CreateFavoriteFolderItem(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = onClick,
+            ),
         color = Color.Transparent,
-        onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
         content = {
@@ -152,10 +155,13 @@ private fun FavoriteFolderVideoCarouselRowItem(
     onClick: (String) -> Unit,
 ) {
     Surface(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
-        color = Color.Transparent,
-        onClick = { onClick(videoId) }
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = { onClick(videoId) },
+            ),
+        color = Color.Transparent
     ) {
         Column(modifier = Modifier.width(IntrinsicSize.Min)) {
             // Glideの代わりにCoilを試す

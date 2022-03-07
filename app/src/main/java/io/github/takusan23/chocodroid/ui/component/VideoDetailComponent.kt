@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -209,11 +210,13 @@ private fun VideoDetailMenuItem(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = onClick,
+            ),
         color = Color.Transparent,
-        onClick = onClick,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
         content = {
             Column(
                 modifier = Modifier.padding(top = 20.dp, bottom = 20.dp, start = 10.dp, end = 10.dp),

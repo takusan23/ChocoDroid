@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ripple.rememberRipple
@@ -33,11 +34,14 @@ fun SettingItem(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = onClick
+            ),
         color = Color.Transparent,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
-        onClick = onClick
     ) {
         CommonSettingItem(
             modifier = Modifier
@@ -68,11 +72,14 @@ fun SettingSwitchItem(
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = { onCheckedChange(!isEnable) }
+            ),
         color = Color.Transparent,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
-        onClick = { onCheckedChange(!isEnable) }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CommonSettingItem(

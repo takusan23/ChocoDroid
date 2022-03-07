@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -119,12 +120,14 @@ private fun RoundedButton(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                onClick = onClick,
+            ),
         color = backgroundColor,
         shape = shape,
-        onClick = onClick,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             icon()

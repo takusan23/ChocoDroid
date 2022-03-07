@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -73,10 +74,13 @@ private fun FavoriteChCarouselRowItem(
     onClick: (String) -> Unit,
 ) {
     Surface(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(),
+        modifier = Modifier
+            .clickable(
+                indication = rememberRipple(),
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = { onClick(favoriteChDBEntity.channelId) }
+            ),
         color = Color.Transparent,
-        onClick = { onClick(favoriteChDBEntity.channelId) }
     ) {
         Column(
             modifier = Modifier

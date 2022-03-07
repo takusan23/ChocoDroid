@@ -75,4 +75,8 @@
     <string name="search_sort_review">Review order</string>
     <string name="miniplayer_close_area_text">Drag here to end the player</string>
     <string name="unavailable">unavailable</string>
+    <string name="setting_delete_db_title">Delete database</string>
+    <string name="setting_delete_db_description">You can delete the viewing history and favorite database.</string>
+    <string name="setting_enable_dynamic_color_icon_title">Set a dynamic color (dynamic theme) icon</string>
+    <string name="setting_enable_dynamic_color_icon_description">Backport the theme icon feature for Android 13 and above to 12.</string>
 </resources>

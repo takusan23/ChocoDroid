@@ -37,7 +37,12 @@ fun FavouriteScreen(
     val favouriteNavController = rememberNavController()
 
     M3Scaffold(
-        topBar = { ChocoBridgeBar(viewModel = viewModel, navHostController = navController) },
+        topBar = {
+            ChocoBridgeBar(
+                onClick = { navController.navigate(NavigationLinkList.ChocoDroidBridgeSearchScreen) },
+                onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
+            )
+        },
         content = {
             Column(modifier = Modifier.padding(it)) {
                 // ルーティング

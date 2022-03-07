@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen.setting
 
+import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
@@ -75,8 +76,8 @@ fun MasterSettingScreen(
                     }
                     item {
                         SettingSwitchItem(
-                            title = "ダイナミックカラー（動的テーマ）のアイコンを設定する",
-                            description = "Android 13以降のテーマアイコン機能を12へバックポートします",
+                            title = stringResource(id = R.string.setting_enable_dynamic_color_icon_title),
+                            description = stringResource(id = R.string.setting_enable_dynamic_color_icon_description),
                             icon = painterResource(id = R.drawable.ic_outline_color_lens_24),
                             isEnable = dataStoreFlow.value?.get(SettingKeyObject.ENABLE_DYNAMIC_COLOR_ICON) ?: false,
                             onCheckedChange = { isEnable ->
@@ -84,7 +85,16 @@ fun MasterSettingScreen(
                                 DynamicColorLauncherIcon.setDynamicColorLauncherIcon(context, isEnable)
                             }
                         )
-
+                    }
+                    item {
+                        SettingItem(
+                            title = stringResource(id = R.string.setting_delete_db_title),
+                            description = stringResource(id = R.string.setting_delete_db_description),
+                            icon = painterResource(id = R.drawable.ic_outline_delete_24),
+                            onClick = {
+                                Toast.makeText(context, "未実装", Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                     item {
                         SettingItem(

@@ -198,6 +198,7 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
             // 動画をロード
             loadContent(requestIndexPos ?: lastPlayingId)
             exoPlayer.repeatMode = if (isRepeatOne) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
+            exoPlayer.playWhenReady = true
         }
         return START_NOT_STICKY
     }
@@ -349,32 +350,32 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
             simpleAddAction(
                 if (isRepeatOne) R.drawable.ic_outline_repeat_one_24 else R.drawable.ic_outline_repeat_24,
                 "repeat",
-                if (isRepeatOne) NotificationMediaButtonReceiver.ACTION_REPEAT_ALL else NotificationMediaButtonReceiver.ACTION_REPEAT_ONE
+                if (isRepeatOne) NotificationMediaButtonReceiver.PlayerControlType.ACTION_REPEAT_ALL.action else NotificationMediaButtonReceiver.PlayerControlType.ACTION_REPEAT_ONE.action
             )
             // 前の曲ボタン
             simpleAddAction(
                 R.drawable.ic_outline_skip_previous_24,
                 "prev",
-                NotificationMediaButtonReceiver.ACTION_SKIP_TO_PREVIOUS
+                NotificationMediaButtonReceiver.PlayerControlType.ACTION_SKIP_TO_PREVIOUS.action
             )
             // 一時停止ボタン
             val isPlaying = exoPlayer.playWhenReady
             simpleAddAction(
                 if (isPlaying) R.drawable.ic_outline_pause_24 else R.drawable.ic_outline_play_arrow_24,
                 if (isPlaying) "pause" else "play",
-                if (isPlaying) NotificationMediaButtonReceiver.ACTION_PAUSE else NotificationMediaButtonReceiver.ACTION_PLAY
+                if (isPlaying) NotificationMediaButtonReceiver.PlayerControlType.ACTION_PAUSE.action else NotificationMediaButtonReceiver.PlayerControlType.ACTION_PLAY.action
             )
             // 次の曲
             simpleAddAction(
                 R.drawable.ic_outline_skip_next_24,
                 "next",
-                NotificationMediaButtonReceiver.ACTION_SKIP_TO_NEXT
+                NotificationMediaButtonReceiver.PlayerControlType.ACTION_SKIP_TO_NEXT.action
             )
             // 終了
             simpleAddAction(
                 R.drawable.ic_outline_close_24,
                 "stop",
-                NotificationMediaButtonReceiver.ACTION_STOP
+                NotificationMediaButtonReceiver.PlayerControlType.ACTION_STOP.action
             )
         }.build()
         startForeground(NOTIFICATION_ID, notificationManagerCompat)

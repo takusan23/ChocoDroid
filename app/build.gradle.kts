@@ -130,6 +130,7 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-core:2.16.1")
     implementation("com.google.android.exoplayer:exoplayer-hls:2.16.1")
     implementation("com.google.android.exoplayer:exoplayer-dash:2.16.1")
+
     // Coil
     implementation("io.coil-kt:coil:1.4.0")
     implementation("io.coil-kt:coil-compose:1.4.0")

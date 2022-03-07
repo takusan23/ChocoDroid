@@ -48,4 +48,9 @@ object NavigationLinkList {
      * */
     const val SettingScreen = "setting"
 
+    /**
+     * 検索入力画面
+     */
+    const val ChocoDroidBridgeSearchScreen = "bridge_search"
+
 }

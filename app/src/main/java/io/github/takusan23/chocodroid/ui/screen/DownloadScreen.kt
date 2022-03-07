@@ -43,7 +43,12 @@ fun DownloadScreen(
     val videoList = downloadScreenVideModel.downloadContentFlow.collectAsState(initial = listOf())
 
     M3Scaffold(
-        topBar = { ChocoBridgeBar(viewModel = mainScreenViewModel, navHostController = navController) },
+        topBar = {
+            ChocoBridgeBar(
+                onClick = { navController.navigate(NavigationLinkList.ChocoDroidBridgeSearchScreen) },
+                onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
+            )
+        },
         content = {
             Column(modifier = Modifier.padding(it)) {
                 Row(

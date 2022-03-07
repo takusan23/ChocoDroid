@@ -5,30 +5,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import io.github.takusan23.chocodroid.R
-import io.github.takusan23.chocodroid.tool.ClipboardTool
-import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
- * 引数多いのでViewModel/NavControllerへ直接指定するバージョン。
- *
- * AtomicDesign？知らねえ！
+ * アプリバー。これを押すと検索入力画面とかに飛ぶ
  *
  * @param modifier Modifier
  * @param viewModel メイン画面のViewModel
@@ -37,61 +28,58 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 @Composable
 fun ChocoBridgeBar(
     modifier: Modifier = Modifier,
-    viewModel: MainScreenViewModel,
-    navHostController: NavHostController,
+    onClick: () -> Unit,
+    onSettingClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val textValue = remember { mutableStateOf("") }
-
-    ChocoBridgeBar(
-        modifier = modifier,
-        textValue = textValue.value,
-        onTextChange = { after -> textValue.value = after },
-        onPlayClick = {
-            if (it.isNotEmpty()) {
-                viewModel.loadWatchPage(it)
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        color = MaterialTheme.colorScheme.inversePrimary,
+        shape = RoundedCornerShape(20.dp),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .height(56.dp)
+                .padding(start = 20.dp, end = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.CenterStart
+            ) { Text(text = stringResource(id = R.string.choco_bridge_bar_title)) }
+            IconButton(onClick = onSettingClick) {
+                Icon(painter = painterResource(id = R.drawable.ic_outline_settings_24), contentDescription = "設定")
             }
-        },
-        onSearchClick = {
-            if (it.isNotEmpty()) {
-                navHostController.navigate(NavigationLinkList.getSearchScreenLink(it))
-            }
-        },
-        onClipboardClick = { textValue.value = ClipboardTool.getClipboardText(context) ?: "" },
-        onSettingClick = { navHostController.navigate(NavigationLinkList.SettingScreen) }
-    )
+        }
+    }
 }
 
 
 /**
- * 検索 URL直打ち 動画ID などを一つにまとめて！
+ * 検索欄
  *
- * @param suggestDownloadList 部分一致したダウンロードコンテンツ配列
- * @param suggestHistoryList 部分一致した履歴動画配列
+ * @param modifier Modifier
  * @param textValue テキストボックスの中身
  * @param onTextChange テキストボックスの中身が変わったら呼ばれる
  * @param onSearchClick 検索押したら
- * @param onPlayClick 動画IDを再生を押したら
- * @param onClipboardClick クリップボード取得押したら
- * @param modifier Modifier
+ * @param onBackClick 戻る押したら呼ばれる
+ * @param isFocusTextBox テキストボックスにフォーカスが当たっていればtrue
+ * @param focusRequester フォーカスのやつ
+ * @param onFocusChange フォーカスが変わったら呼ばれる
  * */
 @Composable
 fun ChocoBridgeBar(
     modifier: Modifier = Modifier,
     textValue: String,
+    isFocusTextBox: Boolean,
+    focusRequester: FocusRequester,
+    onBackClick: () -> Unit,
     onTextChange: (String) -> Unit,
-    onSearchClick: (String) -> Unit = {},
-    onPlayClick: (String) -> Unit = {},
-    onClipboardClick: () -> Unit = {},
-    onSettingClick: () -> Unit = {},
+    onSearchClick: (String) -> Unit,
+    onFocusChange: (Boolean) -> Unit,
 ) {
-    // テキストボックスにフォーカスがあたっているか
-    val isFocusTextBox = remember { mutableStateOf(false) }
-    // テキストボックスのフォーカス外すのにつかう
-    val focusRequester = remember { FocusRequester() }
-    // キーボード消す
-    val inputService = LocalTextInputService.current
-
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -104,27 +92,17 @@ fun ChocoBridgeBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.height(56.dp)
             ) {
-                // フォーカスある状態なら戻るを表示
-                if (isFocusTextBox.value) {
-                    IconButton(
-                        modifier = Modifier
-                            .padding(start = 5.dp, top = 5.dp, end = 10.dp, bottom = 5.dp)
-                            .focusRequester(focusRequester)
-                            .focusTarget(),
-                        onClick = {
-                            println(focusRequester.requestFocus())
-                            inputService?.hideSoftwareKeyboard()
-                        },
-                        content = { Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = "クリア") }
-                    )
-                } else {
-                    Spacer(modifier = Modifier.padding(start = 20.dp))
-                }
+                IconButton(
+                    modifier = Modifier
+                        .padding(start = 5.dp, top = 5.dp, end = 10.dp, bottom = 5.dp)
+                        .focusTarget(),
+                    onClick = onBackClick,
+                ) { Icon(painter = painterResource(id = R.drawable.ic_outline_arrow_back_24), contentDescription = "クリア") }
                 Box(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    if (textValue.isEmpty() && !isFocusTextBox.value) {
+                    if (textValue.isEmpty() && !isFocusTextBox) {
                         // ヒント代わり
                         Text(text = stringResource(id = R.string.choco_bridge_bar_title))
                     }
@@ -132,7 +110,8 @@ fun ChocoBridgeBar(
                         BasicTextField(
                             modifier = Modifier
                                 .weight(1f)
-                                .onFocusChanged { isFocusTextBox.value = it.isFocused },
+                                .focusRequester(focusRequester)
+                                .onFocusChanged { onFocusChange(it.isFocused) },
                             value = textValue,
                             maxLines = 1,
                             singleLine = true,
@@ -142,47 +121,29 @@ fun ChocoBridgeBar(
                             onValueChange = onTextChange,
                         )
                         // クリアボタン
-                        if (isFocusTextBox.value && textValue.isNotEmpty()) {
+                        if (isFocusTextBox && textValue.isNotEmpty()) {
                             IconButton(
                                 modifier = Modifier
-                                    .padding(5.dp),
+                                    .padding(end = 10.dp),
                                 onClick = { onTextChange("") }
-                            ) {
-                                Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = "クリア")
-                            }
-                        }
-                        IconButton(
-                            modifier = Modifier
-                                .padding(start = 5.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
-                            onClick = onSettingClick,
-                        ) {
-                            Icon(painter = painterResource(id = R.drawable.ic_outline_settings_24), contentDescription = "設定")
+                            ) { Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = "クリア") }
                         }
                     }
                 }
-            }
-
-            // ここにクリップボード貼り付けなどを入れる
-            if (isFocusTextBox.value) {
-                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_search_24, text = stringResource(id = R.string.search), onClick = { onSearchClick?.invoke(textValue) })
-                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_play_arrow_24, text = stringResource(id = R.string.play_video_id), onClick = { onPlayClick?.invoke(textValue) })
-                Divider(Modifier.padding(start = 10.dp, end = 10.dp))
-                ChocoNavMenuItem(resIconId = R.drawable.ic_outline_content_paste_go_24, text = stringResource(id = R.string.paste_from_clipboard), onClick = { onClipboardClick?.invoke() })
-                Spacer(modifier = Modifier.padding(bottom = 10.dp))
             }
         }
     }
 }
 
 /**
- * 検索押したときに出るあのメニュー
+ * 検索押したときに検索とかのボタン
  *
  * @param onClick 押したとき
  * @param resIconId アイコンリソースID
  * @param text テキスト
  * */
 @Composable
-private fun ChocoNavMenuItem(resIconId: Int, text: String, onClick: () -> Unit) {
+fun ChocoBridgeItem(resIconId: Int, text: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),

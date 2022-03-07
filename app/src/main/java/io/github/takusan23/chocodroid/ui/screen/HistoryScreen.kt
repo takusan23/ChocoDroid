@@ -51,7 +51,12 @@ fun HistoryScreen(
 
     M3Scaffold(
         snackbarHostState = snackbarHostState,
-        topBar = { ChocoBridgeBar(viewModel = mainViewModel, navHostController = navController) },
+        topBar = {
+            ChocoBridgeBar(
+                onClick = { navController.navigate(NavigationLinkList.ChocoDroidBridgeSearchScreen) },
+                onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
+            )
+        },
         content = {
 
             Column {

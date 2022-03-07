@@ -78,6 +78,12 @@ fun ChocoDroidNavigation(
                 onBack = { navController.popBackStack() }
             )
         }
+        composable(NavigationLinkList.ChocoDroidBridgeSearchScreen) {
+            ChocoDroidBridgeSearchScreen(
+                onBack = { navController.popBackStack() },
+                navController = navController
+            )
+        }
         composable(NavigationLinkList.SettingScreen) {
             // 設定画面
             SettingScreen()

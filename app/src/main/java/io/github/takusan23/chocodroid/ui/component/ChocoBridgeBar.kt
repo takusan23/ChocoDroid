@@ -172,14 +172,15 @@ fun ChocoBridgeItem(resIconId: Int, text: String, onClick: () -> Unit) {
  * 検索サジェスト用のレイアウト
  *
  * @param text サジェスト
- * @param onClick 押したとき、検索ワードが入ってます
+ * @param onSearchClick 押したとき、検索ワードが入ってます
+ * @param onAppendClick テキストボックスに入れる場合に呼ばれる
  * */
 @Composable
-fun ChocoBridgeSuggestItem(text: String, onClick: (String) -> Unit) {
+fun ChocoBridgeSuggestItem(text: String, onSearchClick: (String) -> Unit, onAppendClick: (String) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(text) },
+            .clickable { onSearchClick(text) },
         color = Color.Transparent,
         content = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -189,10 +190,9 @@ fun ChocoBridgeSuggestItem(text: String, onClick: (String) -> Unit) {
                         .padding(10.dp),
                     text = text
                 )
-                Icon(
-                    modifier = Modifier.padding(10.dp),
-                    painter = painterResource(id = R.drawable.ic_outline_arrow_forward_24), contentDescription = null
-                )
+                IconButton(onClick = { onAppendClick(text) }) {
+                    Icon(painter = painterResource(id = R.drawable.ic_baseline_north_west_24), contentDescription = null)
+                }
             }
         }
     )

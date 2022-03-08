@@ -37,12 +37,12 @@ fun ChocoBridgeSearchScreen(
     bridgeSearchScreenViewModel: ChocoBridgeSearchScreenViewModel,
 ) {
     val context = LocalContext.current
-    // 入力した文字
-    val searchText = remember { mutableStateOf("") }
     // テキストボックスにフォーカスがあたっているか
     val isFocusTextBox = remember { mutableStateOf(false) }
     // テキストボックスのフォーカス外すのにつかう
     val focusRequester = remember { FocusRequester() }
+    // 入力した文字
+    val searchText = bridgeSearchScreenViewModel.searchWord.collectAsState()
     // 検索ワードのサジェスト
     val suggestWordList = bridgeSearchScreenViewModel.searchSuggestList.collectAsState()
 
@@ -60,6 +60,16 @@ fun ChocoBridgeSearchScreen(
         navController.navigate(NavigationLinkList.getSearchScreenLink(searchWord))
     }
 
+    /**
+     * ViewModelへ検索ワードを保存 + サジェストAPIを叩くのをまとめた関数
+     *
+     * @param searchWord 検索ワード
+     * */
+    fun notifyTextChange(searchWord: String) {
+        bridgeSearchScreenViewModel.setSearchWord(searchWord)
+        bridgeSearchScreenViewModel.getSuggestWord(searchWord)
+    }
+
     M3Scaffold {
         Column {
             ChocoBridgeBar(
@@ -69,14 +79,15 @@ fun ChocoBridgeSearchScreen(
                 isFocusTextBox = isFocusTextBox.value,
                 onFocusChange = { isFocusTextBox.value = it },
                 onSearchClick = { search(searchText.value) },
-                onTextChange = {
-                    searchText.value = it
-                    bridgeSearchScreenViewModel.getSuggestWord(it)
-                },
+                onTextChange = { notifyTextChange(it) },
                 suggestContent = {
                     Column {
                         suggestWordList.value.forEach { suggestWord ->
-                            ChocoBridgeSuggestItem(text = suggestWord) { search(suggestWord) }
+                            ChocoBridgeSuggestItem(
+                                text = suggestWord,
+                                onSearchClick = { search(suggestWord) },
+                                onAppendClick = { notifyTextChange(it) }
+                            )
                         }
                         if (suggestWordList.value.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(10.dp))
@@ -91,7 +102,7 @@ fun ChocoBridgeSearchScreen(
                 mainViewModel.loadWatchPage(searchText.value)
             }
             ChocoBridgeItem(resIconId = R.drawable.ic_outline_content_paste_go_24, text = stringResource(id = R.string.paste_from_clipboard)) {
-                ClipboardTool.getClipboardText(context)?.also { searchText.value = it }
+                ClipboardTool.getClipboardText(context)?.also { bridgeSearchScreenViewModel.setSearchWord(it) }
             }
             Divider(Modifier.padding(start = 10.dp, end = 10.dp))
         }

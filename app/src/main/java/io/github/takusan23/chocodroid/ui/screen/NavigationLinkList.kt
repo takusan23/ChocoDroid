@@ -51,6 +51,13 @@ object NavigationLinkList {
     /**
      * 検索入力画面
      */
-    const val ChocoDroidBridgeSearchScreen = "bridge_search"
+    private const val ChocoDroidBridgeSearchScreen = "bridge_search"
+
+    /**
+     * 検索入力画面
+     *
+     * @param searchWord 検索ワード
+     * */
+    fun getChocoDroidBridgeSearchScreen(searchWord: String = "") = "$ChocoDroidBridgeSearchScreen?word=$searchWord"
 
 }

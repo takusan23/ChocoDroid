@@ -45,7 +45,7 @@ fun DownloadScreen(
     M3Scaffold(
         topBar = {
             ChocoBridgeBar(
-                onClick = { navController.navigate(NavigationLinkList.ChocoDroidBridgeSearchScreen) },
+                onClick = { navController.navigate(NavigationLinkList.getChocoDroidBridgeSearchScreen()) },
                 onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
             )
         },

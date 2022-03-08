@@ -106,12 +106,4 @@ class SearchScreenViewModel(application: Application, private val query: String)
         }
     }
 
-    /**
-     * 検索ワードをセット
-     * @param query 検索ワード
-     * */
-    fun setQuery(query: String) {
-        _queryFlow.value = query
-    }
-
 }

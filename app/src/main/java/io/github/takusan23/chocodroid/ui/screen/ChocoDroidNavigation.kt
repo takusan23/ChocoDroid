@@ -12,6 +12,7 @@ import io.github.takusan23.chocodroid.ui.component.SettingScreen
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
+import io.github.takusan23.chocodroid.viewmodel.factory.ChocoBridgeSearchScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
 
 /**
@@ -29,6 +30,7 @@ fun ChocoDroidNavigation(
     navController: NavHostController = rememberNavController(),
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit = {},
 ) {
+    val application = (LocalContext.current as ComponentActivity).application
 
     // 画面遷移
     NavHost(navController = navController, startDestination = NavigationLinkList.FavouriteScreen) {
@@ -38,7 +40,7 @@ fun ChocoDroidNavigation(
             val application = (LocalContext.current as ComponentActivity).application
             SearchScreen(
                 viewModel = viewModel(factory = SearchScreenViewModelFactory(application, searchQuery)),
-                onBack = { navController.popBackStack() },
+                navController = navController,
                 onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
                 onBottomSheetNavigate = onBottomSheetNavigate
             )
@@ -71,17 +73,18 @@ fun ChocoDroidNavigation(
         composable(NavigationLinkList.getChannelScreenLink("{channel_id}")) {
             // チャンネル画面
             val channelId = it.arguments?.getString("channel_id")!!
-            val application = (LocalContext.current as ComponentActivity).application
             ChannelScreen(
                 channelScreenViewModel = viewModel(factory = ChannelScreenViewModelFactory(application, channelId)),
                 onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(NavigationLinkList.ChocoDroidBridgeSearchScreen) {
+        composable(NavigationLinkList.getChocoDroidBridgeSearchScreen("{word}")) {
+            // 検索入力画面
+            val searchWord = it.arguments?.getString("word") ?: ""
             ChocoBridgeSearchScreen(
+                bridgeSearchScreenViewModel = viewModel(factory = ChocoBridgeSearchScreenViewModelFactory(application, searchWord)),
                 navController = navController,
-                bridgeSearchScreenViewModel = viewModel(),
                 mainViewModel = mainScreenViewModel
             )
         }

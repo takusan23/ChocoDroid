@@ -53,7 +53,7 @@ fun HistoryScreen(
         snackbarHostState = snackbarHostState,
         topBar = {
             ChocoBridgeBar(
-                onClick = { navController.navigate(NavigationLinkList.ChocoDroidBridgeSearchScreen) },
+                onClick = { navController.navigate(NavigationLinkList.getChocoDroidBridgeSearchScreen()) },
                 onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
             )
         },

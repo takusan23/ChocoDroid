@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
@@ -23,6 +24,8 @@ import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.SearchSortScreenInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 /**
@@ -30,14 +33,14 @@ import kotlinx.coroutines.launch
  *
  * @param viewModel 検索画面ViewModel
  * @param onClick 押したときに呼ばれる。引数は動画ID
- * @param onBack 戻る際に呼ばれる
+ * @param navController メイン画面のナビゲーション
  * @param onBottomSheetNavigate ボトムシート出してほしいときに呼ばれる
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchScreenViewModel,
-    onBack: () -> Unit,
+    navController: NavHostController,
     onClick: (String) -> Unit,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
@@ -63,20 +66,20 @@ fun SearchScreen(
     })
 
     // 追加読み込み制御
-    if (lazyListState.firstVisibleItemIndex > 0 && lazyListState.firstVisibleItemIndex + lazyListState.layoutInfo.visibleItemsInfo.size == lazyListState.layoutInfo.totalItemsCount) {
-        // 追加読み込み
-        LaunchedEffect(key1 = Unit, block = { viewModel.moreLoad() })
-    }
+    LaunchedEffect(key1 = lazyListState, block = {
+        snapshotFlow { lazyListState.firstVisibleItemIndex }
+            .filter { firstVisibleItemIndex -> firstVisibleItemIndex > 0 && firstVisibleItemIndex + lazyListState.layoutInfo.visibleItemsInfo.size == lazyListState.layoutInfo.totalItemsCount }
+            .collect { viewModel.moreLoad() }
+    })
 
     M3Scaffold(
         snackbarHostState = snackbarHostState,
         topBar = {
             SearchScreenBar(
-                onBack = onBack,
-                onSearch = { scope.launch { viewModel.reSearch() } },
-                onSortChange = { onBottomSheetNavigate(SearchSortScreenInitData()) },
-                onSearchWordChange = { viewModel.setQuery(it) },
                 searchWord = query.value,
+                onBack = { navController.popBackStack() },
+                onSortChange = { onBottomSheetNavigate(SearchSortScreenInitData()) },
+                onSearchBarClick = { navController.navigate(NavigationLinkList.getChocoDroidBridgeSearchScreen(query.value)) }
             )
         },
         content = {

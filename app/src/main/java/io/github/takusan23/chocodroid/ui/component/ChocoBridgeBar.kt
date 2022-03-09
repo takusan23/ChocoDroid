@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.chocodroid.R
 
@@ -74,11 +75,11 @@ fun ChocoBridgeBar(
 @Composable
 fun ChocoBridgeBar(
     modifier: Modifier = Modifier,
-    textValue: String,
+    textValue: TextFieldValue,
     isFocusTextBox: Boolean,
     focusRequester: FocusRequester,
     onBackClick: () -> Unit,
-    onTextChange: (String) -> Unit,
+    onTextChange: (TextFieldValue) -> Unit,
     onSearchClick: (String) -> Unit,
     onFocusChange: (Boolean) -> Unit,
     suggestContent: @Composable () -> Unit,
@@ -105,7 +106,7 @@ fun ChocoBridgeBar(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    if (textValue.isEmpty() && !isFocusTextBox) {
+                    if (textValue.text.isEmpty() && !isFocusTextBox) {
                         // ヒント代わり
                         Text(text = stringResource(id = R.string.choco_bridge_bar_title))
                     }
@@ -120,15 +121,15 @@ fun ChocoBridgeBar(
                             singleLine = true,
                             textStyle = TextStyle(color = LocalContentColor.current),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { onSearchClick.invoke(textValue) }),
+                            keyboardActions = KeyboardActions(onSearch = { onSearchClick.invoke(textValue.text) }),
                             onValueChange = onTextChange,
                         )
                         // クリアボタン
-                        if (isFocusTextBox && textValue.isNotEmpty()) {
+                        if (isFocusTextBox && textValue.text.isNotEmpty()) {
                             IconButton(
                                 modifier = Modifier
                                     .padding(end = 10.dp),
-                                onClick = { onTextChange("") }
+                                onClick = { onTextChange(TextFieldValue()) }
                             ) { Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = "クリア") }
                         }
                     }
@@ -190,9 +191,10 @@ fun ChocoBridgeSuggestItem(text: String, onSearchClick: (String) -> Unit, onAppe
                         .padding(10.dp),
                     text = text
                 )
-                IconButton(onClick = { onAppendClick(text) }) {
-                    Icon(painter = painterResource(id = R.drawable.ic_baseline_north_west_24), contentDescription = null)
-                }
+                IconButton(
+                    modifier = Modifier.padding(end = 10.dp),
+                    onClick = { onAppendClick(text) }
+                ) { Icon(painter = painterResource(id = R.drawable.ic_baseline_north_west_24), contentDescription = null) }
             }
         }
     )

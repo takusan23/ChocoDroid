@@ -38,7 +38,7 @@ fun ChocoBridgeBar(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable(onClick = onClick),
-        color = MaterialTheme.colorScheme.inversePrimary,
+        color = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(20.dp),
     ) {
         Row(

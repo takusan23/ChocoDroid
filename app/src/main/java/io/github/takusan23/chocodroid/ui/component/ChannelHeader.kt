@@ -47,7 +47,7 @@ fun ChannelHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset(0.dp, (-10).dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
             content = {
                 Column {

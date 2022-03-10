@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {
-        Surface {
+        Surface(color = MaterialTheme.colorScheme.background) {
 
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
@@ -68,8 +68,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // ナビゲーションバーの色
             // BottomNavigationの色に合わせている。ボトムシート表示中とか標準プレイヤー時の色
             SetNavigationBarColor(color = when {
-                modalBottomSheetState.isVisible -> MaterialTheme.colorScheme.primaryContainer
-                miniPlayerState.currentState.value == MiniPlayerStateType.Default -> MaterialTheme.colorScheme.primaryContainer
+                modalBottomSheetState.isVisible -> MaterialTheme.colorScheme.background
+                miniPlayerState.currentState.value == MiniPlayerStateType.Default -> MaterialTheme.colorScheme.inverseOnSurface
                 else -> calcM3ElevationColor(
                     colorScheme = MaterialTheme.colorScheme,
                     color = MaterialTheme.colorScheme.surface,
@@ -77,7 +77,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 )
             })
             // ステータスバーの色
-            SetStatusBarColor(color = MaterialTheme.colorScheme.primaryContainer)
+            SetStatusBarColor(color = MaterialTheme.colorScheme.background)
 
             // 動画情報更新したらミニプレイヤーの状態も変更
             LaunchedEffect(key1 = watchPageResponseData.value, block = {

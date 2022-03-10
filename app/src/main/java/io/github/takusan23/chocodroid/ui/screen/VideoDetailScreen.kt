@@ -42,7 +42,7 @@ fun VideoDetailScreen(
     M3Scaffold {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.inverseOnSurface,
             content = {
                 LazyColumn(
                     modifier = Modifier

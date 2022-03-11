@@ -129,7 +129,7 @@ fun ChocoBridgeBar(
                             IconButton(
                                 modifier = Modifier
                                     .padding(end = 10.dp),
-                                onClick = { onTextChange(TextFieldValue()) }
+                                onClick = { onTextChange(TextFieldValue(text = "")) }
                             ) { Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = "クリア") }
                         }
                     }

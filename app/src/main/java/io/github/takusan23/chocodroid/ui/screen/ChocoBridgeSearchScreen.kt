@@ -95,19 +95,19 @@ fun ChocoBridgeSearchScreen(
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             ChocoBridgeBar(
                 textValue = textFieldValue,
-                onBackClick = { navController.popBackStack() },
                 focusRequester = focusRequester,
                 isFocusTextBox = isFocusTextBox.value,
+                onBackClick = { navController.popBackStack() },
                 onFocusChange = { isFocusTextBox.value = it },
                 onSearchClick = { search(searchText.value) },
                 onTextChange = {
-                    if (_textFieldValue.value != it) {
+                    if (textFieldValue != it) {
                         // 違うとき
-                        notifyTextChange(it.text)
+                        bridgeSearchScreenViewModel.getSuggestWord(it.text)
                     }
+                    bridgeSearchScreenViewModel.setSearchWord(it.text)
                     cursorPos.value = it.selection
                     textComposition.value = it.composition
-                    _textFieldValue.value = it
                 },
                 suggestContent = {
                     Column {
@@ -116,7 +116,8 @@ fun ChocoBridgeSearchScreen(
                                 text = suggestWord,
                                 onSearchClick = { search(suggestWord) },
                                 onAppendClick = {
-                                    notifyTextChange(it)
+                                    bridgeSearchScreenViewModel.setSearchWord(it)
+                                    bridgeSearchScreenViewModel.getSuggestWord(it)
                                     // キャレットの位置を文字の最後にする
                                     cursorPos.value = TextRange(it.length)
                                     textComposition.value = null

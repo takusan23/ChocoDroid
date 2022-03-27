@@ -12,7 +12,7 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("IDqw8ICZnxE", null, null, null)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("F2ZAlXrldIM", null, null, null)
 
             if (watchPageData.isHTTPStreaming()) {
                 println("生放送 HLS アドレス")

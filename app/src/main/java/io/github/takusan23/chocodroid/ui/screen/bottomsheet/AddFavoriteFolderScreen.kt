@@ -1,8 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen.bottomsheet
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -73,38 +71,24 @@ fun AddFavoriteFolderScreen(
             text = stringResource(id = R.string.add_favorite_folder),
             fontSize = 25.sp
         )
-        Surface(
+        OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp),
-            color = MaterialTheme.colorScheme.primary,
-            shape = RoundedCornerShape(20.dp),
-        ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (textValue.isEmpty()) {
-                    Text(
-                        modifier = Modifier
-                            .padding(20.dp),
-                        text = stringResource(id = R.string.folder_name)
-                    )
-                }
-                BasicTextField(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth(),
-                    value = textValue,
-                    maxLines = 1,
-                    singleLine = true,
-                    textStyle = TextStyle(color = LocalContentColor.current),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { onCreate(textValue) }),
-                    onValueChange = onValueChange,
+            value = textValue,
+            maxLines = 1,
+            singleLine = true,
+            textStyle = TextStyle(color = LocalContentColor.current),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { onCreate(textValue) }),
+            onValueChange = onValueChange,
+            label = {
+                Text(
+                    modifier = Modifier.padding(20.dp),
+                    text = stringResource(id = R.string.folder_name)
                 )
-            }
-        }
+            },
+        )
         Button(
             onClick = { if (textValue.isNotEmpty()) onCreate(textValue) },
             modifier = Modifier.padding(10.dp),

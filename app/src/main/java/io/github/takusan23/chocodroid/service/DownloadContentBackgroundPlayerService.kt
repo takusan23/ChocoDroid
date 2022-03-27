@@ -97,7 +97,6 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
         override fun onPause() {
             super.onPause()
             exoPlayer.pause()
-            mediaSession.isActive = false
         }
 
         /** 再生 */

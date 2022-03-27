@@ -23,12 +23,6 @@ object AboutSettingScreen {
 
     /** Twitterリンク */
     const val TwitterUrl = "https://twitter.com/takusan__23"
-
-    /** Twitter ID */
-    const val TwitterId = "@takusan__23"
-
-    /** 更新した日 */
-    const val UpdateReleaseDate = "2022/02/02"
 }
 
 /**

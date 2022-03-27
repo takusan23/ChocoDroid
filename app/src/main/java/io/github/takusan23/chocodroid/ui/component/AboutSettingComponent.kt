@@ -73,14 +73,6 @@ fun AboutSettingAppInfo() {
             onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, AboutSettingScreen.SourceCodeGitHubUrl.toUri())) }
         )
         Spacer(modifier = Modifier.padding(5.dp))
-        RoundedIconButton(
-            modifier = Modifier,
-            mainText = AboutSettingScreen.TwitterId,
-            subText = stringResource(id = R.string.twitter),
-            iconPainter = painterResource(id = R.drawable.ic_outline_open_in_browser_24),
-            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, AboutSettingScreen.TwitterUrl.toUri())) }
-        )
-        Spacer(modifier = Modifier.padding(5.dp))
     }
 
 }

@@ -36,13 +36,21 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    /** アプリ起動中に他アプリから共有で開いた場合に呼ばれる。launchMode=singleTop */
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null) {
+            launchFromShare(intent)
+        }
+    }
+
     /** ブラウザから起動 */
     private fun launchFromBrowser() {
         intent.data?.toString()?.apply { viewModel.loadWatchPage(this) }
     }
 
     /** 共有から起動したとき */
-    private fun launchFromShare() {
+    private fun launchFromShare(intent: Intent = this@MainActivity.intent) {
         if (Intent.ACTION_SEND == intent.action) {
             val extras = intent.extras
             // URLを開く

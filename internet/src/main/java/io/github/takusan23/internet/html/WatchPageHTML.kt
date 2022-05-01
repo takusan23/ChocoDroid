@@ -71,7 +71,16 @@ object WatchPageHTML {
         // なんか後ろにJavaScript付いてるのでオブジェクトだけ取るためのJS
         val regex = Regex("(\\{.*?\\});")
         val ytInitialPlayerResponseJSON = regex.find(ytInitialPlayerResponse)!!.groupValues[1]
-        val watchPageJSONResponseData = SerializationTool.jsonSerialization.decodeFromString<WatchPageResponseJSONData>(ytInitialPlayerResponseJSON)
+        val watchPageJSONResponseData = try {
+            // とりあえずJSONパーサーへ
+            SerializationTool.jsonSerialization.decodeFromString<WatchPageResponseJSONData>(ytInitialPlayerResponseJSON)
+        } catch (e: Exception) {
+            // 映像データの情報が欠陥してる、年齢確認など
+            // 失敗時は失敗理由を表示する例外を吐く
+            // そもそもJSON解析に失敗した場合はここで例外を吐くと思う
+            val errorData = SerializationTool.jsonSerialization.decodeFromString<WatchPageErrorResponseJSONData>(ytInitialPlayerResponseJSON)
+            throw WatchPageErrorException(errorData)
+        }
 
         // もう一つのJSONもほしい
         val ytInitialData = document

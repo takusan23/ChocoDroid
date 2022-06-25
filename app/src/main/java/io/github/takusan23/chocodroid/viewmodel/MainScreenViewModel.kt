@@ -105,9 +105,6 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
                     withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
                 }
             } else watchPageData
-
-            _watchPageData.value?.contentUrlList?.forEach { println(it) }
-
             selectMediaUrl()
             _isLoadingFlow.value = false
 

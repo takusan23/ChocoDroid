@@ -1,11 +1,10 @@
 package io.github.takusan23.chocodroid.ui.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -109,6 +108,7 @@ fun RoundedImageButton(
 /**
  * Icon部分を変更可能にしたバージョン。
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RoundedButton(
     modifier: Modifier = Modifier,
@@ -120,14 +120,11 @@ private fun RoundedButton(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
-                onClick = onClick,
-            ),
+        modifier = modifier,
         color = backgroundColor,
         shape = shape,
+        interactionSource = remember { MutableInteractionSource() },
+        onClick = onClick,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             icon()

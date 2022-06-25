@@ -172,17 +172,20 @@ fun VideoControlUI(
                             if (controller.currentPosition.value > 0 && controller.duration.value > 0) {
                                 val isTouchingSlider = remember { mutableStateOf(false) }
                                 val progressFloat = remember { mutableStateOf(0f) }
+                                val progressBuffered = (controller.bufferedPosition.value / controller.duration.value.toFloat())
+
                                 // 操作中でなければ
                                 LaunchedEffect(key1 = controller.currentPosition.value, block = {
                                     if (!isTouchingSlider.value) {
                                         progressFloat.value = (controller.currentPosition.value / controller.duration.value.toFloat())
                                     }
                                 })
-                                Slider(
+                                BufferSeekbar(
                                     modifier = Modifier
                                         .padding(5.dp)
                                         .weight(1f),
-                                    value = progressFloat.value,
+                                    progressFloat = progressFloat.value,
+                                    progressBuffered = progressBuffered,
                                     onValueChange = {
                                         isTouchingSlider.value = true
                                         progressFloat.value = it

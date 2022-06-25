@@ -88,6 +88,9 @@ class ExoPlayerComposeController(
     /** 再生時間（ミリ秒）。定期的に更新されます */
     val currentPosition = mutableStateOf(0L)
 
+    /** バッファどこまで読み込んだか（ミリ秒）。定期的に更新されます */
+    val bufferedPosition = mutableStateOf(0L)
+
     /** 動画時間（ミリ秒）*/
     val duration = mutableStateOf(0L)
 
@@ -154,6 +157,7 @@ class ExoPlayerComposeController(
             while (isActive) {
                 delay(100)
                 currentPosition.value = exoPlayer.currentPosition
+                bufferedPosition.value = exoPlayer.bufferedPosition
             }
         }
         // リピートモード等設定読み出し

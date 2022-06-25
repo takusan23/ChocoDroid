@@ -46,12 +46,14 @@ fun BufferSeekbar(
             // シークバーのバックグラウンド
             // Sliderのバックグラウンドは透明化して、バックグラウンドだけ自前で描画する
             LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
                 progress = 1f,
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
                 trackColor = Color.Transparent
             )
             // 進捗表示
             LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
                 progress = progressBuffered,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 trackColor = Color.Transparent

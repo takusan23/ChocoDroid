@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.video.VideoSize
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
+import io.github.takusan23.internet.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 
@@ -116,7 +117,11 @@ class ExoPlayerComposeController(
         }
     }
 
-    private val defaultDataSourceFactory = DefaultDataSource.Factory(context).setTransferListener(transferListener)
+    private val defaultDataSourceFactory = DefaultDataSource.Factory(context) {
+        DefaultDataSource(context, SingletonOkHttpClientTool.USER_AGENT, true).apply {
+            addTransferListener(transferListener)
+        }
+    }
 
     /** ExoPlayer */
     val exoPlayer = ExoPlayer.Builder(context)

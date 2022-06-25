@@ -19,7 +19,10 @@ import io.github.takusan23.internet.magic.UnlockMagic
 import io.github.takusan23.internet.magic.data.AlgorithmFuncNameData
 import io.github.takusan23.internet.magic.data.AlgorithmInvokeData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -94,16 +97,17 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
 
             /**
              * View（Compose）にデータを渡す
-             *
              * 動画の場合はURLのパラメーターを修正する
-             *
              * ここらへんどうにかしたい
              * */
-            _watchPageData.value = if (!watchPageData.isHTTPStreaming()) {
+            _watchPageData.value = if (!watchPageData.isLiveContent()) {
                 UnlockMagic.fixUrlParam(watchPageData, decryptData.urlParamFixJSCode) { evalCode ->
                     withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
                 }
             } else watchPageData
+
+            _watchPageData.value?.contentUrlList?.forEach { println(it) }
+
             selectMediaUrl()
             _isLoadingFlow.value = false
 

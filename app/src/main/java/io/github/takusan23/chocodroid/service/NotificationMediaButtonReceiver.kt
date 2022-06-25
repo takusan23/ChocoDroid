@@ -29,7 +29,6 @@ class NotificationMediaButtonReceiver(
     /** イベント受け取り */
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            println(intent?.action)
             when (intent?.action) {
                 PlayerControlType.ACTION_PLAY.action -> transportControls.play()
                 PlayerControlType.ACTION_PAUSE.action -> transportControls.pause()

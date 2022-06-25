@@ -133,6 +133,8 @@ object WatchPageHTML {
                     mixTrackUrl = watchPageJSONResponseData.streamingData.hlsManifestUrl!!
                 ))
             }
+/*
+            // TODO これいらないかも
             // dashManifestUrlがある場合はそれを採用（多分adaptiveFormatsが404を返す？）
             watchPageJSONResponseData.streamingData.dashManifestUrl != null -> {
                 listOf(MediaUrlData(
@@ -140,6 +142,7 @@ object WatchPageHTML {
                     mixTrackUrl = watchPageJSONResponseData.streamingData.dashManifestUrl
                 ))
             }
+*/
             else -> {
                 // 音声ファイル選ぶ
                 val audioTrack = watchPageJSONResponseData.streamingData.adaptiveFormats.find { it.mimeType.contains("audio") }!!

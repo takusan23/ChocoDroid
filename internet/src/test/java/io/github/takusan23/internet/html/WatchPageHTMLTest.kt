@@ -12,21 +12,20 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("F2ZAlXrldIM", null, null, null)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("SkyYpWEeOfk", null, null, null)
 
             if (watchPageData.isHTTPStreaming()) {
                 println("生放送 HLS アドレス")
                 println(watchPageData.watchPageResponseJSONData.streamingData.hlsManifestUrl)
                 println("MPEG-DASH アドレス")
                 println(watchPageData.watchPageResponseJSONData.streamingData.dashManifestUrl)
-            } else {
-                println("動画URL")
-                watchPageData.contentUrlList.forEach { mediaUrlData ->
-                    println(mediaUrlData.quality)
-                    println(mediaUrlData.videoTrackUrl)
-                    println(mediaUrlData.audioTrackUrl)
-                    println("----")
-                }
+            }
+            println("動画URL")
+            watchPageData.contentUrlList.forEach { mediaUrlData ->
+                println(mediaUrlData.quality)
+                println(mediaUrlData.videoTrackUrl)
+                println(mediaUrlData.audioTrackUrl)
+                println("----")
             }
 
             watchPageData.watchPageResponseJSONData.streamingData.adaptiveFormats.forEach {

@@ -116,14 +116,17 @@ fun VideoDetailMenu(
     onMenuClick: (BottomSheetInitData) -> Unit,
 ) {
     // プログレッシブ形式で配信してない場合はダウンロードボタンを塞ぐ
-    val isDisableDownloadButton = watchPageData.isHTTPStreaming()
+    val isDisableDownloadButton = watchPageData.isLiveContent()
+    val isDownloadContent = watchPageData.type == "download"
 
     // ボタンリスト
     val buttonList = listOf(
         Triple(R.string.video_menu, R.drawable.ic_outline_more_vert_24, null),
         Triple(R.string.favourite, R.drawable.ic_outline_folder_special_24, AddVideoToFavoriteFolderScreenInitData(CommonVideoData(watchPageData.watchPageResponseJSONData))),
-        Triple(R.string.download, R.drawable.chocodroid_download,
-            if (isDisableDownloadButton) null else VideoDownloadScreenInitData(watchPageData)
+        Triple(
+            if (isDownloadContent) R.string.downloaded_content else R.string.download,
+            if (isDownloadContent) R.drawable.ic_outline_file_download_done_24 else R.drawable.chocodroid_download,
+            if (isDisableDownloadButton || isDownloadContent) null else VideoDownloadScreenInitData(watchPageData)
         )
     )
 
@@ -223,7 +226,7 @@ private fun VideoDetailMenuItem(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(painter = painterResource(id = iconResId), contentDescription = null)
-                Text(text = stringResource(id = stringResId))
+                Text(text = stringResource(id = stringResId), fontSize = 12.sp)
             }
         }
     )

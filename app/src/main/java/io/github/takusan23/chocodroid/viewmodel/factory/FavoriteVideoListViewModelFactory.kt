@@ -11,7 +11,7 @@ import io.github.takusan23.chocodroid.viewmodel.FavoriteVideoListViewModel
  * @param folderId フォルダID
  * */
 class FavoriteVideoListViewModelFactory(private val application: Application, private val folderId: Int) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return FavoriteVideoListViewModel(application, folderId) as T
     }
 }

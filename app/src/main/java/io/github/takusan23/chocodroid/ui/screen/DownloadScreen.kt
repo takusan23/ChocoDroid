@@ -50,7 +50,7 @@ fun DownloadScreen(
             )
         },
         content = {
-            Column(modifier = Modifier.padding(it)) {
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),

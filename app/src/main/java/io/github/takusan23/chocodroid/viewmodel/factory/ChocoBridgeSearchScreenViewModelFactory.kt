@@ -12,7 +12,7 @@ import io.github.takusan23.chocodroid.viewmodel.ChocoBridgeSearchScreenViewModel
  * */
 class ChocoBridgeSearchScreenViewModelFactory(private val application: Application, private val searchWord: String) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ChocoBridgeSearchScreenViewModel(application, searchWord) as T
     }
 

@@ -1,10 +1,8 @@
 package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,7 +42,7 @@ fun FavouriteScreen(
             )
         },
         content = {
-            Column(modifier = Modifier.padding(it)) {
+            Column {
                 // ルーティング
                 NavHost(navController = favouriteNavController, startDestination = FavouriteScreenNavigationLinkList.FavoriteTop) {
                     composable(FavouriteScreenNavigationLinkList.FavoriteTop) {

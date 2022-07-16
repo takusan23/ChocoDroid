@@ -13,7 +13,7 @@ import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
  * */
 class SearchScreenViewModelFactory(private val application: Application, private val query: String) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SearchScreenViewModel(application, query) as T
     }
 

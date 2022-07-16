@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.takusan23.chocodroid.viewmodel.ChannelScreenViewModel
-import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
-import io.github.takusan23.internet.api.SearchAPI
 
 /**
  * SearchScreenViewModelへ引数を渡すためのクラス
@@ -15,8 +13,7 @@ import io.github.takusan23.internet.api.SearchAPI
  * */
 class ChannelScreenViewModelFactory(private val application: Application, private val channelId: String) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ChannelScreenViewModel(application, channelId) as T
     }
-
 }

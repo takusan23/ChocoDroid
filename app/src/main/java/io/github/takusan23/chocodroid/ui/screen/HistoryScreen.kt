@@ -54,7 +54,6 @@ fun HistoryScreen(
             )
         },
         content = {
-
             Column {
                 // 削除ボタン
                 HistoryAllDeleteButton(

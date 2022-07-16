@@ -40,7 +40,7 @@ fun M3Scaffold(
         containerColor = containerColor,
         contentColor = contentColor,
         content = {
-            Box {
+            Box(Modifier.padding(it)) {
                 content(it)
                 SnackbarHost(
                     modifier = Modifier

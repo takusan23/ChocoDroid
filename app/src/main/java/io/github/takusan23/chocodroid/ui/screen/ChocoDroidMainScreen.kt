@@ -2,8 +2,10 @@ package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -11,7 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
-import io.github.takusan23.chocodroid.ui.tool.*
+import io.github.takusan23.chocodroid.ui.tool.SetActivitySleepComposeApp
+import io.github.takusan23.chocodroid.ui.tool.SetBackKeyEvent
+import io.github.takusan23.chocodroid.ui.tool.SetNavigationBarColor
+import io.github.takusan23.chocodroid.ui.tool.SetStatusBarColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -70,11 +75,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             SetNavigationBarColor(color = when {
                 modalBottomSheetState.isVisible -> MaterialTheme.colorScheme.background
                 miniPlayerState.currentState.value == MiniPlayerStateType.Default -> MaterialTheme.colorScheme.inverseOnSurface
-                else -> calcM3ElevationColor(
-                    colorScheme = MaterialTheme.colorScheme,
-                    color = MaterialTheme.colorScheme.surface,
-                    elevation = 3.dp
-                )
+                else -> MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current + 3.0.dp)
             })
             // ステータスバーの色
             SetStatusBarColor(color = MaterialTheme.colorScheme.background)

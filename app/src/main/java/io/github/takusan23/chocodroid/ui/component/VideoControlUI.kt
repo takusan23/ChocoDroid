@@ -18,7 +18,10 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.setting.SettingKeyObject
+import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.QualityChangeScreenInitData
@@ -51,6 +54,10 @@ fun VideoControlUI(
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    // プレイヤーはDataStoreの変更を検知してExoPlayerへ自動で反映される
+    val dataStore = remember { context.dataStore }
+    val currentSetting = dataStore.data.collectAsState(initial = null)
 
     // プレイヤーの幅
     val playerWidth = remember { mutableStateOf(0) }
@@ -132,8 +139,12 @@ fun VideoControlUI(
                                 )
                             }
                             RepeatButton(
-                                isEnableRepeat = controller.isRepeatEnable.value,
-                                onRepeatChange = { controller.setRepeatMode(it) }
+                                isEnableRepeat = currentSetting.value?.get(SettingKeyObject.PLAYER_REPEAT_MODE) ?: false,
+                                onRepeatChange = { isRepeat ->
+                                    scope.launch {
+                                        dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_MODE] = isRepeat }
+                                    }
+                                }
                             )
                         }
                     }

@@ -80,4 +80,6 @@
     <string name="setting_enable_dynamic_color_icon_title">Set a dynamic color (dynamic theme) icon</string>
     <string name="setting_enable_dynamic_color_icon_description">Backport the theme icon feature for Android 13 and above to 12.</string>
     <string name="downloaded_content">download complete</string>
+    <string name="player_menu">Player menu</string>
+    <string name="player_menu_volume">Video volume</string>
 </resources>

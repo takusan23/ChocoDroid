@@ -80,6 +80,9 @@ fun ChocoDroidBottomSheetNavigation(
                 BottomSheetInitData.BottomSheetScreenList.SearchSortChange -> {
                     SearchSortScreen(onClose = { scope.launch { modalBottomSheetState.hide() } })
                 }
+                BottomSheetInitData.BottomSheetScreenList.PlayerMenu -> {
+                    VideoPlayerMenuScreen()
+                }
                 else -> {
                     // The initial value must have an associated anchor. 対策。何もない状態だとエラーが出るので適当においておく
                     Spacer(modifier = Modifier.size(10.dp))

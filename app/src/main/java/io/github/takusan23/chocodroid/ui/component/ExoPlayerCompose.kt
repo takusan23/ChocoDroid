@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.datastore.preferences.core.edit
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -33,7 +32,8 @@ import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.internet.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 /**
@@ -93,9 +93,6 @@ class ExoPlayerComposeController(
 
     /** 動画時間（ミリ秒）*/
     val duration = mutableStateOf(0L)
-
-    /** 繰り返し再生する場合はtrue */
-    val isRepeatEnable = mutableStateOf(false)
 
     /** コルーチンスコープ。終了時にキャンセルするため */
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -160,11 +157,11 @@ class ExoPlayerComposeController(
                 bufferedPosition.value = exoPlayer.bufferedPosition
             }
         }
-        // リピートモード等設定読み出し
-        coroutineScope.launch {
-            val setting = context.dataStore.data.first()
+        // リピートモード / 音量調整 など DataStore の値が変わったら更新する
+        context.dataStore.data.onEach { setting ->
             setRepeatMode(setting[SettingKeyObject.PLAYER_REPEAT_MODE] ?: false)
-        }
+            setVolume(setting[SettingKeyObject.PLAYER_VOLUME] ?: 1f)
+        }.launchIn(coroutineScope)
     }
 
     /**
@@ -218,10 +215,14 @@ class ExoPlayerComposeController(
      * */
     fun setRepeatMode(isRepeat: Boolean = true) {
         exoPlayer.repeatMode = if (isRepeat) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
-        this.isRepeatEnable.value = isRepeat
-        coroutineScope.launch {
-            context.dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_MODE] = isRepeat }
-        }
+    }
+
+    /**
+     * 音量を設定する
+     * @param volume 音量
+     * */
+    private fun setVolume(volume: Float) {
+        exoPlayer.volume = volume
     }
 
     /** 終了時に呼んでください */

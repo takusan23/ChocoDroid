@@ -19,10 +19,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.AddVideoToFavoriteFolderScreenInitData
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoDownloadScreenInitData
-import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
+import io.github.takusan23.chocodroid.ui.screen.bottomsheet.*
 import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
@@ -121,7 +118,7 @@ fun VideoDetailMenu(
 
     // ボタンリスト
     val buttonList = listOf(
-        Triple(R.string.video_menu, R.drawable.ic_outline_more_vert_24, null),
+        Triple(R.string.video_menu, R.drawable.ic_outline_more_vert_24, VideoPlayerMenuScreenInitData()),
         Triple(R.string.favourite, R.drawable.ic_outline_folder_special_24, AddVideoToFavoriteFolderScreenInitData(CommonVideoData(watchPageData.watchPageResponseJSONData))),
         Triple(
             if (isDownloadContent) R.string.downloaded_content else R.string.download,

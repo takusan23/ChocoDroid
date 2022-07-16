@@ -80,4 +80,6 @@
     <string name="setting_enable_dynamic_color_icon_title">ダイナミックカラー（動的テーマ）のアイコンを設定する</string>
     <string name="setting_enable_dynamic_color_icon_description">Android 13以降のテーマアイコン機能を12へバックポートします</string>
     <string name="downloaded_content">ダウンロード済み</string>
+    <string name="player_menu">プレイヤーメニュー</string>
+    <string name="player_menu_volume">動画の音量</string>
 </resources>

@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid.setting
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
 /**
@@ -39,6 +40,9 @@ object SettingKeyObject {
 
     /** 前回選択した画質。動画バージョン */
     val PLAYER_QUALITY_VIDEO = stringPreferencesKey("player_quality_video")
+
+    /** ExoPlayerへ渡す音量 */
+    val PLAYER_VOLUME = floatPreferencesKey("player_volume")
 
     /** 設定項目。別ファイルに切り出したほうが良さそう */
 

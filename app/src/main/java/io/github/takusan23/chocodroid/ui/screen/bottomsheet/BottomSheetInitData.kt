@@ -32,6 +32,9 @@ open class BottomSheetInitData(val screen: BottomSheetScreenList) {
 
         /** ソート変更 */
         SearchSortChange,
+
+        /** プレイヤーメニュー */
+        PlayerMenu
     }
 
 }

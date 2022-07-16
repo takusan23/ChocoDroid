@@ -44,7 +44,4 @@ object SettingKeyObject {
 
     /** Android 12以降で使えるダイナミックカラーを有効にするか */
     val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
-
-    /** 動的にアイコンを切り替える */
-    val ENABLE_DYNAMIC_COLOR_ICON = booleanPreferencesKey("enable_dynamic_color_icon")
 }

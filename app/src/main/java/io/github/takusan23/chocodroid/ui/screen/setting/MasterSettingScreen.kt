@@ -18,7 +18,6 @@ import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
-import io.github.takusan23.chocodroid.tool.DynamicColorLauncherIcon
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.SettingItem
 import io.github.takusan23.chocodroid.ui.component.SettingSwitchItem
@@ -72,18 +71,6 @@ fun MasterSettingScreen(
                             icon = painterResource(id = R.drawable.ic_outline_color_lens_24),
                             isEnable = dataStoreFlow.value?.get(SettingKeyObject.ENABLE_DYNAMIC_THEME) ?: false,
                             onCheckedChange = { isEnable -> editDataStore(SettingKeyObject.ENABLE_DYNAMIC_THEME, isEnable) }
-                        )
-                    }
-                    item {
-                        SettingSwitchItem(
-                            title = stringResource(id = R.string.setting_enable_dynamic_color_icon_title),
-                            description = stringResource(id = R.string.setting_enable_dynamic_color_icon_description),
-                            icon = painterResource(id = R.drawable.ic_outline_color_lens_24),
-                            isEnable = dataStoreFlow.value?.get(SettingKeyObject.ENABLE_DYNAMIC_COLOR_ICON) ?: false,
-                            onCheckedChange = { isEnable ->
-                                editDataStore(SettingKeyObject.ENABLE_DYNAMIC_COLOR_ICON, isEnable)
-                                DynamicColorLauncherIcon.setDynamicColorLauncherIcon(context, isEnable)
-                            }
                         )
                     }
                     item {

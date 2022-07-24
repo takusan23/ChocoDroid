@@ -58,7 +58,17 @@ open class CommonVideoData(
     constructor(watchPageResponseJSONData: WatchPageResponseJSONData) : this(
         videoId = watchPageResponseJSONData.videoDetails.videoId,
         videoTitle = watchPageResponseJSONData.videoDetails.title,
-        duration = SimpleDateFormat("mm:ss", Locale.getDefault()).format(watchPageResponseJSONData.videoDetails.lengthSeconds * 1000),
+        duration = watchPageResponseJSONData.videoDetails.lengthSeconds.let { videoLengthSec ->
+            val minuteSec = SimpleDateFormat("mm:ss", Locale.getDefault()).format(videoLengthSec * 1000)
+            if (videoLengthSec < 3600) {
+                // 1時間を超えない場合
+                minuteSec
+            } else {
+                val hourText = (videoLengthSec / 3600)
+                    .let { hour -> String.format("%02d", hour) }
+                "$hourText:$minuteSec"
+            }
+        },
         watchCount = watchPageResponseJSONData.videoDetails.viewCount,
         publishDate = watchPageResponseJSONData.microformat.playerMicroformatRenderer.publishDate,
         ownerName = watchPageResponseJSONData.videoDetails.author,

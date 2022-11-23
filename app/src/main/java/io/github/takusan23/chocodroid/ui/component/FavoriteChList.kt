@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.database.entity.FavoriteChDBEntity
 
@@ -77,11 +79,11 @@ private fun FavoriteChItemList(
                     .size(70.dp)
                     .padding(10.dp)
                     .clip(RoundedCornerShape(50)),
-                painter = rememberImagePainter(
-                    data = favoriteChDBEntity.thumbnailUrl,
-                    builder = {
-                        crossfade(true)
-                    }
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(data = favoriteChDBEntity.thumbnailUrl)
+                        .apply(block = { crossfade(true) })
+                        .build()
                 ),
                 contentScale = ContentScale.Crop,
                 contentDescription = null

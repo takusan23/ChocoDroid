@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.channel.C4TabbedHeaderRenderer
 
@@ -35,7 +35,7 @@ fun ChannelHeader(
     Column {
         if (header.banner != null) {
             Image(
-                painter = rememberImagePainter(data = header.banner!!.thumbnails.last().url),
+                painter = rememberAsyncImagePainter(model = header.banner!!.thumbnails.last().url),
                 contentDescription = "ヘッダー",
                 modifier = Modifier
                     .fillMaxWidth()

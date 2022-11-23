@@ -10,12 +10,13 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
+    namespace ="io.github.takusan23.chocodroid"
 
     defaultConfig {
         applicationId = "io.github.takusan23.chocodroid"
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0.0 beta01"
 
@@ -46,8 +47,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.2.0"
-        kotlinCompilerVersion = kotlinVersion
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     packagingOptions {
         resources {
@@ -106,11 +106,11 @@ dependencies {
     implementation(project(":downloadpocket"))
 
     // Android
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.appcompat:appcompat:1.4.2")
-    implementation("com.google.android.material:material:1.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
-    implementation("androidx.activity:activity-compose:1.5.0")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.appcompat:appcompat:1.5.1")
+    implementation("com.google.android.material:material:1.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.media:media:1.6.0")
 
@@ -123,18 +123,18 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.20.0")
     // Compose + Material You
-    implementation("androidx.compose.material3:material3:1.0.0-alpha14")
+    implementation("androidx.compose.material3:material3:1.1.0-alpha02")
     // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
 
     // ExoPlayer。生放送用のHlsと、一部の動画はDashで配信されている
-    implementation("com.google.android.exoplayer:exoplayer-core:2.17.1")
-    implementation("com.google.android.exoplayer:exoplayer-hls:2.17.1")
-    implementation("com.google.android.exoplayer:exoplayer-dash:2.17.1")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.18.1")
+    implementation("com.google.android.exoplayer:exoplayer-hls:2.18.1")
+    implementation("com.google.android.exoplayer:exoplayer-dash:2.18.1")
 
     // Coil
-    implementation("io.coil-kt:coil:1.4.0")
-    implementation("io.coil-kt:coil-compose:1.4.0")
+    implementation("io.coil-kt:coil:2.2.2")
+    implementation("io.coil-kt:coil-compose:2.2.2")
 
     // Room
     val roomVersion = "2.5.0-alpha02"

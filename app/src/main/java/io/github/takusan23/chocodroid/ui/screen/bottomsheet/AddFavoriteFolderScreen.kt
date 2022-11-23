@@ -56,6 +56,7 @@ fun AddFavoriteFolderScreen(
  * @param onValueChange テキスト変更時に呼ばれる
  * @param onCreate 作成ボタンを押したら呼ばれる
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFavoriteFolderScreen(
     textValue: String,

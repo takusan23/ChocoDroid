@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.rememberImagePainter
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 
 /**
  * 丸いアバターアイコン
@@ -22,11 +24,11 @@ fun RoundedAvatarImage(
     Image(
         modifier = modifier
             .clip(RoundedCornerShape(50)),
-        painter = rememberImagePainter(
-            data = avatarUrl,
-            builder = {
-                crossfade(true)
-            }
+        painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current)
+                .data(avatarUrl)
+                .apply { crossfade(true) }
+                .build()
         ),
         contentScale = ContentScale.Crop,
         contentDescription = null

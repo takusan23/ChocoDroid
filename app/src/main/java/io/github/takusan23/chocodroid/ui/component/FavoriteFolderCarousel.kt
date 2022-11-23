@@ -18,13 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.CommonVideoData
 
@@ -171,11 +173,11 @@ private fun FavoriteFolderVideoCarouselRowItem(
                         .width(150.dp)
                         .aspectRatio(1.7f)
                         .clip(RoundedCornerShape(10.dp)),
-                    painter = rememberImagePainter(
-                        data = thumbnailUrl,
-                        builder = {
-                            crossfade(true)
-                        }
+                    painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(thumbnailUrl)
+                            .apply { crossfade(true) }
+                            .build()
                     ),
                     contentScale = ContentScale.Crop,
                     contentDescription = null,

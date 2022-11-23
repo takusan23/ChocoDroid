@@ -11,12 +11,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.screen.NavigationLinkList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.*
@@ -47,56 +49,57 @@ fun VideoDetailInfoCard(
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.inversePrimary,
-        shape = RoundedCornerShape(20.dp),
-        content = {
-            Column(modifier = Modifier.padding(10.dp)) {
-                Row {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            modifier = Modifier.padding(top = 5.dp),
-                            fontSize = 20.sp,
-                            text = videoDetails.title,
-                            fontWeight = FontWeight.Bold
-                        )
-                        VideoDetailIconText(
-                            modifier = Modifier.padding(top = 5.dp),
-                            iconResId = R.drawable.ic_outline_today_24,
-                            text = "${stringResource(id = R.string.publish_date)} : $publishDate"
-                        )
-                        VideoDetailIconText(
-                            modifier = Modifier.padding(top = 5.dp),
-                            iconResId = R.drawable.ic_outline_play_arrow_24,
-                            text = "${stringResource(id = R.string.watch_count)} : ${videoDetails.viewCount}"
-                        )
-                    }
-                    IconButton(
-                        modifier = Modifier.padding(top = 10.dp),
-                        onClick = { onOpenClick(!isExpanded) }
-                    ) { Icon(painter = painterResource(id = if (isExpanded) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24), contentDescription = null) }
-                }
-                // 動画説明文
-                if (isExpanded) {
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+            Row {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         modifier = Modifier.padding(top = 5.dp),
-                        fontSize = 15.sp,
-                        text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
+                        fontSize = 20.sp,
+                        text = videoDetails.title,
+                        fontWeight = FontWeight.Bold
+                    )
+                    VideoDetailIconText(
+                        modifier = Modifier.padding(top = 5.dp),
+                        iconResId = R.drawable.ic_outline_today_24,
+                        text = "${stringResource(id = R.string.publish_date)} : $publishDate"
+                    )
+                    VideoDetailIconText(
+                        modifier = Modifier.padding(top = 5.dp),
+                        iconResId = R.drawable.ic_outline_play_arrow_24,
+                        text = "${stringResource(id = R.string.watch_count)} : ${videoDetails.viewCount}"
                     )
                 }
-                RoundedImageButton(
-                    modifier = Modifier
-                        .padding(top = 5.dp, bottom = 5.dp)
-                        .fillMaxWidth(),
-                    mainText = videoDetails.author,
-                    subText = stringResource(id = R.string.publish_name),
-                    iconPainter = rememberImagePainter(
-                        data = iconUrl,
-                        builder = { crossfade(true) }
-                    ),
-                    onClick = { onNavigate(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageResponseJSONData.videoDetails.channelId)) }
+                IconButton(
+                    modifier = Modifier.padding(top = 10.dp),
+                    onClick = { onOpenClick(!isExpanded) }
+                ) { Icon(painter = painterResource(id = if (isExpanded) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24), contentDescription = null) }
+            }
+            // 動画説明文
+            if (isExpanded) {
+                Text(
+                    modifier = Modifier.padding(top = 5.dp),
+                    fontSize = 15.sp,
+                    text = watchPageData.watchPageResponseJSONData.videoDetails.shortDescription,
                 )
             }
+            RoundedImageButton(
+                modifier = Modifier
+                    .padding(top = 5.dp, bottom = 5.dp)
+                    .fillMaxWidth(),
+                mainText = videoDetails.author,
+                subText = stringResource(id = R.string.publish_name),
+                iconPainter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(iconUrl)
+                        .apply { crossfade(true) }
+                        .build()
+                ),
+                onClick = { onNavigate(NavigationLinkList.getChannelScreenLink(watchPageData.watchPageResponseJSONData.videoDetails.channelId)) }
+            )
         }
-    )
+    }
 }
 
 /**

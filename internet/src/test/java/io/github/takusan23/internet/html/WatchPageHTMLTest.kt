@@ -12,7 +12,7 @@ class WatchPageHTMLTest {
     @Test
     fun getWatchPage() {
         runBlocking {
-            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("SkyYpWEeOfk", null, null, null)
+            val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("hUVdNSD6TI4", null, null, null)
 
             if (watchPageData.isHTTPStreaming()) {
                 println("生放送 HLS アドレス")
@@ -34,7 +34,11 @@ class WatchPageHTMLTest {
                 println("---")
             }
 
-            println("投稿者。の画像URL")
+            println("投稿者")
+            watchPageData.watchPageResponseJSONData.videoDetails.apply {
+                println(author)
+                println(channelId)
+            }
             watchPageData.watchPageInitialJSONData.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer?.owner?.videoOwnerRenderer?.thumbnail?.thumbnails?.forEach {
                 println(it.url)
             }

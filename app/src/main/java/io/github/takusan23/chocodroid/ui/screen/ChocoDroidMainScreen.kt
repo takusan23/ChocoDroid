@@ -1,5 +1,6 @@
 package io.github.takusan23.chocodroid.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalAbsoluteTonalElevation
@@ -14,7 +15,6 @@ import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
 import io.github.takusan23.chocodroid.ui.tool.SetActivitySleepComposeApp
-import io.github.takusan23.chocodroid.ui.tool.SetBackKeyEvent
 import io.github.takusan23.chocodroid.ui.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.tool.SetStatusBarColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
@@ -58,13 +58,13 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             }
 
             // BottomSheetをバックキーで閉じれるように。isVisibleのときのみバックキーを監視
-            if (modalBottomSheetState.isVisible) {
-                SetBackKeyEvent { scope.launch { modalBottomSheetState.hide() } }
+            BackHandler(modalBottomSheetState.isVisible) {
+                scope.launch { modalBottomSheetState.hide() }
             }
 
             // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
-            if (miniPlayerState.currentState.value == MiniPlayerStateType.Default) {
-                SetBackKeyEvent { miniPlayerState.setState(MiniPlayerStateType.MiniPlayer) }
+            BackHandler(miniPlayerState.currentState.value == MiniPlayerStateType.Default) {
+                miniPlayerState.setState(MiniPlayerStateType.MiniPlayer)
             }
 
             // スリープモード制御

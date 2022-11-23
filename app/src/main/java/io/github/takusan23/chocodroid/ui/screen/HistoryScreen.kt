@@ -52,45 +52,43 @@ fun HistoryScreen(
                 onClick = { navController.navigate(NavigationLinkList.getChocoDroidBridgeSearchScreen()) },
                 onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
             )
-        },
-        content = {
-            Column {
-                // 削除ボタン
-                HistoryAllDeleteButton(
+        }
+    ) {
+        Column {
+            // 削除ボタン
+            HistoryAllDeleteButton(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(end = 10.dp),
+                snackbarHostState = snackbarHostState,
+                onDelete = { historyScreenViewModel.deleteAllDB() }
+            )
+            // 一覧表示
+            if (historyList.value.isNotEmpty()) {
+                Surface(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(end = 10.dp),
-                    snackbarHostState = snackbarHostState,
-                    onDelete = { historyScreenViewModel.deleteAllDB() }
-                )
-                // 一覧表示
-                if (historyList.value.isNotEmpty()) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
-                            .fillMaxHeight(),
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                        content = {
-                            VideoList(
-                                videoList = historyList.value,
-                                onClick = { mainViewModel.loadWatchPage(it) },
-                                onMenuClick = {
-                                    onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                        commonVideoData = it,
-                                        isHistory = true
-                                    ))
-                                }
-                            )
+                        .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .fillMaxHeight(),
+                    color = MaterialTheme.colorScheme.inverseOnSurface,
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                ) {
+                    VideoList(
+                        videoList = historyList.value,
+                        onClick = { mainViewModel.loadWatchPage(it) },
+                        onMenuClick = {
+                            onBottomSheetNavigate(VideoListMenuScreenInitData(
+                                commonVideoData = it,
+                                isHistory = true
+                            ))
                         }
                     )
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) { Text(text = stringResource(id = R.string.history_empty)) }
                 }
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { Text(text = stringResource(id = R.string.history_empty)) }
             }
         }
-    )
+    }
 }

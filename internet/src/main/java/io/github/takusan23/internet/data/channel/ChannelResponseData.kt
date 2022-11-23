@@ -20,17 +20,24 @@ data class ChannelResponseData(
         return contents.twoColumnBrowseResultsRenderer.tabs.find { it.tabRenderer?.content != null }!!
             .tabRenderer
             ?.content
-            ?.sectionListRenderer
+            ?.richGridRenderer
             ?.contents
-            ?.get(0)?.itemSectionRenderer
-            ?.contents
-            ?.get(0)
-            ?.gridRenderer
-            ?.items
-            ?.mapNotNull { it.gridVideoRenderer }
-            ?.map { CommonVideoData(it) }
+            ?.mapNotNull { it.richItemRenderer?.content?.videoRenderer?.let { it1 -> CommonVideoData(it1) } }
     }
 
+    /** 追加ロード用の Token を取得する */
+    fun getContinuationToken(): String? {
+        return contents.twoColumnBrowseResultsRenderer.tabs.find { it.tabRenderer?.content != null }!!
+            .tabRenderer
+            ?.content
+            ?.richGridRenderer
+            ?.contents
+            ?.last()
+            ?.continuationItemRenderer
+            ?.continuationEndpoint
+            ?.continuationCommand
+            ?.token
+    }
 }
 
 /**
@@ -48,7 +55,7 @@ data class OnResponseReceivedActions(
 
 @Serializable
 data class AppendContinuationItemsAction(
-    val continuationItems: List<GridRendererItem>,
+    val continuationItems: List<RichGridRendererContent>,
 )
 
 @Serializable
@@ -95,45 +102,35 @@ data class TabRenderer(
 
 @Serializable
 data class Content(
-    val sectionListRenderer: SectionListRenderer,
+    val richGridRenderer: RichGridRenderer,
 )
 
 @Serializable
-data class SectionListRenderer(
-    val contents: List<SectionListRendererContent>,
+data class RichGridRenderer(
+    val contents: List<RichGridRendererContent>,
 )
 
 @Serializable
-data class SectionListRendererContent(
-    val itemSectionRenderer: ItemSectionRenderer,
+data class RichGridRendererContent(
+    // richItemRenderer 以外が来ることがある。オプショナルフィールドの場合は null を初期値にする
+    val richItemRenderer: RichItemRenderer? = null,
+    // 最後に入ってるオブジェクト。追加ロードで使われる
+    val continuationItemRenderer: ContinuationItemRenderer? = null,
 )
 
 @Serializable
-data class ItemSectionRenderer(
-    val contents: List<ItemSectionRendererContent>,
+data class RichItemRenderer(
+    val content: RichItemRendererContent? = null,
 )
 
 @Serializable
-data class ItemSectionRendererContent(
-    val gridRenderer: GridRenderer,
-)
-
-@Serializable
-data class GridRenderer(
-    val items: List<GridRendererItem>,
-)
-
-/**
- * たぶん最後にgridVideoRenderer以外のが入ってるのでnull
- * */
-@Serializable
-data class GridRendererItem(
-    val gridVideoRenderer: GridVideoRenderer? = null,
+data class RichItemRendererContent(
+    val videoRenderer: VideoRenderer,
 )
 
 /** やっと動画情報データクラス */
 @Serializable
-data class GridVideoRenderer(
+data class VideoRenderer(
     val videoId: String,
     val thumbnail: Thumbnail,
     val title: Title,
@@ -185,4 +182,19 @@ data class Thumbnail(
 @Serializable
 data class ThumbnailUrl(
     val url: String,
+)
+
+@Serializable
+data class ContinuationItemRenderer(
+    val continuationEndpoint: ContinuationEndpoint,
+)
+
+@Serializable
+data class ContinuationEndpoint(
+    val continuationCommand: ContinuationCommand,
+)
+
+@Serializable
+data class ContinuationCommand(
+    val token: String,
 )

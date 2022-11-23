@@ -35,7 +35,7 @@ object SingletonOkHttpClientTool {
         if (response.isSuccessful) {
             responseBody
         } else {
-            throw HttpStatusCodeException(response.code, responseBody)
+            throw HttpStatusCodeException(response.code, url, responseBody)
         }
     }
 
@@ -59,7 +59,7 @@ object SingletonOkHttpClientTool {
         if (response.isSuccessful) {
             responseBody
         } else {
-            throw HttpStatusCodeException(response.code, responseBody)
+            throw HttpStatusCodeException(response.code, url, responseBody)
         }
     }
 

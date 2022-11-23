@@ -1,4 +1,4 @@
-package io.github.takusan23.internet.data.search
+package io.github.takusan23.internet.data.api
 
 import kotlinx.serialization.Serializable
 

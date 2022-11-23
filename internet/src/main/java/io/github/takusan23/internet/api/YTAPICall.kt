@@ -1,6 +1,6 @@
 package io.github.takusan23.internet.api
 
-import io.github.takusan23.internet.data.search.YTAPIResponseErrorData
+import io.github.takusan23.internet.data.api.YTAPIResponseErrorData
 import io.github.takusan23.internet.exception.HttpStatusCodeException
 import io.github.takusan23.internet.html.APIKeyHTML
 import io.github.takusan23.internet.tool.SerializationTool
@@ -8,6 +8,7 @@ import io.github.takusan23.internet.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.decodeFromString
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /**
  * APIキー変更等に対応するためHTTPクライアントに少し手を加える
@@ -41,11 +42,18 @@ class YTAPICall {
      *
      * @param apiBaseUrl APIキーを抜いたURL
      * @param requestBody リクエストボデー
+     * @param queryParams クエリーパラメーター
      * @return レスポンスボディー。各クラスでAPIキーを保持していると思うので更新してください。
      * */
-    suspend fun executeYTAPIPostRequest(apiBaseUrl: String, requestBody: String): String {
+    suspend fun executeYTAPIPostRequest(apiBaseUrl: String, requestBody: String, queryParams: Map<String, String> = emptyMap()): String {
         return try {
-            SingletonOkHttpClientTool.executePostRequest("$apiBaseUrl?key=${_APIKeyFlow.value}", requestBody)
+            val url = apiBaseUrl.toHttpUrl().newBuilder().apply {
+                addQueryParameter("key", _APIKeyFlow.value)
+                queryParams.forEach { (key, value) ->
+                    addQueryParameter(key, value)
+                }
+            }.build().toUrl().toString()
+            SingletonOkHttpClientTool.executePostRequest(url, requestBody)
         } catch (e: HttpStatusCodeException) {
             val errorJSONData = SerializationTool.jsonSerialization.decodeFromString<YTAPIResponseErrorData>(e.body)
             if (errorJSONData.error.status == "INVALID_ARGUMENT") {
@@ -59,5 +67,4 @@ class YTAPICall {
             }
         }
     }
-
 }

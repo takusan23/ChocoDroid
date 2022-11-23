@@ -48,6 +48,7 @@ import io.github.takusan23.internet.data.CommonVideoData
  * @param isSwipeEnabled 引っ張るやつ無効にする場合はtrue
  * @param onRefresh 引っ張って更新で引っ張ったら呼ばれる
  * @param onMenuClick メニュー押したとき。nullにした場合はメニューを非表示にします
+ * @param headerLayout ヘッダーに表示する
  * */
 @Composable
 fun VideoList(

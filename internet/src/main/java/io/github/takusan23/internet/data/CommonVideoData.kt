@@ -1,6 +1,5 @@
 package io.github.takusan23.internet.data
 
-import io.github.takusan23.internet.data.channel.GridVideoRenderer
 import io.github.takusan23.internet.data.search.VideoRenderer
 import io.github.takusan23.internet.data.watchpage.CompactVideoRenderer
 import io.github.takusan23.internet.data.watchpage.WatchPageResponseJSONData
@@ -32,15 +31,15 @@ open class CommonVideoData(
     val thumbnailUrl: String,
 ) {
 
-    /** [GridVideoRenderer]から[CommonVideoData]へ変換 */
-    constructor(gridVideoRenderer: GridVideoRenderer) : this(
-        videoId = gridVideoRenderer.videoId,
-        videoTitle = gridVideoRenderer.title.runs[0].text,
-        duration = gridVideoRenderer.thumbnailOverlays[0].thumbnailOverlayTimeStatusRenderer!!.text.simpleText,
-        watchCount = gridVideoRenderer.viewCountText?.simpleText ?: "",
-        publishDate = gridVideoRenderer.publishedTimeText?.simpleText,
+    /** [io.github.takusan23.internet.data.channel.VideoRenderer]から[CommonVideoData]へ変換 */
+    constructor(videoRenderer: io.github.takusan23.internet.data.channel.VideoRenderer) : this(
+        videoId = videoRenderer.videoId,
+        videoTitle = videoRenderer.title.runs.first().text,
+        duration = videoRenderer.thumbnailOverlays[0].thumbnailOverlayTimeStatusRenderer!!.text.simpleText,
+        watchCount = videoRenderer.viewCountText?.simpleText ?: "",
+        publishDate = videoRenderer.publishedTimeText?.simpleText,
         ownerName = "",
-        thumbnailUrl = gridVideoRenderer.thumbnail.thumbnails.last().url,
+        thumbnailUrl = videoRenderer.thumbnail.thumbnails.last().url,
     )
 
     /** [VideoRenderer]から[CommonVideoData]へ変換 */

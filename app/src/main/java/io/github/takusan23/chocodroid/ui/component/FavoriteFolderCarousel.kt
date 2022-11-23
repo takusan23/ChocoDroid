@@ -3,16 +3,12 @@ package io.github.takusan23.chocodroid.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,43 +94,39 @@ fun FavoriteFolderVideoCarouselItem(
  * @param modifier [Modifier]
  * @param onClick 押したときに呼ばれる
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateFavoriteFolderItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
-                onClick = onClick,
-            ),
+        modifier = modifier,
         color = Color.Transparent,
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        content = {
-            Column(
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier
+                .width(150.dp)
+                .height(100.dp),
+        ) {
+            Icon(
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(100.dp),
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(alignment = Alignment.CenterHorizontally),
-                    painter = painterResource(id = R.drawable.ic_outline_create_24),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null,
-                )
-                Text(
-                    modifier = Modifier.padding(5.dp),
-                    textAlign = TextAlign.Center,
-                    text = stringResource(id = R.string.add_favorite_folder),
-                )
-            }
+                    .weight(1f)
+                    .align(alignment = Alignment.CenterHorizontally),
+                painter = painterResource(id = R.drawable.ic_outline_create_24),
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = null,
+            )
+            Text(
+                modifier = Modifier.padding(5.dp),
+                textAlign = TextAlign.Center,
+                text = stringResource(id = R.string.add_favorite_folder),
+            )
         }
-    )
+    }
 }
 
 /**
@@ -147,6 +139,7 @@ fun CreateFavoriteFolderItem(
  * @param ownerName 投稿者
  * @param onClick 押したとき。動画IDが渡されます
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FavoriteFolderVideoCarouselRowItem(
     videoId: String,
@@ -157,12 +150,7 @@ private fun FavoriteFolderVideoCarouselRowItem(
     onClick: (String) -> Unit,
 ) {
     Surface(
-        modifier = Modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
-                onClick = { onClick(videoId) },
-            ),
+        onClick = { onClick(videoId) },
         color = Color.Transparent
     ) {
         Column(modifier = Modifier.width(IntrinsicSize.Min)) {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
+import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
 import io.github.takusan23.chocodroid.viewmodel.DownloadScreenVideModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -48,41 +50,39 @@ fun DownloadScreen(
                 onClick = { navController.navigate(NavigationLinkList.getChocoDroidBridgeSearchScreen()) },
                 onSettingClick = { navController.navigate(NavigationLinkList.SettingScreen) }
             )
-        },
-        content = {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    content = {
-                        DownloadContentBackgroundPlayButton(modifier = Modifier.padding(end = 10.dp)) {
-                            DownloadContentBackgroundPlayerService.startService(context)
-                        }
+        }
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                content = {
+                    DownloadContentBackgroundPlayButton(modifier = Modifier.padding(end = 10.dp)) {
+                        DownloadContentBackgroundPlayerService.startService(context)
                     }
-                )
-                if (videoList.value.isNotEmpty()) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
-                            .fillMaxHeight(),
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                        content = {
-                            VideoList(
-                                videoList = videoList.value,
-                                onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
-                                onMenuClick = { videoData ->
-                                    onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                        commonVideoData = videoData,
-                                        isDownloadContent = true
-                                    ))
-                                }
-                            )
+                }
+            )
+            if (videoList.value.isNotEmpty()) {
+                Surface(
+                    modifier = Modifier
+                        .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .fillMaxHeight(),
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(SurfaceElevations.VideoListBackgroundElevation),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                ) {
+                    VideoList(
+                        videoList = videoList.value,
+                        onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
+                        onMenuClick = { videoData ->
+                            onBottomSheetNavigate(VideoListMenuScreenInitData(
+                                commonVideoData = videoData,
+                                isDownloadContent = true
+                            ))
                         }
                     )
                 }
             }
         }
-    )
+    }
 }

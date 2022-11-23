@@ -44,49 +44,47 @@ fun FavoriteTopScreen(
     /** お気に入りチャンネルの一覧 */
     val favoriteChList = viewModel.favoriteChList.collectAsState(initial = null)
 
-    M3Scaffold(
-        content = {
-            LazyColumn(content = {
-                // お気に入りチャンネルのカルーセル
-                if (favoriteChList.value?.isNotEmpty() == true) {
+    M3Scaffold {
+        LazyColumn {
+            // お気に入りチャンネルのカルーセル
+            if (favoriteChList.value?.isNotEmpty() == true) {
+                item {
+                    FavoriteChCarouselItem(
+                        channelList = favoriteChList.value!!,
+                        onChannelClick = onChannelClick,
+                        onLabelClick = { onNavigate(FavouriteScreenNavigationLinkList.ChannelList) },
+                    )
+                }
+            }
+            // お気に入りフォルダーのカルーセル
+            if (favoriteFolderVideoMap.value.isNotEmpty()) {
+                favoriteFolderVideoMap.value.forEach { item ->
                     item {
-                        FavoriteChCarouselItem(
-                            channelList = favoriteChList.value!!,
-                            onChannelClick = onChannelClick,
-                            onLabelClick = { onNavigate(FavouriteScreenNavigationLinkList.ChannelList) },
+                        FavoriteFolderVideoCarouselItem(
+                            folderName = item.key.folderName,
+                            folderId = item.key.id,
+                            favoriteVideoList = item.value.mapNotNull { it.convertToCommonVideoData() },
+                            onLabelClick = { onNavigate(FavouriteScreenNavigationLinkList.getFolderVideoList(it.toString())) },
+                            onVideoClick = onVideoLoad
                         )
                     }
                 }
-                // お気に入りフォルダーのカルーセル
-                if (favoriteFolderVideoMap.value.isNotEmpty()) {
-                    favoriteFolderVideoMap.value.forEach { item ->
-                        item {
-                            FavoriteFolderVideoCarouselItem(
-                                folderName = item.key.folderName,
-                                folderId = item.key.id,
-                                favoriteVideoList = item.value.mapNotNull { it.convertToCommonVideoData() },
-                                onLabelClick = { onNavigate(FavouriteScreenNavigationLinkList.getFolderVideoList(it.toString())) },
-                                onVideoClick = onVideoLoad
-                            )
-                        }
-                    }
-                } else {
-                    // 無いとき
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) { Text(text = stringResource(id = R.string.favorite_folder_empty)) }
-                    }
-                }
-                // 追加するボタン
+            } else {
+                // 無いとき
                 item {
-                    CreateFavoriteFolderItem(
-                        modifier = Modifier.padding(top = 20.dp, start = 10.dp),
-                        onClick = onAddClick
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) { Text(text = stringResource(id = R.string.favorite_folder_empty)) }
                 }
-            })
+            }
+            // 追加するボタン
+            item {
+                CreateFavoriteFolderItem(
+                    modifier = Modifier.padding(top = 20.dp, start = 10.dp),
+                    onClick = onAddClick
+                )
+            }
         }
-    )
+    }
 }

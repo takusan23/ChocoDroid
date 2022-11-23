@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
+import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
@@ -42,44 +44,42 @@ fun VideoDetailScreen(
     M3Scaffold {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.inverseOnSurface,
-            content = {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    content = {
-                        // 動画情報カード
-                        item {
-                            VideoDetailInfoCard(
-                                modifier = Modifier.padding(top = 10.dp),
-                                watchPageData = watchPageData,
-                                onNavigate = {
-                                    mainNavHostController.navigate(it)
-                                    miniPlayerState.setState(MiniPlayerStateType.MiniPlayer)
-                                },
-                                isExpanded = isExpandedDescription.value,
-                                onOpenClick = { isExpandedDescription.value = it }
-                            )
-                        }
-                        // メニュー
-                        item {
-                            VideoDetailMenu(
-                                watchPageData = watchPageData,
-                                onMenuClick = onBottomSheetNavigate
-                            )
-                        }
-                        // 関連動画
-                        item {
-                            VideoDetailRecommendVideoList(
-                                watchPageData = watchPageData,
-                                onClick = { mainViewModel.loadWatchPage(it) },
-                                onMenuClick = onBottomSheetNavigate
-                            )
-                        }
-                    }
-                )
+            color = MaterialTheme.colorScheme.surfaceColorAtElevation(SurfaceElevations.VideoDetailBackgroundElevation)
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // 動画情報カード
+                item {
+                    VideoDetailInfoCard(
+                        modifier = Modifier.padding(top = 10.dp),
+                        watchPageData = watchPageData,
+                        onNavigate = {
+                            mainNavHostController.navigate(it)
+                            miniPlayerState.setState(MiniPlayerStateType.MiniPlayer)
+                        },
+                        isExpanded = isExpandedDescription.value,
+                        onOpenClick = { isExpandedDescription.value = it }
+                    )
+                }
+                // メニュー
+                item {
+                    VideoDetailMenu(
+                        watchPageData = watchPageData,
+                        onMenuClick = onBottomSheetNavigate
+                    )
+                }
+                // 関連動画
+                item {
+                    VideoDetailRecommendVideoList(
+                        watchPageData = watchPageData,
+                        onClick = { mainViewModel.loadWatchPage(it) },
+                        onMenuClick = onBottomSheetNavigate
+                    )
+                }
             }
-        )
+        }
     }
 }

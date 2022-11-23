@@ -3,10 +3,7 @@ package io.github.takusan23.chocodroid.ui.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -23,6 +20,7 @@ import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.VideoList
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
+import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
 import io.github.takusan23.chocodroid.viewmodel.HistoryScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -33,7 +31,7 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
  * @param historyScreenViewModel 履歴画面のViewModel
  * @param navController メイン画面のNavController
  * @param onBottomSheetNavigate BottomSheet画面遷移
- * */
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
@@ -69,7 +67,7 @@ fun HistoryScreen(
                     modifier = Modifier
                         .padding(top = 10.dp, start = 10.dp, end = 10.dp)
                         .fillMaxHeight(),
-                    color = MaterialTheme.colorScheme.inverseOnSurface,
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(SurfaceElevations.VideoListBackgroundElevation),
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
                 ) {
                     VideoList(

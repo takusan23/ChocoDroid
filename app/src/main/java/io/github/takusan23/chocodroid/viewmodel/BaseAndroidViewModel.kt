@@ -4,9 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import io.github.takusan23.chocodroid.tool.StacktraceToString
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * エラー送信FlowとかCoroutineExceptionHandlerとかほとんどのViewModelで共通して使うやつ
@@ -26,9 +25,9 @@ open class BaseAndroidViewModel(application: Application) : AndroidViewModel(app
     }
 
     /** 読み込み中？ */
-    val isLoadingFlow = _isLoadingFlow as Flow<Boolean>
+    val isLoadingFlow = _isLoadingFlow.asStateFlow()
 
     /** エラーメッセージ送信用Flow */
-    val errorMessageFlow = _errorMessageFlow as StateFlow<String?>
+    val errorMessageFlow = _errorMessageFlow.asStateFlow()
 
 }

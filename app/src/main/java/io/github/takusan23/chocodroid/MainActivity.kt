@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import io.github.takusan23.chocodroid.service.SmoothBackgroundPlayService
 import io.github.takusan23.chocodroid.ui.screen.ChocoDroidMainScreen
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
@@ -22,11 +23,8 @@ class MainActivity : ComponentActivity() {
 
         setContent { ChocoDroidMainScreen(viewModel) }
 
-        /**
-         * 共有から起動した
-         *
-         * ただし、画面回転した場合は動かさない
-         * */
+        // 共有から起動した
+        // ただし、画面回転した場合は動かさない
         if (savedInstanceState == null) {
             // 共有から起動
             launchFromShare()
@@ -44,9 +42,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** バックグラウンド再生へ */
+    override fun onPause() {
+        super.onPause()
+        // 視聴行動中のみ
+        if (ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying) {
+            SmoothBackgroundPlayService.startService(this)
+        }
+    }
+
+    /** フォアグラウンドへ戻った際は終了 */
+    override fun onResume() {
+        super.onResume()
+        SmoothBackgroundPlayService.stopService(this)
+    }
+
     /** ブラウザから起動 */
     private fun launchFromBrowser() {
-        intent.data?.toString()?.apply { viewModel.loadWatchPage(this) }
+        val url = intent.data?.toString() ?: return
+        ChocoDroidApplication.instance.chocoDroidContentLoader.loadWatchPage(url)
     }
 
     /** 共有から起動したとき */
@@ -55,7 +69,7 @@ class MainActivity : ComponentActivity() {
             val extras = intent.extras
             // URLを開く
             val url = extras?.getCharSequence(Intent.EXTRA_TEXT) ?: return
-            viewModel.loadWatchPage(url.toString())
+            ChocoDroidApplication.instance.chocoDroidContentLoader.loadWatchPage(url.toString())
         }
     }
 

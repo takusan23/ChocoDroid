@@ -21,12 +21,10 @@ import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
 import io.github.takusan23.chocodroid.viewmodel.DownloadScreenVideModel
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
  * ダウンロード済み動画画面
  *
- * @param mainScreenViewModel メイン画面のViewModel
  * @param navController メイン画面のNavController
  * @param downloadScreenVideModel ダウンロード画面のViewModel
  * @param onBottomSheetNavigate BottomSheetの切り替えをしてほしいときに呼ばれる
@@ -34,9 +32,9 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DownloadScreen(
-    mainScreenViewModel: MainScreenViewModel,
     navController: NavHostController,
     downloadScreenVideModel: DownloadScreenVideModel,
+    onLoadWatchPageFromLocal: (String) -> Unit,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     val context = LocalContext.current
@@ -56,13 +54,12 @@ fun DownloadScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                content = {
-                    DownloadContentBackgroundPlayButton(modifier = Modifier.padding(end = 10.dp)) {
-                        DownloadContentBackgroundPlayerService.startService(context)
-                    }
+                horizontalArrangement = Arrangement.End
+            ) {
+                DownloadContentBackgroundPlayButton(modifier = Modifier.padding(end = 10.dp)) {
+                    DownloadContentBackgroundPlayerService.startService(context)
                 }
-            )
+            }
             if (videoList.value.isNotEmpty()) {
                 Surface(
                     modifier = Modifier
@@ -73,7 +70,7 @@ fun DownloadScreen(
                 ) {
                     VideoList(
                         videoList = videoList.value,
-                        onClick = { mainScreenViewModel.loadWatchPageFromLocal(it) },
+                        onClick = onLoadWatchPageFromLocal,
                         onMenuClick = { videoData ->
                             onBottomSheetNavigate(VideoListMenuScreenInitData(
                                 commonVideoData = videoData,

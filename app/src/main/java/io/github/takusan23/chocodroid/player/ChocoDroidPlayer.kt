@@ -7,7 +7,6 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultDataSource
@@ -24,18 +23,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 /**
- * プレイヤー
- * シングルトンにする
+ * プレイヤー。シングルトンにする
+ *
+ * @param context [Context]
  */
 class ChocoDroidPlayer(private val context: Context) {
 
     /** コルーチンスコープ。終了時にキャンセルするため */
-    private val coroutineScope = CoroutineScope(Job() + Dispatchers.Main)
+    private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     /** ExoPlayer。 [createPlayer]から[destroy]まで有効 */
     private lateinit var exoPlayer: ExoPlayer
 
-    private val trackSelector = DefaultTrackSelector(context)
     private val defaultDataSourceFactory = DefaultDataSource.Factory(context) {
         DefaultDataSource(context, SingletonOkHttpClientTool.USER_AGENT, true).apply {
             addTransferListener(transferListener)
@@ -65,14 +64,15 @@ class ChocoDroidPlayer(private val context: Context) {
             _videoDataFlow.value = videoDataFlow.value.copy(aspectRate = videoSize.width / videoSize.height.toFloat())
         }
 
+        /** プレイヤー状況をUIに渡す */
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
             _playbackStateFlow.value = when {
-                player.playbackState == Player.STATE_BUFFERING -> PlaybackStatus.Buffering
-                playWhenReady -> PlaybackStatus.Play
-                !playWhenReady -> PlaybackStatus.Pause
-                player.playerError != null -> PlaybackStatus.Error
-                else -> PlaybackStatus.Destroy
+                player.playbackState == Player.STATE_BUFFERING -> PlayerState.Buffering
+                playWhenReady -> PlayerState.Play
+                !playWhenReady -> PlayerState.Pause
+                player.playerError != null -> PlayerState.Error
+                else -> PlayerState.Destroy
             }
         }
 
@@ -83,8 +83,8 @@ class ChocoDroidPlayer(private val context: Context) {
     }
 
     // UI層にプレイヤーの状態を返す
-    private val _playbackStateFlow = MutableStateFlow<PlaybackStatus>(PlaybackStatus.Destroy)
-    private val _currentPositionDataFlow = MutableStateFlow<CurrentPositionData?>(null)
+    private val _playbackStateFlow = MutableStateFlow<PlayerState>(PlayerState.Destroy)
+    private val _currentPositionDataFlow = MutableStateFlow(CurrentPositionData(0, 0))
     private val _videoDataFlow = MutableStateFlow(VideoData(0, 1.7f)) // copy するので適当な初期値を入れる
 
     /** 現在の再生状態 */
@@ -95,6 +95,12 @@ class ChocoDroidPlayer(private val context: Context) {
 
     /** 動画情報 */
     val videoDataFlow = _videoDataFlow.asStateFlow()
+
+    /** 視聴行動中か。破棄時とエラー時以外 */
+    val isContentPlaying: Boolean
+        get() = playbackStateFlow.value == PlayerState.Play
+                || playbackStateFlow.value == PlayerState.Pause
+                || playbackStateFlow.value == PlayerState.Buffering
 
     /** 再生位置 */
     var currentPositionMs: Long
@@ -110,18 +116,25 @@ class ChocoDroidPlayer(private val context: Context) {
             exoPlayer.playWhenReady = value
         }
 
+    /** リピートモード */
+    var repeatMode: Boolean
+        get() = exoPlayer.repeatMode == Player.REPEAT_MODE_ONE
+        set(value) {
+            exoPlayer.repeatMode = if (value) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
+        }
+
     /** プレイヤーを作成 */
     fun createPlayer() {
         // 破棄済みのみ
-        if (playbackStateFlow.value != PlaybackStatus.Destroy) {
+        if (playbackStateFlow.value != PlayerState.Destroy) {
             return
         }
         exoPlayer = ExoPlayer.Builder(context).build().apply {
             addListener(playerListener)
-            exoPlayer.playWhenReady = true
+            playWhenReady = true
         }
         // 再生時間更新用
-        coroutineScope.launch {
+        scope.launch {
             while (isActive) {
                 _currentPositionDataFlow.value = CurrentPositionData(exoPlayer.currentPosition, exoPlayer.bufferedPosition)
                 delay(100)
@@ -130,9 +143,9 @@ class ChocoDroidPlayer(private val context: Context) {
         // 設定値の監視を行う
         // リピートモード / 音量調整 など DataStore の値が変わったら更新する
         context.dataStore.data.onEach { setting ->
-            exoPlayer.repeatMode = if (setting[SettingKeyObject.PLAYER_REPEAT_MODE] == true) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
+            repeatMode = setting[SettingKeyObject.PLAYER_REPEAT_MODE] == true
             exoPlayer.volume = setting[SettingKeyObject.PLAYER_VOLUME] ?: 1f
-        }.launchIn(coroutineScope)
+        }.launchIn(scope)
     }
 
     /**
@@ -188,10 +201,10 @@ class ChocoDroidPlayer(private val context: Context) {
 
     /** プレイヤー破棄。[exoPlayer]は呼び出してはいけない */
     fun destroy() {
-        _playbackStateFlow.value = PlaybackStatus.Destroy
         exoPlayer.clearVideoSurface()
         exoPlayer.release()
-        coroutineScope.coroutineContext.cancelChildren()
+        scope.coroutineContext.cancelChildren()
+        _playbackStateFlow.value = PlayerState.Destroy
     }
 
 }

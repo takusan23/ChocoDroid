@@ -3,22 +3,22 @@ package io.github.takusan23.chocodroid.player
 // プレイヤーの状態をデータクラスで表現してUIに返す
 
 /** 再生状況 */
-sealed class PlaybackStatus {
+sealed class PlayerState {
 
     /** 再生中 */
-    object Play : PlaybackStatus()
+    object Play : PlayerState()
 
     /** 一時停止中 */
-    object Pause : PlaybackStatus()
+    object Pause : PlayerState()
 
     /** バッファリング中 */
-    object Buffering : PlaybackStatus()
+    object Buffering : PlayerState()
 
     /** 破棄済み */
-    object Destroy : PlaybackStatus()
+    object Destroy : PlayerState()
 
     /** エラー？ */
-    object Error : PlaybackStatus()
+    object Error : PlayerState()
 }
 
 /**

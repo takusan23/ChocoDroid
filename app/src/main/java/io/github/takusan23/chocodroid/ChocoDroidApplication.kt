@@ -1,6 +1,7 @@
 package io.github.takusan23.chocodroid
 
 import android.app.Application
+import io.github.takusan23.chocodroid.player.ChocoDroidContentLoader
 import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
 
 /**
@@ -13,15 +14,29 @@ class ChocoDroidApplication : Application() {
     /** 動画プレイヤー */
     val chocoDroidPlayer by lazy { ChocoDroidPlayer(this) }
 
+    /** 動画読み込むやつ */
+    val chocoDroidContentLoader by lazy { ChocoDroidContentLoader(this) }
+
+    /**
+     * プレイヤー、再生中コンテンツの破棄を行う。
+     * もう再生しない場合に呼ぶ。
+     */
+    fun playerDestroy() {
+        chocoDroidPlayer.destroy()
+        chocoDroidContentLoader.destroy()
+    }
+
     override fun onCreate() {
         super.onCreate()
-        instance = this
+        _instance = this
     }
 
     companion object {
 
+        private var _instance: ChocoDroidApplication? = null
+
         /** [ChocoDroidApplication]を取得する */
-        var instance: ChocoDroidApplication? = null
-            private set
+        val instance: ChocoDroidApplication
+            get() = _instance!!
     }
 }

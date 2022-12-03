@@ -1,16 +1,16 @@
 package io.github.takusan23.chocodroid.ui.screen
 
-import android.app.Activity
 import android.view.SurfaceView
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.*
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ChocoDroidApplication
 import io.github.takusan23.chocodroid.R
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
  *
  * @param viewModel ViewModel
  * */
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLifecycleComposeApi::class)
 @Composable
 fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
     ChocoDroidTheme {
@@ -41,25 +41,35 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
+            // 動画プレイヤー
+            val chocoDroidPlayer = remember { ChocoDroidApplication.instance.chocoDroidPlayer }
+            // 動画ローダー
+            val contentLoader = remember { ChocoDroidApplication.instance.chocoDroidContentLoader }
             // 画面遷移。ナビゲーション
             val navController = rememberNavController()
-            // 動画プレイヤー
-            val chocoDroidPlayer = remember { ((context as Activity).application as ChocoDroidApplication).chocoDroidPlayer }
             // BottomSheetの画面遷移用Flow
             val bottomSheetInitData = viewModel.bottomSheetNavigation.collectAsState()
+
             // 再生中の動画情報
-            val watchPageResponseData = viewModel.watchPageResponseDataFlow.collectAsState(initial = null)
+            val watchPageResponseData = contentLoader.watchPageResponseDataFlow.collectAsStateWithLifecycle(initialValue = null)
             // コンテンツURL
-            val mediaUrlData = viewModel.mediaUrlData.collectAsState(initial = null)
+            val mediaUrlData = contentLoader.mediaUrlData.collectAsStateWithLifecycle(initialValue = null)
             // エラーが流れてくるFlow
-            val errorData = viewModel.errorMessageFlow.collectAsState(initial = null)
+            val errorData = contentLoader.errorMessageFlow.collectAsStateWithLifecycle(initialValue = null)
+            // 動画情報
+            val videoData = chocoDroidPlayer.videoDataFlow.collectAsStateWithLifecycle()
+            // プレイヤー状態
+            val playbackState = chocoDroidPlayer.playbackStateFlow.collectAsStateWithLifecycle()
+            // 再生位置
+            val currentPositionData = chocoDroidPlayer.currentPositionDataFlow.collectAsStateWithLifecycle()
+
             // BottomSheetの状態
             val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
             // 動画ミニプレイヤー
             val miniPlayerState = rememberMiniPlayerState(initialState = MiniPlayerStateType.EndOrHide) {
                 // 終了したら
                 if (it == MiniPlayerStateType.EndOrHide) {
-                    viewModel.closePlayer()
+                    ChocoDroidApplication.instance.playerDestroy()
                 }
             }
 
@@ -121,7 +131,6 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             chocoDroidPlayer.createPlayer()
                             chocoDroidPlayer.setSurfaceView(surfaceView)
                             onDispose {
-                                // TODO バックグラウンドで再生を続けるためSurfaceをデタッチする
                                 chocoDroidPlayer.clearSurface()
                             }
                         }
@@ -146,13 +155,18 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                         }
 
                         // SurfaceViewとコントローラーセット
-                        ExoPlayerComposeUI(chocoDroidPlayer, surfaceView)
+                        ExoPlayerComposeUI(
+                            videoData = videoData.value,
+                            playbackState = playbackState.value,
+                            surfaceView = surfaceView
+                        )
                         VideoControlUI(
                             watchPageData = watchPageResponseData.value!!,
                             mediaUrlData = mediaUrlData.value!!,
                             chocoDroidPlayer = chocoDroidPlayer,
+                            videoData = videoData.value,
+                            currentPositionData = currentPositionData.value,
                             miniPlayerState = miniPlayerState,
-                            state = miniPlayerState,
                             onBottomSheetNavigate = { route ->
                                 viewModel.navigateBottomSheet(route)
                                 scope.launch { modalBottomSheetState.show() }
@@ -166,21 +180,20 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                         VideoDetailScreen(
                             watchPageData = this,
                             miniPlayerState = miniPlayerState,
-                            mainViewModel = viewModel,
                             mainNavHostController = navController,
-                            onBottomSheetNavigate = {
-                                viewModel.navigateBottomSheet(it)
-                                scope.launch { modalBottomSheetState.show() }
-                            }
-                        )
+                            onLoadWatchPage = { contentLoader.loadWatchPage(it) }
+                        ) {
+                            viewModel.navigateBottomSheet(it)
+                            scope.launch { modalBottomSheetState.show() }
+                        }
                     }
                 },
                 bottomSheetContent = {
                     // ボトムシートの内容
                     ChocoDroidBottomSheetNavigation(
-                        mainScreenViewModel = viewModel,
                         bottomSheetInitData = bottomSheetInitData.value,
                         modalBottomSheetState = modalBottomSheetState,
+                        chocoDroidContentLoader = contentLoader,
                         onBottomSheetNavigate = {
                             viewModel.navigateBottomSheet(it)
                             scope.launch { modalBottomSheetState.show() }
@@ -191,12 +204,12 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                     // 画面遷移。別コンポーネントへ
                     ChocoDroidNavigation(
                         navController = navController,
-                        mainScreenViewModel = viewModel,
-                        onBottomSheetNavigate = { route ->
-                            viewModel.navigateBottomSheet(route)
-                            scope.launch { modalBottomSheetState.show() }
-                        }
-                    )
+                        onLoadWatchPage = { videoId -> contentLoader.loadWatchPage(videoId) },
+                        onLoadWatchPageFromLocal = { videoId -> contentLoader.loadWatchPageFromLocal(videoId) }
+                    ) { route ->
+                        viewModel.navigateBottomSheet(route)
+                        scope.launch { modalBottomSheetState.show() }
+                    }
                 }
             )
         }

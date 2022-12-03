@@ -12,14 +12,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.takusan23.chocodroid.player.ChocoDroidContentLoader
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.*
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.launch
 
 /**
  * BottomSheetのナビゲーション。画面遷移
  *
- * @param mainScreenViewModel メイン画面ViewModel
+ * @param chocoDroidContentLoader 動画ローダー
  * @param bottomSheetInitData 画面遷移データ。nullでも落ちません
  * @param modalBottomSheetState ボトムシート制御用
  * @param onBottomSheetNavigate ボトムシートを出してほしいときに呼ばれる
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChocoDroidBottomSheetNavigation(
-    mainScreenViewModel: MainScreenViewModel,
+    chocoDroidContentLoader: ChocoDroidContentLoader,
     bottomSheetInitData: BottomSheetInitData?,
     modalBottomSheetState: ModalBottomSheetState,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
@@ -56,7 +56,7 @@ fun ChocoDroidBottomSheetNavigation(
                 // 画質変更
                 BottomSheetInitData.BottomSheetScreenList.QualityChange -> {
                     QualityChangeScreen(
-                        mainScreenViewModel = mainScreenViewModel,
+                        chocoDroidContentLoader = chocoDroidContentLoader,
                         onClose = { scope.launch { modalBottomSheetState.hide() } }
                     )
                 }

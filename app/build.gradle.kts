@@ -66,7 +66,7 @@ android {
          * set ENV_SIGN_KEY_ALIAS = KeyAlias
          * set ENV_SIGN_KEY_PASSWORD = KeyPassword
          * set ENV_SIGN_STORE_PASSWORD = StorePassword
-         * */
+         */
         create("release_signing_config") {
             // 存在しない場合はとりあえずスルーする
             if (System.getenv("ENV_SIGN_KEYSTORE_BASE64") != null) {
@@ -113,6 +113,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.media:media:1.6.0")
+    implementation("androidx.lifecycle:lifecycle-service:2.5.1")
 
     // Jetpack Compose
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -126,6 +127,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.0-alpha02")
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha03") // collectAsStateWithLifecycle を使いたい
 
     // ExoPlayer。生放送用のHlsと、一部の動画はDashで配信されている
     implementation("com.google.android.exoplayer:exoplayer-core:2.18.1")

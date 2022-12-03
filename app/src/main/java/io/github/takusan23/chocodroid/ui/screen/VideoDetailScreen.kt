@@ -17,14 +17,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.internet.data.watchpage.WatchPageData
 
 /**
  * 動画説明部分のUI
  *
  * @param watchPageData 視聴ページレスポンスデータ
- * @param mainViewModel メイン画面ViewModel
+ * @param onLoadWatchPage 動画を再生してほしいときに呼ばれます。動画IDが渡されます
  * @param mainNavHostController メイン画面のNavController
  * @param miniPlayerState ミニプレイヤー操作
  * @param onBottomSheetNavigate ボトムシート表示のときに呼ばれる
@@ -33,9 +32,9 @@ import io.github.takusan23.internet.data.watchpage.WatchPageData
 @Composable
 fun VideoDetailScreen(
     watchPageData: WatchPageData,
-    mainViewModel: MainScreenViewModel,
     miniPlayerState: MiniPlayerState = rememberMiniPlayerState(),
     mainNavHostController: NavHostController = rememberNavController(),
+    onLoadWatchPage: (String) -> Unit = {},
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit = {},
 ) {
     // 動画説明文を展開するか
@@ -75,7 +74,7 @@ fun VideoDetailScreen(
                 item {
                     VideoDetailRecommendVideoList(
                         watchPageData = watchPageData,
-                        onClick = { mainViewModel.loadWatchPage(it) },
+                        onClick = { onLoadWatchPage(it) },
                         onMenuClick = onBottomSheetNavigate
                     )
                 }

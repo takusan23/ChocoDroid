@@ -22,22 +22,21 @@ import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
 import io.github.takusan23.chocodroid.viewmodel.HistoryScreenViewModel
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
  * 履歴画面
  *
- * @param mainViewModel メイン画面のViewModel
  * @param historyScreenViewModel 履歴画面のViewModel
  * @param navController メイン画面のNavController
  * @param onBottomSheetNavigate BottomSheet画面遷移
+ * @param onLoadWatchPage 動画を読み込んでほしいときに呼ばれます。動画IDが渡されます
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
-    mainViewModel: MainScreenViewModel,
     historyScreenViewModel: HistoryScreenViewModel = viewModel(),
     navController: NavHostController,
+    onLoadWatchPage: (String) -> Unit,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     val historyList = historyScreenViewModel.historyDBDataListFlow.collectAsState(initial = listOf())
@@ -72,7 +71,7 @@ fun HistoryScreen(
                 ) {
                     VideoList(
                         videoList = historyList.value,
-                        onClick = { mainViewModel.loadWatchPage(it) },
+                        onClick = { onLoadWatchPage(it) },
                         onMenuClick = {
                             onBottomSheetNavigate(VideoListMenuScreenInitData(
                                 commonVideoData = it,

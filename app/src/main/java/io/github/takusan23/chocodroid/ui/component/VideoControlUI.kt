@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
+import io.github.takusan23.chocodroid.player.CurrentPositionData
+import io.github.takusan23.chocodroid.player.VideoData
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
@@ -35,8 +37,9 @@ import kotlinx.coroutines.launch
  * 動画プレイヤーのUI。重ねる
  *
  * @param chocoDroidPlayer Applicationにあるコントローラー
+ * @param videoData 動画データ情報
+ * @param currentPositionData プレイヤーの現在位置
  * @param watchPageData 視聴ページデータ
- * @param state ミニプレイヤー操作用
  * @param mediaUrlData ストリーミング情報
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移をしてほしいときに呼ばれる
  * @param miniPlayerState ミニプレーヤーの状態変更するやつ
@@ -45,10 +48,11 @@ import kotlinx.coroutines.launch
 fun VideoControlUI(
     watchPageData: WatchPageData,
     chocoDroidPlayer: ChocoDroidPlayer,
-    state: MiniPlayerState,
+    videoData: VideoData,
+    currentPositionData: CurrentPositionData,
+    miniPlayerState: MiniPlayerState,
     mediaUrlData: MediaUrlData,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
-    miniPlayerState: MiniPlayerState,
 ) {
     // ダブルタップのシーク量。変更可能にする
     val doubleTapSeekValue = 5_000L
@@ -64,11 +68,6 @@ fun VideoControlUI(
     val playerWidth = remember { mutableStateOf(0) }
     // プレイヤー押したらプレイヤーUIを非表示にしたいので
     val isShowPlayerUI = remember { mutableStateOf(true) }
-
-    // 動画情報
-    val videoData = chocoDroidPlayer.videoDataFlow.collectAsState()
-    // 再生位置
-    val currentPositionData = chocoDroidPlayer.currentPositionDataFlow.collectAsState()
 
     // 一定時間後にfalseにする
     LaunchedEffect(key1 = isShowPlayerUI.value) {
@@ -111,12 +110,12 @@ fun VideoControlUI(
                                 scope.launch {
                                     // 操作しない100ms後に実行
                                     delay(100L)
-                                    state.setState(if (state.currentState.value == MiniPlayerStateType.MiniPlayer) MiniPlayerStateType.Default else MiniPlayerStateType.MiniPlayer)
+                                    miniPlayerState.setState(if (miniPlayerState.currentState.value == MiniPlayerStateType.MiniPlayer) MiniPlayerStateType.Default else MiniPlayerStateType.MiniPlayer)
                                 }
                             },
                             content = {
                                 Icon(
-                                    painter = painterResource(id = if (state.currentState.value == MiniPlayerStateType.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
+                                    painter = painterResource(id = if (miniPlayerState.currentState.value == MiniPlayerStateType.MiniPlayer) R.drawable.ic_outline_expand_less_24 else R.drawable.ic_outline_expand_more_24),
                                     contentDescription = null
                                 )
                             }
@@ -130,7 +129,7 @@ fun VideoControlUI(
                         )
                     }
                     // ミニプレイヤー時はこれ以降表示しない
-                    if (state.progress.value > 0.5f) {
+                    if (miniPlayerState.progress.value > 0.5f) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -156,7 +155,7 @@ fun VideoControlUI(
                     }
                 }
                 // ミニプレイヤー時はこれ以降表示しない
-                if (state.progress.value > 0.5f) {
+                if (miniPlayerState.progress.value > 0.5f) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -186,15 +185,15 @@ fun VideoControlUI(
                                 modifier = Modifier.padding(5.dp),
                                 text = TimeFormatTool.videoDurationToFormatText(chocoDroidPlayer.currentPositionMs / 1000),
                             )
-                            if (chocoDroidPlayer.currentPositionMs > 0 && videoData.value.durationMs > 0) {
+                            if (chocoDroidPlayer.currentPositionMs > 0 && videoData.durationMs > 0) {
                                 val isTouchingSlider = remember { mutableStateOf(false) }
                                 val progressFloat = remember { mutableStateOf(0f) }
-                                val progressBuffered = ((currentPositionData.value?.bufferingPositionMs ?: 0) / videoData.value.durationMs.toFloat())
+                                val progressBuffered = (currentPositionData.bufferingPositionMs / videoData.durationMs.toFloat())
 
                                 // 操作中でなければ
-                                LaunchedEffect(key1 = currentPositionData.value?.currentPositionMs) {
+                                LaunchedEffect(key1 = currentPositionData.currentPositionMs) {
                                     if (!isTouchingSlider.value) {
-                                        progressFloat.value = ((currentPositionData.value?.currentPositionMs ?: 0) / videoData.value.durationMs.toFloat())
+                                        progressFloat.value = (currentPositionData.currentPositionMs / videoData.durationMs.toFloat())
                                     }
                                 }
                                 BufferSeekbar(
@@ -209,13 +208,13 @@ fun VideoControlUI(
                                     },
                                     onValueChangeFinished = {
                                         isTouchingSlider.value = false
-                                        chocoDroidPlayer.currentPositionMs = (progressFloat.value * videoData.value.durationMs).toLong()
+                                        chocoDroidPlayer.currentPositionMs = (progressFloat.value * videoData.durationMs).toLong()
                                     }
                                 )
                             } else Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 modifier = Modifier.padding(5.dp),
-                                text = TimeFormatTool.videoDurationToFormatText(videoData.value.durationMs / 1000),
+                                text = TimeFormatTool.videoDurationToFormatText(videoData.durationMs / 1000),
                             )
                             // 全画面ボタン
                             FullscreenButton(

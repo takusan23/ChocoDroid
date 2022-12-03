@@ -17,7 +17,7 @@ import androidx.media.session.MediaButtonReceiver
  *
  * @param context [Context]
  * @param transportControls Broadcastで来たイベントを[MediaControllerCompat.TransportControls]にあるそれぞれの関数を呼ぶ
- * */
+ */
 class NotificationMediaButtonReceiver(
     private val context: Context,
     private val transportControls: MediaControllerCompat.TransportControls,
@@ -59,12 +59,12 @@ class NotificationMediaButtonReceiver(
      *
      * @param action [ACTION_PLAY]とか
      * */
-    fun buildPendingIntent(action: String) = PendingIntent.getBroadcast(
+    fun buildPendingIntent(action: String): PendingIntent = PendingIntent.getBroadcast(
         context,
         requestCodeIncrement++,
         Intent(action),
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-    )!!
+    )
 
     /** BroadcastReceiverを解除する */
     fun release() {

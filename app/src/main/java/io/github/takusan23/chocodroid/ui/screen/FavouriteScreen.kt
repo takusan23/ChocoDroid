@@ -15,20 +15,19 @@ import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteChListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteTopScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavoriteVideoListScreen
 import io.github.takusan23.chocodroid.ui.screen.favourite.FavouriteScreenNavigationLinkList
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
  * お気に入り画面
  *
- * @param viewModel メイン画面のViewModel
  * @param navController メイン画面のNavController
+ * @param onLoadWatchPage 動画を読み込んでほしいときに呼ばれます。動画IDが渡されます
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移してほしいときに呼ばれる
- * */
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouriteScreen(
-    viewModel: MainScreenViewModel,
     navController: NavHostController,
+    onLoadWatchPage: (String) -> Unit,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     // 画面遷移
@@ -50,7 +49,7 @@ fun FavouriteScreen(
                         FavoriteTopScreen(
                             onNavigate = { route -> favouriteNavController.navigate(route) },
                             onAddClick = { onBottomSheetNavigate(AddFavoriteFolderScreenInitData()) },
-                            onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) },
+                            onVideoLoad = onLoadWatchPage,
                             onChannelClick = { channelId -> navController.navigate(NavigationLinkList.getChannelScreenLink(channelId)) }
                         )
                     }
@@ -61,7 +60,7 @@ fun FavouriteScreen(
                             folderId = folderId,
                             onBottomSheetNavigate = onBottomSheetNavigate,
                             onBack = { favouriteNavController.popBackStack() },
-                            onVideoLoad = { videoId -> viewModel.loadWatchPage(videoId) }
+                            onVideoLoad = onLoadWatchPage
                         )
                     }
                     composable(FavouriteScreenNavigationLinkList.ChannelList) {

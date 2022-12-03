@@ -24,21 +24,20 @@ import io.github.takusan23.chocodroid.ui.component.ChocoBridgeItem
 import io.github.takusan23.chocodroid.ui.component.ChocoBridgeSuggestItem
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.viewmodel.ChocoBridgeSearchScreenViewModel
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
  * 検索入力画面。検索結果は[SearchScreen]です
  *
- * @param mainViewModel メイン画面のViewModel
  * @param navController メイン画面のナビゲーション
  * @param bridgeSearchScreenViewModel 検索入力画面のViewModel
- * */
+ * @param onLoadWatchPage 動画IDが渡されるのでロードする
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChocoBridgeSearchScreen(
-    mainViewModel: MainScreenViewModel,
     navController: NavHostController,
     bridgeSearchScreenViewModel: ChocoBridgeSearchScreenViewModel,
+    onLoadWatchPage: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
     // カーソルの位置を変更するには TextFieldValue が必要
@@ -73,23 +72,12 @@ fun ChocoBridgeSearchScreen(
     }
 
     // 初回コンポーズ時にやること
-    LaunchedEffect(key1 = Unit, block = {
+    LaunchedEffect(key1 = Unit) {
         // フォーカスを当てる
         focusRequester.requestFocus()
         // キャレットの位置を文字の最後にする
         cursorPos.value = TextRange(searchText.value.length)
-    })
-
-    /**
-     * ViewModelへ検索ワードを保存 + サジェストAPIを叩くのをまとめた関数
-     *
-     * @param changedWord 検索ワード
-     * */
-    fun notifyTextChange(changedWord: String) {
-        bridgeSearchScreenViewModel.setSearchWord(changedWord)
-        bridgeSearchScreenViewModel.getSuggestWord(changedWord)
     }
-
 
     M3Scaffold {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -134,7 +122,7 @@ fun ChocoBridgeSearchScreen(
                 search(searchText.value)
             }
             ChocoBridgeItem(resIconId = R.drawable.ic_outline_play_arrow_24, text = stringResource(id = R.string.play_video_id)) {
-                mainViewModel.loadWatchPage(searchText.value)
+                onLoadWatchPage(searchText.value)
             }
             ChocoBridgeItem(resIconId = R.drawable.ic_outline_content_paste_go_24, text = stringResource(id = R.string.paste_from_clipboard)) {
                 ClipboardTool.getClipboardText(context)?.also { bridgeSearchScreenViewModel.setSearchWord(it) }

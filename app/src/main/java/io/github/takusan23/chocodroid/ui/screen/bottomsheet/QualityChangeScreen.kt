@@ -12,22 +12,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.player.ChocoDroidContentLoader
 import io.github.takusan23.chocodroid.ui.component.QualityList
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 
 /**
  * 画質一覧画面。BottomSheetで使う
  *
- * @param mainScreenViewModel メイン画面ViewModel
+ * @param chocoDroidContentLoader コンテンツ読み込むやつ
  * @param onClose 閉じるときに呼ばれる
  * */
 @Composable
 fun QualityChangeScreen(
-    mainScreenViewModel: MainScreenViewModel,
+    chocoDroidContentLoader: ChocoDroidContentLoader,
     onClose: () -> Unit,
 ) {
-    val currentQualityData = mainScreenViewModel.mediaUrlData.collectAsState()
-    val watchPageResponseJSONData = mainScreenViewModel.watchPageResponseDataFlow.collectAsState()
+    val currentQualityData = chocoDroidContentLoader.mediaUrlData.collectAsState()
+    val watchPageResponseJSONData = chocoDroidContentLoader.watchPageResponseDataFlow.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -44,7 +44,7 @@ fun QualityChangeScreen(
                 currentQualityLabel = currentQualityData.value?.quality!!,
                 qualityLabelList = watchPageResponseJSONData.value!!.contentUrlList.map { it.quality!! },
                 onQualityClick = { qualityLabel ->
-                    mainScreenViewModel.selectMediaUrl(qualityLabel)
+                    chocoDroidContentLoader.selectMediaUrl(qualityLabel)
                     onClose()
                 }
             )

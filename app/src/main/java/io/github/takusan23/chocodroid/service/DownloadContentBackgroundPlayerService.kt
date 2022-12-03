@@ -53,9 +53,6 @@ import kotlin.math.max
  * */
 class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
 
-    private val NOTIFICATION_ID = 1919
-    private val MEDIASESSION_TAG = "io.github.takusan23.chocodroid.service.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_SERVICE"
-
     /** システムが最後の曲を要求している場合はこっち */
     private val ROOT_REQUIRE_RECENT = ""
 
@@ -129,6 +126,10 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
             super.onStop()
             mediaSession.isActive = false
             stopSelf()
+        }
+
+        override fun onCustomAction(action: String?, extras: Bundle?) {
+            super.onCustomAction(action, extras)
         }
 
         /** リピートモード変更時 */
@@ -388,9 +389,7 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
      * */
     private suspend fun loadBitmap(path: String): Bitmap? {
         // CoilでBitmap読み込み
-        return imageLoader.execute(ImageRequest.Builder(this).data(path).build())
-            .drawable
-            ?.toBitmap()
+        return imageLoader.execute(ImageRequest.Builder(this).data(path).build()).drawable?.toBitmap()
     }
 
     /**
@@ -415,6 +414,9 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
 
     companion object {
 
+        private const val NOTIFICATION_ID = 1919
+        private const val MEDIASESSION_TAG = "io.github.takusan23.chocodroid.service.DOWNLOAD_CONTENT_BACKGROUND_PLAYER_SERVICE"
+
         /** putExtra のキーにこれを入れて、値には動画IDをしていすることでその動画から再生を始めます */
         const val REQUEST_START_VIDEO_ID = "request_start_video_id"
 
@@ -422,7 +424,7 @@ class DownloadContentBackgroundPlayerService : MediaBrowserServiceCompat() {
          * バックグラウンド再生を始める
          *
          * @param context [Context]
-         * @param startVideoIdIndex ここに動画IDを入れるとその動画から再生を始めます
+         * @param startVideoId 開始動画ID
          * */
         fun startService(context: Context, startVideoId: String? = null) {
             ContextCompat.startForegroundService(

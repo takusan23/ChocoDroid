@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ui.component.SettingScreen
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
-import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import io.github.takusan23.chocodroid.viewmodel.factory.ChannelScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.ChocoBridgeSearchScreenViewModelFactory
 import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFactory
@@ -21,13 +20,15 @@ import io.github.takusan23.chocodroid.viewmodel.factory.SearchScreenViewModelFac
  * [ChocoDroidMainScreen]のインテントというかネスト的にしんどくなってきたので切り出した
  *
  * @param navController 画面遷移コントローラー
- * @param mainScreenViewModel 最初の画面のViewModel
+ * @param onLoadWatchPage 動画を再生してほしいときに呼ばれます。動画IDが渡されます
+ * @param onLoadWatchPageFromLocal [onLoadWatchPage]のダウンロードコンテンツ版
  * @param onBottomSheetNavigate BottomSheetの画面遷移と表示をしてほしいときに呼ばれる
- * */
+ */
 @Composable
 fun ChocoDroidNavigation(
-    mainScreenViewModel: MainScreenViewModel,
     navController: NavHostController = rememberNavController(),
+    onLoadWatchPage: (String) -> Unit = {},
+    onLoadWatchPageFromLocal: (String) -> Unit = {},
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit = {},
 ) {
     val application = (LocalContext.current as ComponentActivity).application
@@ -37,37 +38,36 @@ fun ChocoDroidNavigation(
         composable(NavigationLinkList.getSearchScreenLink("{query}")) {
             // 検索画面
             val searchQuery = it.arguments?.getString("query")!!
-            val application = (LocalContext.current as ComponentActivity).application
             SearchScreen(
                 viewModel = viewModel(factory = SearchScreenViewModelFactory(application, searchQuery)),
                 navController = navController,
-                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
+                onClick = onLoadWatchPage,
                 onBottomSheetNavigate = onBottomSheetNavigate
             )
         }
         composable(NavigationLinkList.FavouriteScreen) {
             // お気に入り画面
             FavouriteScreen(
-                viewModel = mainScreenViewModel,
                 navController = navController,
+                onLoadWatchPage = onLoadWatchPage,
                 onBottomSheetNavigate = onBottomSheetNavigate
             )
         }
         composable(NavigationLinkList.HistoryScreen) {
             // 履歴画面
             HistoryScreen(
-                mainViewModel = mainScreenViewModel,
                 navController = navController,
-                onBottomSheetNavigate = onBottomSheetNavigate
+                onBottomSheetNavigate = onBottomSheetNavigate,
+                onLoadWatchPage = onLoadWatchPage
             )
         }
         composable(NavigationLinkList.DownloadScreen) {
             // ダウンロード画面
             DownloadScreen(
-                mainScreenViewModel = mainScreenViewModel,
                 navController = navController,
                 downloadScreenVideModel = viewModel(),
-                onBottomSheetNavigate = onBottomSheetNavigate
+                onBottomSheetNavigate = onBottomSheetNavigate,
+                onLoadWatchPageFromLocal = onLoadWatchPageFromLocal
             )
         }
         composable(NavigationLinkList.getChannelScreenLink("{channel_id}")) {
@@ -75,7 +75,7 @@ fun ChocoDroidNavigation(
             val channelId = it.arguments?.getString("channel_id")!!
             ChannelScreen(
                 channelScreenViewModel = viewModel(factory = ChannelScreenViewModelFactory(application, channelId)),
-                onClick = { videoId -> mainScreenViewModel.loadWatchPage(videoId) },
+                onClick = onLoadWatchPage,
                 onBack = { navController.popBackStack() }
             )
         }
@@ -85,7 +85,7 @@ fun ChocoDroidNavigation(
             ChocoBridgeSearchScreen(
                 bridgeSearchScreenViewModel = viewModel(factory = ChocoBridgeSearchScreenViewModelFactory(application, searchWord)),
                 navController = navController,
-                mainViewModel = mainScreenViewModel
+                onLoadWatchPage = onLoadWatchPage
             )
         }
         composable(NavigationLinkList.SettingScreen) {

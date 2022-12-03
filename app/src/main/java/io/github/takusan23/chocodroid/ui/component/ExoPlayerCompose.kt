@@ -8,28 +8,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
-import io.github.takusan23.chocodroid.player.PlaybackStatus
+import io.github.takusan23.chocodroid.player.PlayerState
+import io.github.takusan23.chocodroid.player.VideoData
 
 
 /**
  * [ChocoDroidPlayer]のUI部分
  *
- * @param chocoDroidPlayer Applicationでもらえる
+ * @param videoData 動画データ情報
+ * @param playbackState プレイヤーの状態
  * @param surfaceView SurfaceView
  */
 @Composable
 fun ExoPlayerComposeUI(
-    chocoDroidPlayer: ChocoDroidPlayer,
+    videoData: VideoData,
+    playbackState: PlayerState,
     surfaceView: SurfaceView,
 ) {
-    val videoData = chocoDroidPlayer.videoDataFlow.collectAsState()
-    val playerStatus = chocoDroidPlayer.playbackStateFlow.collectAsState()
-
     // 横いっぱいで作る
     Box(
         modifier = Modifier
@@ -41,10 +40,10 @@ fun ExoPlayerComposeUI(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxHeight()
-                .aspectRatio(videoData.value.aspectRate),
+                .aspectRatio(videoData.aspectRate),
             factory = { surfaceView }
         )
-        if (playerStatus.value == PlaybackStatus.Buffering) {
+        if (playbackState == PlayerState.Buffering) {
             // くるくる
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }

@@ -14,7 +14,7 @@ class WatchPageHTMLTest {
         runBlocking {
             val (watchPageData, decryptData) = WatchPageHTML.getWatchPage("hUVdNSD6TI4", null, null, null)
 
-            if (watchPageData.isHTTPStreaming()) {
+            if (watchPageData.isHTTPStreaming) {
                 println("生放送 HLS アドレス")
                 println(watchPageData.watchPageResponseJSONData.streamingData.hlsManifestUrl)
                 println("MPEG-DASH アドレス")

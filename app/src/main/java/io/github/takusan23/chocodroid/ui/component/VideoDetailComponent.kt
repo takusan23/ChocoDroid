@@ -116,7 +116,7 @@ fun VideoDetailMenu(
     onMenuClick: (BottomSheetInitData) -> Unit,
 ) {
     // プログレッシブ形式で配信してない場合はダウンロードボタンを塞ぐ
-    val isDisableDownloadButton = watchPageData.isLiveContent()
+    val isDisableDownloadButton = watchPageData.isLiveContent
     val isDownloadContent = watchPageData.type == "download"
 
     // ボタンリスト

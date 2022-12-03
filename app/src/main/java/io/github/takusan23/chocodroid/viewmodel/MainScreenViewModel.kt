@@ -100,7 +100,7 @@ class MainScreenViewModel(application: Application) : BaseAndroidViewModel(appli
              * 動画の場合はURLのパラメーターを修正する
              * ここらへんどうにかしたい
              * */
-            _watchPageData.value = if (!watchPageData.isLiveContent()) {
+            _watchPageData.value = if (!watchPageData.isLiveContent) {
                 UnlockMagic.fixUrlParam(watchPageData, decryptData.urlParamFixJSCode) { evalCode ->
                     withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
                 }

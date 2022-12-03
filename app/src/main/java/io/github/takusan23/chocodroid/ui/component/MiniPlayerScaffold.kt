@@ -45,37 +45,35 @@ fun MiniPlayerScaffold(
     ModalBottomSheetLayout(
         sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         sheetState = modalBottomSheetState,
-        sheetContent = bottomSheetContent,
-        content = {
-            Scaffold(
-                modifier = modifier,
-                bottomBar = { if (alpha > 0.5f) Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
-                content = {
-                    // topBar / bottomBar 分のPaddingを足す
-                    Box(modifier = Modifier.padding(it)) {
-                        // 後ろに描画するやつ
-                        content()
-                        // SnackbarHostがcompose3に未実装なので
-                        SnackbarHost(
-                            modifier = Modifier.align(alignment = Alignment.BottomCenter),
-                            hostState = snackbarHostState
-                        )
-                    }
-                    // 沈んでるので
-                    val bottomPadding = if (miniPlayerState.progress.value < 1f) {
-                        (alpha * it.calculateBottomPadding().value).dp
-                    } else {
-                        it.calculateBottomPadding()
-                    }
-                    MiniPlayerCompose(
-                        modifier = Modifier.padding(bottom = bottomPadding), // 沈んでるので
-                        state = miniPlayerState,
-                        playerContent = playerContent,
-                        backgroundContent = { },
-                        detailContent = { detailContent() }
-                    )
-                },
+        sheetContent = bottomSheetContent
+    ) {
+        Scaffold(
+            modifier = modifier,
+            bottomBar = { if (alpha > 0.5f) Box(modifier = Modifier.alpha(alpha)) { bottomBar() } },
+        ) {
+            // topBar / bottomBar 分のPaddingを足す
+            Box(modifier = Modifier.padding(it)) {
+                // 後ろに描画するやつ
+                content()
+                // SnackbarHostがcompose3に未実装なので
+                SnackbarHost(
+                    modifier = Modifier.align(alignment = Alignment.BottomCenter),
+                    hostState = snackbarHostState
+                )
+            }
+            // 沈んでるので
+            val bottomPadding = if (miniPlayerState.progress.value < 1f) {
+                (alpha * it.calculateBottomPadding().value).dp
+            } else {
+                it.calculateBottomPadding()
+            }
+            MiniPlayerCompose(
+                modifier = Modifier.padding(bottom = bottomPadding), // 沈んでるので
+                state = miniPlayerState,
+                playerContent = playerContent,
+                backgroundContent = { },
+                detailContent = detailContent
             )
         }
-    )
+    }
 }

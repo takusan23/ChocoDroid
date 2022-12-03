@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
@@ -33,17 +34,17 @@ import kotlinx.coroutines.launch
 /**
  * 動画プレイヤーのUI。重ねる
  *
- * @param controller ExoPlayer操作用
+ * @param chocoDroidPlayer Applicationにあるコントローラー
  * @param watchPageData 視聴ページデータ
  * @param state ミニプレイヤー操作用
  * @param mediaUrlData ストリーミング情報
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移をしてほしいときに呼ばれる
  * @param miniPlayerState ミニプレーヤーの状態変更するやつ
- * */
+ */
 @Composable
 fun VideoControlUI(
     watchPageData: WatchPageData,
-    controller: ExoPlayerComposeController,
+    chocoDroidPlayer: ChocoDroidPlayer,
     state: MiniPlayerState,
     mediaUrlData: MediaUrlData,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
@@ -64,11 +65,16 @@ fun VideoControlUI(
     // プレイヤー押したらプレイヤーUIを非表示にしたいので
     val isShowPlayerUI = remember { mutableStateOf(true) }
 
+    // 動画情報
+    val videoData = chocoDroidPlayer.videoDataFlow.collectAsState()
+    // 再生位置
+    val currentPositionData = chocoDroidPlayer.currentPositionDataFlow.collectAsState()
+
     // 一定時間後にfalseにする
-    LaunchedEffect(key1 = isShowPlayerUI.value, block = {
+    LaunchedEffect(key1 = isShowPlayerUI.value) {
         delay(3000L)
         isShowPlayerUI.value = false
-    })
+    }
 
     // まとめて色を変えられる
     Surface(
@@ -83,11 +89,11 @@ fun VideoControlUI(
                         isShowPlayerUI.value = !isShowPlayerUI.value
                     },
                     onDoubleTap = {
-                        val currentPos = controller.currentPosition.value
+                        val currentPos = chocoDroidPlayer.currentPositionMs
                         val currentX = it.x
                         // 左半分で前シーク 右半分で次シーク
                         val isNextSeek = (playerWidth.value / 2) < currentX
-                        controller.seek(if (isNextSeek) currentPos + doubleTapSeekValue else currentPos - doubleTapSeekValue)
+                        chocoDroidPlayer.currentPositionMs = if (isNextSeek) currentPos + doubleTapSeekValue else currentPos - doubleTapSeekValue
                     }
                 )
             }
@@ -116,10 +122,10 @@ fun VideoControlUI(
                             }
                         )
                         Text(
-                            text = watchPageData.watchPageResponseJSONData.videoDetails.title,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 10.dp, end = 10.dp),
+                            text = watchPageData.watchPageResponseJSONData.videoDetails.title,
                             maxLines = 1,
                         )
                     }
@@ -163,34 +169,34 @@ fun VideoControlUI(
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(bounded = false, radius = 30.dp)
-                                ) { controller.exoPlayer.playWhenReady = !controller.exoPlayer.playWhenReady },
-                            painter = painterResource(id = if (controller.exoPlayer.playWhenReady) R.drawable.ic_outline_pause_24 else R.drawable.ic_outline_play_arrow_24),
+                                ) { chocoDroidPlayer.playWhenReady = !chocoDroidPlayer.playWhenReady },
+                            painter = painterResource(id = if (chocoDroidPlayer.playWhenReady) R.drawable.ic_outline_pause_24 else R.drawable.ic_outline_play_arrow_24),
                             colorFilter = ColorFilter.tint(Color.White),
                             contentDescription = null
                         )
                     }
 
                     // 生放送時はシークバー出さない
-                    if (!watchPageData.isLiveContent()) {
+                    if (!watchPageData.isLiveContent) {
                         Row(
                             modifier = Modifier.align(Alignment.BottomCenter),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 modifier = Modifier.padding(5.dp),
-                                text = TimeFormatTool.videoDurationToFormatText(controller.currentPosition.value / 1000),
+                                text = TimeFormatTool.videoDurationToFormatText(chocoDroidPlayer.currentPositionMs / 1000),
                             )
-                            if (controller.currentPosition.value > 0 && controller.duration.value > 0) {
+                            if (chocoDroidPlayer.currentPositionMs > 0 && videoData.value.durationMs > 0) {
                                 val isTouchingSlider = remember { mutableStateOf(false) }
                                 val progressFloat = remember { mutableStateOf(0f) }
-                                val progressBuffered = (controller.bufferedPosition.value / controller.duration.value.toFloat())
+                                val progressBuffered = ((currentPositionData.value?.bufferingPositionMs ?: 0) / videoData.value.durationMs.toFloat())
 
                                 // 操作中でなければ
-                                LaunchedEffect(key1 = controller.currentPosition.value, block = {
+                                LaunchedEffect(key1 = currentPositionData.value?.currentPositionMs) {
                                     if (!isTouchingSlider.value) {
-                                        progressFloat.value = (controller.currentPosition.value / controller.duration.value.toFloat())
+                                        progressFloat.value = ((currentPositionData.value?.currentPositionMs ?: 0) / videoData.value.durationMs.toFloat())
                                     }
-                                })
+                                }
                                 BufferSeekbar(
                                     modifier = Modifier
                                         .padding(5.dp)
@@ -203,13 +209,13 @@ fun VideoControlUI(
                                     },
                                     onValueChangeFinished = {
                                         isTouchingSlider.value = false
-                                        controller.seek((progressFloat.value * controller.duration.value).toLong())
+                                        chocoDroidPlayer.currentPositionMs = (progressFloat.value * videoData.value.durationMs).toLong()
                                     }
                                 )
                             } else Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 modifier = Modifier.padding(5.dp),
-                                text = TimeFormatTool.videoDurationToFormatText(controller.duration.value / 1000),
+                                text = TimeFormatTool.videoDurationToFormatText(videoData.value.durationMs / 1000),
                             )
                             // 全画面ボタン
                             FullscreenButton(

@@ -38,7 +38,7 @@ fun QualityChangeScreen(
             text = stringResource(id = R.string.quality),
             fontSize = 25.sp
         )
-        if (currentQualityData.value?.quality != null && watchPageResponseJSONData.value != null && !watchPageResponseJSONData.value!!.isLiveContent()) {
+        if (currentQualityData.value?.quality != null && watchPageResponseJSONData.value != null && !watchPageResponseJSONData.value!!.isLiveContent) {
             // 動画のみ
             QualityList(
                 currentQualityLabel = currentQualityData.value?.quality!!,

@@ -1,5 +1,7 @@
 package io.github.takusan23.chocodroid.ui.screen
 
+import android.app.Activity
+import android.view.SurfaceView
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import io.github.takusan23.chocodroid.ChocoDroidApplication
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
@@ -18,6 +21,7 @@ import io.github.takusan23.chocodroid.ui.tool.SetActivitySleepComposeApp
 import io.github.takusan23.chocodroid.ui.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.tool.SetStatusBarColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
+import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import kotlinx.coroutines.launch
 
 /**
@@ -39,6 +43,8 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             val scope = rememberCoroutineScope()
             // 画面遷移。ナビゲーション
             val navController = rememberNavController()
+            // 動画プレイヤー
+            val chocoDroidPlayer = remember { ((context as Activity).application as ChocoDroidApplication).chocoDroidPlayer }
             // BottomSheetの画面遷移用Flow
             val bottomSheetInitData = viewModel.bottomSheetNavigation.collectAsState()
             // 再生中の動画情報
@@ -81,15 +87,15 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             SetStatusBarColor(color = MaterialTheme.colorScheme.background)
 
             // 動画情報更新したらミニプレイヤーの状態も変更
-            LaunchedEffect(key1 = watchPageResponseData.value, block = {
+            LaunchedEffect(key1 = watchPageResponseData.value) {
                 miniPlayerState.setState(if (watchPageResponseData.value != null) {
                     MiniPlayerStateType.Default
                 } else MiniPlayerStateType.EndOrHide)
-            })
+            }
 
             // Snackbar出す
             val snackbarHostState = remember { SnackbarHostState() }
-            LaunchedEffect(key1 = errorData.value, block = {
+            LaunchedEffect(key1 = errorData.value) {
                 if (errorData.value != null) {
                     val result = snackbarHostState.showSnackbar(errorData.value!!, actionLabel = context.getString(R.string.close), duration = SnackbarDuration.Indefinite)
                     if (result == SnackbarResult.ActionPerformed) {
@@ -97,7 +103,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                         snackbarHostState.currentSnackbarData?.dismiss()
                     }
                 }
-            })
+            }
 
             // MiniPlayerとScaffoldをつなげたもの
             MiniPlayerScaffold(
@@ -108,17 +114,43 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 playerContent = {
                     // 動画再生
                     if (watchPageResponseData.value != null && mediaUrlData.value != null) {
-                        // ExoPlayerコントロール用
-                        val exoPlayerComposeController = rememberExoPlayerComposeController(true)
-                        VideoPlayerUI(
-                            watchPageData = watchPageResponseData.value!!,
-                            mediaUrlData = mediaUrlData.value!!,
-                            controller = exoPlayerComposeController
-                        )
+                        // SurfaceView
+                        val surfaceView = remember { SurfaceView(context) }
+                        // プレイヤー作成
+                        DisposableEffect(key1 = Unit) {
+                            chocoDroidPlayer.createPlayer()
+                            chocoDroidPlayer.setSurfaceView(surfaceView)
+                            onDispose {
+                                // TODO バックグラウンドで再生を続けるためSurfaceをデタッチする
+                                chocoDroidPlayer.clearSurface()
+                            }
+                        }
+
+                        LaunchedEffect(key1 = mediaUrlData.value) {
+                            mediaUrlData.value!!.apply {
+                                // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
+                                // ない場合は映像、音声トラックをそれぞれ渡す
+                                if (mixTrackUrl != null) {
+                                    val isDash = urlType == MediaUrlData.MediaUrlType.TYPE_DASH
+                                    chocoDroidPlayer.setMediaSourceUri(mixTrackUrl!!, isDash)
+                                } else {
+                                    // 動画URLを読み込む
+                                    chocoDroidPlayer.setMediaSourceVideoAudioUriSupportVer(videoTrackUrl!!, audioTrackUrl!!)
+                                }
+                            }
+                            // ダブルタップシークを実装した際に、初回ロード中にダブルタップすることで即時再生されることを発見したので、
+                            // わからないレベルで進めておく。これで初回のめっちゃ長い読み込みが解決する？
+                            if (watchPageResponseData.value?.isLiveContent == false) {
+                                chocoDroidPlayer.currentPositionMs = 10L
+                            }
+                        }
+
+                        // SurfaceViewとコントローラーセット
+                        ExoPlayerComposeUI(chocoDroidPlayer, surfaceView)
                         VideoControlUI(
                             watchPageData = watchPageResponseData.value!!,
                             mediaUrlData = mediaUrlData.value!!,
-                            controller = exoPlayerComposeController,
+                            chocoDroidPlayer = chocoDroidPlayer,
                             miniPlayerState = miniPlayerState,
                             state = miniPlayerState,
                             onBottomSheetNavigate = { route ->

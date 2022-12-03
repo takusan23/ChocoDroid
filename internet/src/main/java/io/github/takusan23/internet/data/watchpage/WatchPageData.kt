@@ -13,7 +13,7 @@ import kotlinx.serialization.encodeToString
  * @param watchPageInitialJSONData 投稿者のアイコンURLはここにあります
  * @param contentUrlList 映像と音声のデータクラスの配列です。復号化済みであら簡単
  * @param type videoかlive。あとダウンロード済みの場合は"download"とか？。
- * */
+ */
 data class WatchPageData(
     val watchPageResponseJSONData: WatchPageResponseJSONData,
     val watchPageInitialJSONData: WatchPageInitialJSONData,
@@ -32,11 +32,12 @@ data class WatchPageData(
     }
 
     /** HLS / Dash 形式で配信されている動画の場合はtrue。必然的に生放送時もtrueになります */
-    fun isHTTPStreaming() = watchPageResponseJSONData.streamingData.hlsManifestUrl != null
-            || watchPageResponseJSONData.streamingData.dashManifestUrl != null
+    val isHTTPStreaming: Boolean
+        get() = watchPageResponseJSONData.streamingData.hlsManifestUrl != null || watchPageResponseJSONData.streamingData.dashManifestUrl != null
 
     /** ライブ配信の場合はtrue */
-    fun isLiveContent() = watchPageResponseJSONData.videoDetails.isLive == true
+    val isLiveContent: Boolean
+        get() = watchPageResponseJSONData.videoDetails.isLive == true
 
     /**
      * 指定した画質の[MediaUrlData]を返す
@@ -44,7 +45,7 @@ data class WatchPageData(
      * ない場合は今の所最高画質を返してる
      *
      * @param quality 画質
-     * */
+     */
     fun getMediaUrlDataFromQuality(quality: String? = "360p") = contentUrlList
         .find { it.quality == quality } ?: contentUrlList.first()
 

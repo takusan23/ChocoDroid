@@ -12,7 +12,13 @@ class SearchAPITest {
             searchAPI.init()
             val searchResponseData = searchAPI.search("さくらんぼキッス", SearchAPI.PARAMS_SORT_UPLOAD_DATE)
             searchResponseData?.forEach {
-                println(it)
+                println(it.videoTitle)
+                println("---")
+            }
+            val moreSearchResponseData = searchAPI.moreSearch()
+            println("追加ロード")
+            moreSearchResponseData?.forEach {
+                println(it.videoTitle)
                 println("---")
             }
         }

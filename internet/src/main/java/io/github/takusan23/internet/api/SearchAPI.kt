@@ -99,7 +99,8 @@ class SearchAPI {
         val moreSearchResponseData = SerializationTool.jsonSerialization.decodeFromString<MoreSearchResponseData>(postResponseBody)
         // 次回検索用
         NEXT_PAGE_CONTINUATION = tokenGetRegex.find(postResponseBody)!!.groupValues[1]
-        val videoList = moreSearchResponseData.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[0].itemSectionRenderer?.contents
+        // onResponseReceivedCommands[0] には appendContinuationItemsAction あるはず
+        val videoList = moreSearchResponseData.onResponseReceivedCommands[0].appendContinuationItemsAction!!.continuationItems[0].itemSectionRenderer?.contents
         return videoList?.mapNotNull { it.videoRenderer }?.map { CommonVideoData(it) }
     }
 

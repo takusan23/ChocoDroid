@@ -49,7 +49,7 @@ data class MoreSearchResponseData(
 
 @Serializable
 data class OnResponseReceivedCommands(
-    val appendContinuationItemsAction: AppendContinuationItemsAction,
+    val appendContinuationItemsAction: AppendContinuationItemsAction? = null,
 )
 
 @Serializable

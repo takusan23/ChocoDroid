@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import androidx.media.session.MediaButtonReceiver
@@ -22,6 +23,8 @@ import coil.request.ImageRequest
 import io.github.takusan23.chocodroid.ChocoDroidApplication
 import io.github.takusan23.chocodroid.MainActivity
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.setting.SettingKeyObject
+import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.internet.data.CommonVideoData
 import io.github.takusan23.internet.data.watchpage.WatchPageResponseJSONData
 import kotlinx.coroutines.flow.filterNotNull
@@ -83,11 +86,15 @@ class SmoothBackgroundPlayService : LifecycleService() {
             super.onCustomAction(action, extras)
             when (action) {
                 MEDIA_SESSION_CUSTOM_REPEAT -> {
-                    chocoDroidPlayer.repeatMode = !chocoDroidPlayer.repeatMode
+                    lifecycleScope.launch {
+                        dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_MODE] = it[SettingKeyObject.PLAYER_REPEAT_MODE] == false }
+                        updateState(contentLoader.watchPageResponseDataFlow.first()!!.watchPageResponseJSONData)
+                    }
                 }
-            }
-            lifecycleScope.launch {
-                updateState(contentLoader.watchPageResponseDataFlow.first()!!.watchPageResponseJSONData)
+                MEDIA_SESSION_CUSTOM_CLOSE -> {
+                    ChocoDroidApplication.instance.playerDestroy()
+                    stopSelf()
+                }
             }
         }
 
@@ -95,8 +102,8 @@ class SmoothBackgroundPlayService : LifecycleService() {
         override fun onSetRepeatMode(repeatMode: Int) {
             super.onSetRepeatMode(repeatMode)
             // ExoPlayerに反映
-            chocoDroidPlayer.repeatMode = repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE
             lifecycleScope.launch {
+                dataStore.edit { it[SettingKeyObject.PLAYER_REPEAT_MODE] = repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE }
                 updateState(contentLoader.watchPageResponseDataFlow.first()!!.watchPageResponseJSONData)
                 updateNotification()
             }
@@ -137,6 +144,19 @@ class SmoothBackgroundPlayService : LifecycleService() {
         return START_NOT_STICKY
     }
 
+    /** 最近のアプリ画面から消したときに呼ばれる */
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        // プレイヤー一式終了させる
+        ChocoDroidApplication.instance.playerDestroy()
+        stopSelf()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        notificationButtonReceiver.release()
+    }
+
     /** ExoPlayerの再生状態をMediaSessionへ渡す */
     private suspend fun updateState(watchPageResponseJSONData: WatchPageResponseJSONData) {
         // リピートモードの設定
@@ -154,12 +174,15 @@ class SmoothBackgroundPlayService : LifecycleService() {
             )
             val currentState = if (chocoDroidPlayer.playWhenReady) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
             setState(currentState, chocoDroidPlayer.currentPositionMs, 1f)
+            // Android 13 以降 CustomAction に定義しないと通知領域に表示されるコントローラーには出ない
             // リピートモード切り替えをカスタムアクションとして定義する
             if (chocoDroidPlayer.repeatMode) {
                 addCustomAction(MEDIA_SESSION_CUSTOM_REPEAT, "Repeat", R.drawable.ic_outline_repeat_one_24)
             } else {
                 addCustomAction(MEDIA_SESSION_CUSTOM_REPEAT, "Repeat", R.drawable.ic_outline_repeat_24)
             }
+            // プレイヤー終了ボタン
+            addCustomAction(MEDIA_SESSION_CUSTOM_CLOSE, "Close", R.drawable.ic_outline_close_24)
         }.build()
         // 再生中の音楽情報
         val videoData = CommonVideoData(watchPageResponseJSONData)
@@ -241,11 +264,6 @@ class SmoothBackgroundPlayService : LifecycleService() {
         return imageLoader.execute(ImageRequest.Builder(this).data(path).build()).drawable?.toBitmap()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        notificationButtonReceiver.release()
-    }
-
     companion object {
 
         /** 通知ID */
@@ -256,6 +274,9 @@ class SmoothBackgroundPlayService : LifecycleService() {
 
         /** MediaSessionリピート切り替えカスタムアクション */
         private const val MEDIA_SESSION_CUSTOM_REPEAT = "io.github.takusan23.chocodroid.service.MEDIA_SESSION_CUSTOM_REPEAT"
+
+        /** MediaSessionプレイヤー終了カスタムアクション */
+        private const val MEDIA_SESSION_CUSTOM_CLOSE = "io.github.takusan23.chocodroid.service.MEDIA_SESSION_CUSTOM_CLOSE"
 
         /**
          * サービスを起動する

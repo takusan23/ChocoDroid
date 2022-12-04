@@ -263,6 +263,10 @@ class MiniPlayerState(
         val isNeedUpdateEvent = currentState.value != miniPlayerStateType
         currentState.value = miniPlayerStateType
         currentPlayerWidthPercent.value = if (miniPlayerStateType == MiniPlayerStateType.MiniPlayer) miniPlayerWidthPercent else 1f
+        // 終了時は進捗を戻す（ボトムナビゲーション出す）
+        if (miniPlayerStateType == MiniPlayerStateType.EndOrHide) {
+            progress.value = 0f
+        }
         // 更新通知
         if (isNeedUpdateEvent) {
             onStateChange(miniPlayerStateType)

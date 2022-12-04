@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +39,7 @@ import io.github.takusan23.chocodroid.viewmodel.factory.FavoriteVideoListViewMod
  * @param onVideoLoad 動画を読み込んでほしいときに呼ばれます。動画IDが渡されます
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移してほしいときに呼ばれる
  * */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun FavoriteVideoListScreen(
     folderId: Int,
@@ -62,30 +63,29 @@ fun FavoriteVideoListScreen(
                 actions = { TopBarDeleteButton(folderId = folderId, snackbarHostState, onBack) },
                 onBack = onBack
             )
-        },
-        content = {
-            Box(modifier = Modifier.fillMaxSize()) {
-                // ない場合は無いって表示する
-                if (videoList.value.isNotEmpty()) {
-                    VideoList(
-                        videoList = videoList.value,
-                        onClick = onVideoLoad,
-                        onMenuClick = { data ->
-                            onBottomSheetNavigate(VideoListMenuScreenInitData(
-                                commonVideoData = data,
-                                folderId = folderId
-                            ))
-                        }
-                    )
-                } else {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = stringResource(id = R.string.favorite_folder_video_empty)
-                    )
-                }
+        }
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // ない場合は無いって表示する
+            if (videoList.value.isNotEmpty()) {
+                VideoList(
+                    videoList = videoList.value,
+                    onClick = onVideoLoad,
+                    onMenuClick = { data ->
+                        onBottomSheetNavigate(VideoListMenuScreenInitData(
+                            commonVideoData = data,
+                            folderId = folderId
+                        ))
+                    }
+                )
+            } else {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = stringResource(id = R.string.favorite_folder_video_empty)
+                )
             }
         }
-    )
+    }
 }
 
 /**

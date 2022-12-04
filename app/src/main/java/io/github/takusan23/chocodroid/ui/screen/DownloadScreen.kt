@@ -2,6 +2,7 @@ package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,7 +30,7 @@ import io.github.takusan23.chocodroid.viewmodel.DownloadScreenVideModel
  * @param downloadScreenVideModel ダウンロード画面のViewModel
  * @param onBottomSheetNavigate BottomSheetの切り替えをしてほしいときに呼ばれる
  * */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun DownloadScreen(
     navController: NavHostController,

@@ -2,6 +2,7 @@ package io.github.takusan23.chocodroid.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -31,7 +32,7 @@ import io.github.takusan23.chocodroid.viewmodel.HistoryScreenViewModel
  * @param onBottomSheetNavigate BottomSheet画面遷移
  * @param onLoadWatchPage 動画を読み込んでほしいときに呼ばれます。動画IDが渡されます
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HistoryScreen(
     historyScreenViewModel: HistoryScreenViewModel = viewModel(),

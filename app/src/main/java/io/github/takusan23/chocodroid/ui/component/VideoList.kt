@@ -10,6 +10,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,9 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.internet.data.CommonVideoData
 
@@ -43,46 +45,44 @@ import io.github.takusan23.internet.data.CommonVideoData
  *
  * @param swipeRefreshState スワイプして更新のくるくるを手動で表示したい場合は
  * @param lazyListState スクロール制御など
+ * @param isRefreshLoading ロード中かどうか
  * @param videoList 動画一覧
  * @param onClick 押したら呼ばれる。動画IDが渡されます
  * @param isSwipeEnabled 引っ張るやつ無効にする場合はtrue
- * @param onRefresh 引っ張って更新で引っ張ったら呼ばれる
  * @param onMenuClick メニュー押したとき。nullにした場合はメニューを非表示にします
  * @param headerLayout ヘッダーに表示する
  * */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VideoList(
-    lazyListState: LazyListState = rememberLazyListState(),
-    swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(false),
     videoList: List<CommonVideoData>,
+    lazyListState: LazyListState = rememberLazyListState(),
+    isSwipeEnabled: Boolean = true,
+    isRefreshLoading: Boolean = false,
+    swipeRefreshState: PullRefreshState = rememberPullRefreshState(refreshing = isRefreshLoading, onRefresh = { /* do nothing */ }),
     onClick: (String) -> Unit,
     onMenuClick: ((CommonVideoData) -> Unit)? = null,
-    onRefresh: (() -> Unit)? = null,
-    isSwipeEnabled: Boolean = onRefresh != null,
     headerLayout: (@Composable () -> Unit)? = null,
 ) {
-    SwipeRefresh(
-        swipeEnabled = isSwipeEnabled,
-        state = swipeRefreshState,
-        onRefresh = { onRefresh?.invoke() },
-        content = {
-            LazyColumn(
-                state = lazyListState,
-                content = {
-                    headerLayout?.also { layout ->
-                        item { layout() }
-                    }
-                    items(videoList) { item ->
-                        VideoListItem(
-                            commonVideoData = item,
-                            onClick = onClick,
-                            onMenuClick = onMenuClick
-                        )
-                    }
+    Box(modifier = Modifier.pullRefresh(enabled = isSwipeEnabled, state = swipeRefreshState)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = lazyListState,
+            content = {
+                headerLayout?.also { layout ->
+                    item { layout() }
                 }
-            )
-        }
-    )
+                items(videoList) { item ->
+                    VideoListItem(
+                        commonVideoData = item,
+                        onClick = onClick,
+                        onMenuClick = onMenuClick
+                    )
+                }
+            }
+        )
+        PullRefreshIndicator(isRefreshLoading, swipeRefreshState, Modifier.align(Alignment.TopCenter))
+    }
 }
 
 /**

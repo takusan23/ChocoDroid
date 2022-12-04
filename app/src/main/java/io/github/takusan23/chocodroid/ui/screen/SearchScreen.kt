@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
 import io.github.takusan23.chocodroid.ui.component.SearchScreenBar
@@ -24,9 +25,7 @@ import io.github.takusan23.chocodroid.ui.screen.bottomsheet.BottomSheetInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.SearchSortScreenInitData
 import io.github.takusan23.chocodroid.ui.screen.bottomsheet.VideoListMenuScreenInitData
 import io.github.takusan23.chocodroid.viewmodel.SearchScreenViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.launch
 
 /**
  * 検索画面
@@ -36,7 +35,7 @@ import kotlinx.coroutines.launch
  * @param navController メイン画面のナビゲーション
  * @param onBottomSheetNavigate ボトムシート出してほしいときに呼ばれる
  * */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchScreenViewModel,
@@ -52,25 +51,24 @@ fun SearchScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading.value)
-    val scope = rememberCoroutineScope()
+    val swipeRefreshState = rememberPullRefreshState(refreshing = isLoading.value, onRefresh = { viewModel.reSearch() })
 
     // エラー時
-    LaunchedEffect(key1 = errorMessage.value, block = {
+    LaunchedEffect(key1 = errorMessage.value) {
         if (errorMessage.value != null) {
             val result = snackbarHostState.showSnackbar(errorMessage.value!!, context.getString(R.string.close), SnackbarDuration.Indefinite)
             if (result == SnackbarResult.ActionPerformed) {
                 snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
-    })
+    }
 
     // 追加読み込み制御
-    LaunchedEffect(key1 = lazyListState, block = {
+    LaunchedEffect(key1 = lazyListState) {
         snapshotFlow { lazyListState.firstVisibleItemIndex }
             .filter { firstVisibleItemIndex -> firstVisibleItemIndex > 0 && firstVisibleItemIndex + lazyListState.layoutInfo.visibleItemsInfo.size == lazyListState.layoutInfo.totalItemsCount }
             .collect { viewModel.moreLoad() }
-    })
+    }
 
     M3Scaffold(
         snackbarHostState = snackbarHostState,
@@ -81,25 +79,23 @@ fun SearchScreen(
                 onSortChange = { onBottomSheetNavigate(SearchSortScreenInitData()) },
                 onSearchBarClick = { navController.navigate(NavigationLinkList.getChocoDroidBridgeSearchScreen(query.value)) }
             )
-        },
-        content = {
-            Surface(
-                modifier = Modifier
-                    .padding(top = 10.dp, start = 10.dp, end = 10.dp)
-                    .fillMaxHeight(),
-                color = MaterialTheme.colorScheme.inverseOnSurface,
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                content = {
-                    VideoList(
-                        swipeRefreshState = swipeRefreshState,
-                        lazyListState = lazyListState,
-                        videoList = videoList.value,
-                        onRefresh = { scope.launch { viewModel.reSearch() } },
-                        onClick = onClick,
-                        onMenuClick = { onBottomSheetNavigate(VideoListMenuScreenInitData(it)) }
-                    )
-                }
+        }
+    ) {
+        Surface(
+            modifier = Modifier
+                .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                .fillMaxHeight(),
+            color = MaterialTheme.colorScheme.inverseOnSurface,
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        ) {
+            VideoList(
+                swipeRefreshState = swipeRefreshState,
+                lazyListState = lazyListState,
+                videoList = videoList.value,
+                isRefreshLoading = isLoading.value,
+                onClick = onClick,
+                onMenuClick = { onBottomSheetNavigate(VideoListMenuScreenInitData(it)) }
             )
         }
-    )
+    }
 }

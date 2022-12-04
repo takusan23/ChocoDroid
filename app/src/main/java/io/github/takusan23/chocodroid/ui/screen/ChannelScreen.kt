@@ -4,10 +4,12 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.TabRowDefaults.Divider
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.ui.component.ChannelHeader
 import io.github.takusan23.chocodroid.ui.component.M3Scaffold
@@ -30,7 +31,7 @@ import io.github.takusan23.chocodroid.viewmodel.ChannelScreenViewModel
  * @param channelScreenViewModel チャンネル画面ViewModel
  * @param onBack 戻ってほしいときに呼ばれます
  * */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (String) -> Unit, onBack: () -> Unit) {
 
@@ -43,7 +44,7 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading.value)
+    val swipeRefreshState = rememberPullRefreshState(refreshing = isLoading.value, onRefresh = { channelScreenViewModel.getReGetUploadVideo() })
 
     // エラー時
     LaunchedEffect(key1 = errorMessage.value, block = {
@@ -62,42 +63,41 @@ fun ChannelScreen(channelScreenViewModel: ChannelScreenViewModel, onClick: (Stri
     }
 
     M3Scaffold(
-        snackbarHostState = snackbarHostState,
-        content = {
-            Column(modifier = Modifier.padding(it)) {
-                // 動画配列
-                VideoList(
-                    headerLayout = {
-                        // ヘッダー部
-                        channelResponseData.value?.apply {
-                            ChannelHeader(
-                                header = this.header.c4TabbedHeaderRenderer,
-                                isAddedFavoriteCh = isAddedFavoriteCh.value,
-                                onOpenBrowserClick = {
-                                    // ブラウザで開く
-                                    val intent = Intent(Intent.ACTION_VIEW, "https://www.youtube.com/channel/${this.header.c4TabbedHeaderRenderer.channelId}".toUri())
-                                    context.startActivity(intent)
-                                },
-                                onAddFavoriteChClick = {
-                                    // 登録する？
-                                    if (isAddedFavoriteCh.value) {
-                                        channelScreenViewModel.deleteFavoriteChDB()
-                                    } else {
-                                        channelScreenViewModel.addFavoriteChDB()
-                                    }
+        snackbarHostState = snackbarHostState
+    ) {
+        Column(modifier = Modifier.padding(it)) {
+            // 動画配列
+            VideoList(
+                lazyListState = lazyListState,
+                swipeRefreshState = swipeRefreshState,
+                videoList = uploadVideoList.value,
+                onClick = onClick,
+                isRefreshLoading = isLoading.value,
+                headerLayout = {
+                    // ヘッダー部
+                    channelResponseData.value?.apply {
+                        ChannelHeader(
+                            header = this.header.c4TabbedHeaderRenderer,
+                            isAddedFavoriteCh = isAddedFavoriteCh.value,
+                            onOpenBrowserClick = {
+                                // ブラウザで開く
+                                val intent = Intent(Intent.ACTION_VIEW, "https://www.youtube.com/channel/${this.header.c4TabbedHeaderRenderer.channelId}".toUri())
+                                context.startActivity(intent)
+                            },
+                            onAddFavoriteChClick = {
+                                // 登録する？
+                                if (isAddedFavoriteCh.value) {
+                                    channelScreenViewModel.deleteFavoriteChDB()
+                                } else {
+                                    channelScreenViewModel.addFavoriteChDB()
                                 }
-                            )
-                        }
-                        Divider()
-                    },
-                    lazyListState = lazyListState,
-                    swipeRefreshState = swipeRefreshState,
-                    videoList = uploadVideoList.value,
-                    onRefresh = { channelScreenViewModel.getReGetUploadVideo() },
-                    onClick = onClick
-                )
-            }
+                            }
+                        )
+                    }
+                    Divider()
+                }
+            )
         }
-    )
+    }
 
 }

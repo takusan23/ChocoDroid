@@ -25,13 +25,14 @@ import io.github.takusan23.chocodroid.player.VideoData
  */
 @Composable
 fun ExoPlayerComposeUI(
+    modifier: Modifier = Modifier,
     videoData: VideoData,
     playbackState: PlayerState,
     surfaceView: SurfaceView,
 ) {
     // 横いっぱいで作る
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1.7f),
         contentAlignment = Alignment.Center,

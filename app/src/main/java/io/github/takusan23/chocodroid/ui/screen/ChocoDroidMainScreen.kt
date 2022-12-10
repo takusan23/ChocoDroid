@@ -7,6 +7,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -78,11 +80,6 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 scope.launch { modalBottomSheetState.hide() }
             }
 
-            // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
-            BackHandler(miniPlayerState.currentState.value == MiniPlayerStateType.Default) {
-                miniPlayerState.setState(MiniPlayerStateType.MiniPlayer)
-            }
-
             // スリープモード制御
             SetActivitySleepComposeApp(isEnable = watchPageResponseData.value != null)
 
@@ -122,6 +119,19 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                 playerContent = {
                     // 動画再生
                     if (watchPageResponseData.value != null && mediaUrlData.value != null) {
+
+                        // 通常表示のときのみバックキーを監視して、バックキーでミニプレイヤーに遷移できるようにする
+                        // ここに書くと視聴画面が表示されたときに登録される
+                        BackHandler(miniPlayerState.currentState.value == MiniPlayerStateType.Default || miniPlayerState.currentState.value == MiniPlayerStateType.Fullscreen) {
+                            when (miniPlayerState.currentState.value) {
+                                MiniPlayerStateType.Default -> miniPlayerState.setState(MiniPlayerStateType.MiniPlayer)
+                                MiniPlayerStateType.Fullscreen -> miniPlayerState.setState(MiniPlayerStateType.Default)
+                                else -> {
+                                    // do nothing
+                                }
+                            }
+                        }
+
                         // SurfaceView
                         val surfaceView = remember { SurfaceView(context) }
                         // プレイヤー作成
@@ -154,6 +164,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
                         // SurfaceViewとコントローラーセット
                         ExoPlayerComposeUI(
+                            modifier = Modifier.align(Alignment.Center),
                             videoData = videoData.value,
                             playbackState = playbackState.value,
                             surfaceView = surfaceView

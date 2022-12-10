@@ -220,7 +220,7 @@ fun VideoControlUI(
                             FullscreenButton(
                                 modifier = Modifier.padding(5.dp),
                                 isFullscreen = miniPlayerState.currentState.value == MiniPlayerStateType.Fullscreen,
-                                onFullscreenChange = { miniPlayerState.setState(if (it) MiniPlayerStateType.Fullscreen else MiniPlayerStateType.Default) }
+                                onFullscreenChange = { miniPlayerState.setState(if (!it) MiniPlayerStateType.Default else MiniPlayerStateType.Fullscreen) }
                             )
                         }
                     }

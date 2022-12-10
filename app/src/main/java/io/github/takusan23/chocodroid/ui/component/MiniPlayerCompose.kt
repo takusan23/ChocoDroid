@@ -47,7 +47,7 @@ private const val miniPlayerWidthPercent = 0.5f
 fun MiniPlayerCompose(
     modifier: Modifier = Modifier,
     state: MiniPlayerState = rememberMiniPlayerState(),
-    backgroundContent: @Composable () -> Unit,
+    backgroundContent: @Composable () -> Unit = {},
     playerContent: @Composable (BoxScope.() -> Unit),
     detailContent: @Composable (BoxScope.() -> Unit),
 ) {
@@ -110,56 +110,68 @@ fun MiniPlayerCompose(
             else -> offsetY.value // 何もなければ現状のオフセットを使う
         }, finishedListener = { offsetY.value = it })
 
+        // 通常 / 全画面 Modifier
+        val commonModifier = Modifier
+            .offset { IntOffset(x = animOffsetX.value.roundToInt(), y = animOffsetY.value.roundToInt()) } // 位置
+            .background(Color.Black)
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = { isDragging.value = true },
+                    onDragCancel = { setDragCancel() },
+                    onDragEnd = { setDragCancel() },
+                    onDrag = { change, dragAmount ->
+                        change.consumed.downChange = false
+                        val dragY = dragAmount.y
+                        // 0以下だと画面外なので対策
+                        offsetY.value = maxOf(offsetY.value + dragY, 0f)
+                        // 一定まで移動させたらミニプレーヤーへ遷移
+                        if (currentState.value != MiniPlayerStateType.MiniPlayer) {
+                            // パーセント再計算
+                            currentPlayerWidthPercent.value = maxOf(miniPlayerWidthPercent, 1f - (offsetY.value / miniPlayerSlideValue))
+                            // 状態変更
+                            currentState.value = if (currentPlayerWidthPercent.value == miniPlayerWidthPercent) MiniPlayerStateType.MiniPlayer else MiniPlayerStateType.Default
+                            // ちょっとずつY軸もずらすことで真ん中へ
+                            offsetX.value = (boxWidth / 2) * (1f - currentPlayerWidthPercent.value)
+                        } else {
+                            val playerWidth = boxWidth * currentPlayerWidthPercent.value
+                            // ミニプレイヤー時はY軸の操作も可能にする。画面外対策コード
+                            offsetX.value = if (offsetX.value + dragAmount.x in 0f..(boxWidth - playerWidth)) {
+                                offsetX.value + dragAmount.x
+                            } else offsetX.value
+                        }
+                        // 画面外に入れたら終了可能フラグを立てる
+                        val playerWidth = boxWidth * currentPlayerWidthPercent.value
+                        val playerHeight = (playerWidth / 16) * 9
+                        isAvailableEndOfLife.value = offsetY.value >= (boxHeight - playerHeight)
+                    }
+                )
+            }
+            .pointerInput(Unit) {
+                // ミニプレイヤー押したら元に戻すため
+                // 親コンポーネントでもクリックイベントを受け取る独自のやつ
+                detectBackComponentTapGestures {
+                    // フルスクリーンボタンを押した際にも動いてしまうので防ぐ
+                    if (currentState.value != MiniPlayerStateType.Fullscreen) {
+                        state.setState(MiniPlayerStateType.Default)
+                    }
+                }
+            }
+
+
         Box(modifier = Modifier.fillMaxSize()) {
 
             // 後ろに描画するものがあれば
             backgroundContent()
 
             Box(
-                modifier = Modifier
-                    .offset { IntOffset(x = animOffsetX.value.roundToInt(), y = animOffsetY.value.roundToInt()) } // 位置
-                    .background(Color.Black)
-                    .fillMaxWidth(currentPlayerWidthPercent.value)
-                    .aspectRatio(1.7f) // 16:9を維持
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { isDragging.value = true },
-                            onDragCancel = { setDragCancel() },
-                            onDragEnd = { setDragCancel() },
-                            onDrag = { change, dragAmount ->
-                                change.consumed.downChange = false
-                                val dragY = dragAmount.y
-                                // 0以下だと画面外なので対策
-                                offsetY.value = maxOf(offsetY.value + dragY, 0f)
-                                // 一定まで移動させたらミニプレーヤーへ遷移
-                                if (currentState.value != MiniPlayerStateType.MiniPlayer) {
-                                    // パーセント再計算
-                                    currentPlayerWidthPercent.value = maxOf(miniPlayerWidthPercent, 1f - (offsetY.value / miniPlayerSlideValue))
-                                    // 状態変更
-                                    currentState.value = if (currentPlayerWidthPercent.value == miniPlayerWidthPercent) MiniPlayerStateType.MiniPlayer else MiniPlayerStateType.Default
-                                    // ちょっとずつY軸もずらすことで真ん中へ
-                                    offsetX.value = (boxWidth / 2) * (1f - currentPlayerWidthPercent.value)
-                                } else {
-                                    val playerWidth = boxWidth * currentPlayerWidthPercent.value
-                                    // ミニプレイヤー時はY軸の操作も可能にする。画面外対策コード
-                                    offsetX.value = if (offsetX.value + dragAmount.x in 0f..(boxWidth - playerWidth)) {
-                                        offsetX.value + dragAmount.x
-                                    } else offsetX.value
-                                }
-                                // 画面外に入れたら終了可能フラグを立てる
-                                val playerWidth = boxWidth * currentPlayerWidthPercent.value
-                                val playerHeight = (playerWidth / 16) * 9
-                                isAvailableEndOfLife.value = offsetY.value >= (boxHeight - playerHeight)
-                            }
-                        )
-                    }
-                    .pointerInput(Unit) {
-                        // ミニプレイヤー押したら元に戻すため
-                        // 親コンポーネントでもクリックイベントを受け取る独自のやつ
-                        detectBackComponentTapGestures {
-                            state.setState(MiniPlayerStateType.Default)
-                        }
-                    },
+                modifier = if (currentState.value == MiniPlayerStateType.Fullscreen) {
+                    commonModifier
+                        .fillMaxSize()
+                } else {
+                    commonModifier
+                        .fillMaxWidth(currentPlayerWidthPercent.value)
+                        .aspectRatio(1.7f) // 16:9を維持
+                },
                 content = playerContent
             )
 
@@ -260,6 +272,7 @@ class MiniPlayerState(
      * @param miniPlayerStateType [MiniPlayerStateType]
      * */
     fun setState(miniPlayerStateType: MiniPlayerStateType) {
+        println(miniPlayerStateType)
         val isNeedUpdateEvent = currentState.value != miniPlayerStateType
         currentState.value = miniPlayerStateType
         currentPlayerWidthPercent.value = if (miniPlayerStateType == MiniPlayerStateType.MiniPlayer) miniPlayerWidthPercent else 1f

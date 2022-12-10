@@ -27,8 +27,9 @@ import kotlinx.coroutines.flow.map
  * 動画情報やURLを取得する
  *
  * @param context [Context]
+ * @param chocoDroidPlayer プレイヤー。なんか引数に持たせるべきじゃない気がする、、、
  */
-class ChocoDroidContentLoader(private val context: Context) {
+class ChocoDroidContentLoader(private val context: Context, private val chocoDroidPlayer: ChocoDroidPlayer) {
 
     /** コルーチン起動時の引数に指定してね。例外を捕まえ、Flowに流します */
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
@@ -104,6 +105,9 @@ class ChocoDroidContentLoader(private val context: Context) {
                 updateSetting[SettingKeyObject.WATCH_PAGE_JS_PARAM_FIX_JS_CODE] = decryptData.urlParamFixJSCode
             }
 
+            // プレイヤーにセットする
+            setMediaAndPlay(watchPageData, mediaUrlData.value!!)
+
             // 履歴に追加する
             insertDBOrWatchCountIncrement(watchPageData)
         }
@@ -123,8 +127,34 @@ class ChocoDroidContentLoader(private val context: Context) {
             // Composeへデータを流す
             _watchPageData.value = watchPageData
             _mediaUrlData.value = _watchPageData.value?.contentUrlList?.first()
+            // プレイヤーにセットする
+            setMediaAndPlay(watchPageData, mediaUrlData.value!!)
             // 視聴履歴インクリメント
             downloadContentManager.incrementLocalWatchCount(videoId)
+        }
+    }
+
+    /**
+     * プレイヤーに動画をロードする
+     *
+     * @param mediaUrlData [MediaUrlData]
+     */
+    private suspend fun setMediaAndPlay(watchPageData: WatchPageData, mediaUrlData: MediaUrlData) = withContext(Dispatchers.Main) {
+        // プレイヤー作る
+        chocoDroidPlayer.createPlayer()
+        // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
+        // ない場合は映像、音声トラックをそれぞれ渡す
+        if (mediaUrlData.mixTrackUrl != null) {
+            val isDash = mediaUrlData.urlType == MediaUrlData.MediaUrlType.TYPE_DASH
+            chocoDroidPlayer.setMediaSourceUri(mediaUrlData.mixTrackUrl!!, isDash)
+        } else {
+            // 動画URLを読み込む
+            chocoDroidPlayer.setMediaSourceVideoAudioUriSupportVer(mediaUrlData.videoTrackUrl!!, mediaUrlData.audioTrackUrl!!)
+        }
+        // ダブルタップシークを実装した際に、初回ロード中にダブルタップすることで即時再生されることを発見したので、
+        // わからないレベルで進めておく。これで初回のめっちゃ長い読み込みが解決する？
+        if (!watchPageData.isLiveContent) {
+            chocoDroidPlayer.currentPositionMs = 10L
         }
     }
 

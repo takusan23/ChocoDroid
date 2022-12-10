@@ -9,6 +9,9 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toAndroidRect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -16,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import io.github.takusan23.chocodroid.ChocoDroidApplication
 import io.github.takusan23.chocodroid.R
+import io.github.takusan23.chocodroid.player.PlayerState
 import io.github.takusan23.chocodroid.ui.component.*
 import io.github.takusan23.chocodroid.ui.theme.ChocoDroidTheme
 import io.github.takusan23.chocodroid.ui.theme.SurfaceElevations
@@ -23,7 +27,6 @@ import io.github.takusan23.chocodroid.ui.tool.SetActivitySleepComposeApp
 import io.github.takusan23.chocodroid.ui.tool.SetNavigationBarColor
 import io.github.takusan23.chocodroid.ui.tool.SetStatusBarColor
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
-import io.github.takusan23.internet.data.watchpage.MediaUrlData
 import kotlinx.coroutines.launch
 
 /**
@@ -34,10 +37,14 @@ import kotlinx.coroutines.launch
  * Jetpack Composeのスタート地点
  *
  * @param viewModel ViewModel
- * */
+ * @param onPictureInPictureModeChange ピクチャーインピクチャーボタンが押されたら呼び出す
+ */
 @OptIn(ExperimentalMaterialApi::class, ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
+fun ChocoDroidMainScreen(
+    viewModel: MainScreenViewModel,
+    onPictureInPictureModeChange: () -> Unit = {},
+) {
     ChocoDroidTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
 
@@ -50,7 +57,9 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
             // 画面遷移。ナビゲーション
             val navController = rememberNavController()
             // BottomSheetの画面遷移用Flow
-            val bottomSheetInitData = viewModel.bottomSheetNavigation.collectAsState()
+            val bottomSheetInitData = viewModel.bottomSheetNavigation.collectAsStateWithLifecycle()
+            // ピクチャーインピクチャーモードかどうか
+            val isPictureInPictureMode = viewModel.pictureInPictureMode.collectAsStateWithLifecycle()
 
             // 再生中の動画情報
             val watchPageResponseData = contentLoader.watchPageResponseDataFlow.collectAsStateWithLifecycle(initialValue = null)
@@ -134,41 +143,34 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
 
                         // SurfaceView
                         val surfaceView = remember { SurfaceView(context) }
-                        // プレイヤー作成
-                        DisposableEffect(key1 = Unit) {
-                            chocoDroidPlayer.createPlayer()
-                            chocoDroidPlayer.setSurfaceView(surfaceView)
-                            onDispose {
-                                chocoDroidPlayer.clearSurface()
-                            }
-                        }
-
-                        LaunchedEffect(key1 = mediaUrlData.value) {
-                            mediaUrlData.value!!.apply {
-                                // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
-                                // ない場合は映像、音声トラックをそれぞれ渡す
-                                if (mixTrackUrl != null) {
-                                    val isDash = urlType == MediaUrlData.MediaUrlType.TYPE_DASH
-                                    chocoDroidPlayer.setMediaSourceUri(mixTrackUrl!!, isDash)
-                                } else {
-                                    // 動画URLを読み込む
-                                    chocoDroidPlayer.setMediaSourceVideoAudioUriSupportVer(videoTrackUrl!!, audioTrackUrl!!)
+                        LaunchedEffect(key1 = playbackState.value) {
+                            when (playbackState.value) {
+                                PlayerState.Buffering,
+                                PlayerState.Pause,
+                                PlayerState.Play,
+                                -> chocoDroidPlayer.setSurfaceView(surfaceView)
+                                else -> {
+                                    // do nothing
                                 }
                             }
-                            // ダブルタップシークを実装した際に、初回ロード中にダブルタップすることで即時再生されることを発見したので、
-                            // わからないレベルで進めておく。これで初回のめっちゃ長い読み込みが解決する？
-                            if (watchPageResponseData.value?.isLiveContent == false) {
-                                chocoDroidPlayer.currentPositionMs = 10L
-                            }
                         }
+                        DisposableEffect(key1 = Unit) { onDispose { chocoDroidPlayer.clearSurface() } }
 
                         // SurfaceViewとコントローラーセット
                         ExoPlayerComposeUI(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .onGloballyPositioned {
+                                    // 座標変化したらPinPのパラメーターも更新するため ViewModel に渡す
+                                    viewModel.setPictureInPictureRect(it
+                                        .boundsInWindow()
+                                        .toAndroidRect())
+                                },
                             videoData = videoData.value,
                             playbackState = playbackState.value,
                             surfaceView = surfaceView
                         )
+                        // ピクチャーインピクチャー時は表示しないので
                         VideoControlUI(
                             watchPageData = watchPageResponseData.value!!,
                             mediaUrlData = mediaUrlData.value!!,
@@ -176,6 +178,7 @@ fun ChocoDroidMainScreen(viewModel: MainScreenViewModel) {
                             videoData = videoData.value,
                             currentPositionData = currentPositionData.value,
                             miniPlayerState = miniPlayerState,
+                            onPictureInPictureClick = onPictureInPictureModeChange,
                             onBottomSheetNavigate = { route ->
                                 viewModel.navigateBottomSheet(route)
                                 scope.launch { modalBottomSheetState.show() }

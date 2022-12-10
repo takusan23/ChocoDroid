@@ -15,7 +15,7 @@ class ChocoDroidApplication : Application() {
     val chocoDroidPlayer by lazy { ChocoDroidPlayer(this) }
 
     /** 動画読み込むやつ */
-    val chocoDroidContentLoader by lazy { ChocoDroidContentLoader(this) }
+    val chocoDroidContentLoader by lazy { ChocoDroidContentLoader(this, chocoDroidPlayer) }
 
     /**
      * プレイヤー、再生中コンテンツの破棄を行う。

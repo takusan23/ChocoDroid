@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
  * @param watchPageData 視聴ページデータ
  * @param mediaUrlData ストリーミング情報
  * @param onBottomSheetNavigate BottomSheetの表示と画面遷移をしてほしいときに呼ばれる
+ * @param onPictureInPictureClick ピクチャーインピクチャー押したら呼ばれる
  * @param miniPlayerState ミニプレーヤーの状態変更するやつ
  */
 @Composable
@@ -52,6 +53,7 @@ fun VideoControlUI(
     currentPositionData: CurrentPositionData,
     miniPlayerState: MiniPlayerState,
     mediaUrlData: MediaUrlData,
+    onPictureInPictureClick: () -> Unit,
     onBottomSheetNavigate: (BottomSheetInitData) -> Unit,
 ) {
     // ダブルタップのシーク量。変更可能にする
@@ -143,6 +145,7 @@ fun VideoControlUI(
                                     onClick = { onBottomSheetNavigate(QualityChangeScreenInitData()) }
                                 )
                             }
+                            PictureInPictureButton(onClick = onPictureInPictureClick)
                             RepeatButton(
                                 isEnableRepeat = currentSetting.value?.get(SettingKeyObject.PLAYER_REPEAT_MODE) ?: false,
                                 onRepeatChange = { isRepeat ->
@@ -251,4 +254,23 @@ fun QualityChangeButton(
             Text(text = text)
         }
     )
+}
+
+/**
+ * ピクチャーインピクチャー切り替えボタン
+ *
+ * @param modifier [Modifier]
+ * @param onClick 押したら呼ばれる
+ */
+@Composable
+fun PictureInPictureButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(painter = painterResource(id = R.drawable.ic_outline_picture_in_picture24), contentDescription = null)
+    }
 }

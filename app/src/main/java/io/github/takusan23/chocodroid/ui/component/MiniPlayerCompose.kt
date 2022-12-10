@@ -272,7 +272,6 @@ class MiniPlayerState(
      * @param miniPlayerStateType [MiniPlayerStateType]
      * */
     fun setState(miniPlayerStateType: MiniPlayerStateType) {
-        println(miniPlayerStateType)
         val isNeedUpdateEvent = currentState.value != miniPlayerStateType
         currentState.value = miniPlayerStateType
         currentPlayerWidthPercent.value = if (miniPlayerStateType == MiniPlayerStateType.MiniPlayer) miniPlayerWidthPercent else 1f

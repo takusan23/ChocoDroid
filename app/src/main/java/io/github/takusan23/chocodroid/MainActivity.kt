@@ -5,9 +5,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import io.github.takusan23.chocodroid.service.SmoothBackgroundPlayService
 import io.github.takusan23.chocodroid.ui.screen.ChocoDroidMainScreen
+import io.github.takusan23.chocodroid.ui.tool.PictureInPictureTool
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /**
  * 最初に表示する画面。
@@ -17,11 +22,27 @@ import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MainScreenViewModel>()
+    private val pictureInPictureTool by lazy {
+        PictureInPictureTool(
+            activity = this,
+            onPictureInPictureModeChange = { viewModel.setPictureInPictureMode(it) }
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent { ChocoDroidMainScreen(viewModel) }
+        setContent {
+            ChocoDroidMainScreen(
+                viewModel = viewModel,
+                onPictureInPictureModeChange = { pictureInPictureTool.enterPictureInPicture() }
+            )
+        }
+
+        // ピクチャーインピクチャー用
+        viewModel.pictureInPictureRect.filterNotNull().onEach {
+            pictureInPictureTool.setPictureInPictureRect(it)
+        }.launchIn(lifecycleScope)
 
         // 共有から起動した
         // ただし、画面回転した場合は動かさない
@@ -42,19 +63,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** フォアグラウンドへ戻った際は終了 */
+    override fun onStart() {
+        super.onStart()
+        // ピクチャーインピクチャー時に止めるとおかしくなる
+        if (!pictureInPictureTool.isPictureInPicture) {
+            SmoothBackgroundPlayService.stopService(this)
+        }
+    }
+
     /** バックグラウンド再生へ */
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         // 視聴行動中のみ
         if (ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying) {
             SmoothBackgroundPlayService.startService(this)
         }
     }
 
-    /** フォアグラウンドへ戻った際は終了 */
-    override fun onResume() {
-        super.onResume()
-        SmoothBackgroundPlayService.stopService(this)
+    /** ホームボタン押したら */
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        pictureInPictureTool.onUserLeaveHint()
     }
 
     /** ブラウザから起動 */

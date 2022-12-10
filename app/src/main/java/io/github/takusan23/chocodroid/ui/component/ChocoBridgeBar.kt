@@ -27,6 +27,7 @@ import io.github.takusan23.chocodroid.R
  * @param viewModel メイン画面のViewModel
  * @param navHostController メイン画面のNavController
  * */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChocoBridgeBar(
     modifier: Modifier = Modifier,
@@ -36,10 +37,10 @@ fun ChocoBridgeBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp)
-            .clickable(onClick = onClick),
+            .padding(10.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(20.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier

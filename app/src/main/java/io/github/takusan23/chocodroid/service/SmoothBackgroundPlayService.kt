@@ -141,6 +141,7 @@ class SmoothBackgroundPlayService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        updateNotification()
         return START_NOT_STICKY
     }
 

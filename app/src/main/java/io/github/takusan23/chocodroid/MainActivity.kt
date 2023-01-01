@@ -5,14 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import io.github.takusan23.chocodroid.service.SmoothBackgroundPlayService
 import io.github.takusan23.chocodroid.ui.screen.ChocoDroidMainScreen
 import io.github.takusan23.chocodroid.ui.tool.PictureInPictureTool
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * 最初に表示する画面。
@@ -39,14 +40,22 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        // ピクチャーインピクチャー用
-        viewModel.pictureInPictureRect.filterNotNull().onEach {
-            pictureInPictureTool.setPictureInPictureRect(it)
-        }.launchIn(lifecycleScope)
-        // 再生中のみピクチャーインピクチャーを有効にする
-        ChocoDroidApplication.instance.chocoDroidPlayer.playbackStateFlow.onEach {
-            pictureInPictureTool.isEnablePictureInPicture = ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying
-        }.launchIn(lifecycleScope)
+        lifecycleScope.launch {
+            // ピクチャーインピクチャーの値を監視する
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.pictureInPictureRect.filterNotNull().collect {
+                    pictureInPictureTool.setPictureInPictureRect(it)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            // 再生中のみピクチャーインピクチャーを有効にする
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                ChocoDroidApplication.instance.chocoDroidPlayer.playbackStateFlow.collect {
+                    pictureInPictureTool.isEnablePictureInPicture = ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying
+                }
+            }
+        }
 
         // 共有から起動した
         // ただし、画面回転した場合は動かさない

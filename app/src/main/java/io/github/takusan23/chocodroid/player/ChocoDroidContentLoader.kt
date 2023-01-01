@@ -84,11 +84,9 @@ class ChocoDroidContentLoader(private val context: Context, private val chocoDro
             // HTML解析とURL（復号処理含めて）取得
             val (watchPageData, decryptData) = WatchPageHTML.getWatchPage(videoIdOrHttpUrl, baseJsURL, funcNameData, funcInvokeDataList, urlParamsFixJSCode)
 
-            /**
-             * View（Compose）にデータを渡す
-             * 動画の場合はURLのパラメーターを修正する
-             * ここらへんどうにかしたい
-             */
+            // View（Compose）にデータを渡す
+            // 動画の場合はURLのパラメーターを修正する
+            // ここらへんどうにかしたい
             _watchPageData.value = if (!watchPageData.isLiveContent) {
                 UnlockMagic.fixUrlParam(watchPageData, decryptData.urlParamFixJSCode) { evalCode ->
                     withContext(Dispatchers.Main) { WebViewJavaScriptEngine.evalJavaScriptFromWebView(context, evalCode).replace("\"", "") }
@@ -142,15 +140,7 @@ class ChocoDroidContentLoader(private val context: Context, private val chocoDro
     private suspend fun setMediaAndPlay(watchPageData: WatchPageData, mediaUrlData: MediaUrlData) = withContext(Dispatchers.Main) {
         // プレイヤー作る
         chocoDroidPlayer.createPlayer()
-        // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
-        // ない場合は映像、音声トラックをそれぞれ渡す
-        if (mediaUrlData.mixTrackUrl != null) {
-            val isDash = mediaUrlData.urlType == MediaUrlData.MediaUrlType.TYPE_DASH
-            chocoDroidPlayer.setMediaSourceUri(mediaUrlData.mixTrackUrl!!, isDash)
-        } else {
-            // 動画URLを読み込む
-            chocoDroidPlayer.setMediaSourceVideoAudioUriSupportVer(mediaUrlData.videoTrackUrl!!, mediaUrlData.audioTrackUrl!!)
-        }
+        preparePlayer(mediaUrlData)
         // ダブルタップシークを実装した際に、初回ロード中にダブルタップすることで即時再生されることを発見したので、
         // わからないレベルで進めておく。これで初回のめっちゃ長い読み込みが解決する？
         if (!watchPageData.isLiveContent) {
@@ -170,9 +160,36 @@ class ChocoDroidContentLoader(private val context: Context, private val chocoDro
             // 前回の画質。ない場合は 360p
             val prevQuality = quality ?: context.dataStore.data.map { it[SettingKeyObject.PLAYER_QUALITY_VIDEO] }.first() ?: "360p"
             // 画質を選んでURLをFlowで流す
-            _mediaUrlData.value = _watchPageData.value?.getMediaUrlDataFromQuality(prevQuality)
+            val mediaUrlData = _watchPageData.value?.getMediaUrlDataFromQuality(prevQuality) ?: return@launch
+            _mediaUrlData.value = mediaUrlData
+            withContext(Dispatchers.Main) { preparePlayer(mediaUrlData) }
             // 保存する
             context.dataStore.edit { it[SettingKeyObject.PLAYER_QUALITY_VIDEO] = prevQuality }
+        }
+    }
+
+    /**
+     * プレイヤー終了。データクラス保持Flowにnullを入れます
+     * */
+    fun destroy() {
+        scope.coroutineContext.cancelChildren()
+        _watchPageData.value = null
+        _mediaUrlData.value = null
+    }
+
+    /**
+     * 動画をExoPlayerへ渡してロードする
+     *
+     * @param mediaUrlData [MediaUrlData]
+     */
+    private fun preparePlayer(mediaUrlData: MediaUrlData) {
+        // Hls/DashのManifestがあればそれを読み込む（生放送、一部の動画）。
+        // ない場合は映像、音声トラックをそれぞれ渡す
+        if (mediaUrlData.mixTrackUrl != null) {
+            val isDash = mediaUrlData.urlType == MediaUrlData.MediaUrlType.TYPE_DASH
+            chocoDroidPlayer.setMediaSourceUri(mediaUrlData.mixTrackUrl!!, isDash)
+        } else {
+            chocoDroidPlayer.setMediaSourceVideoAudioUriSupportVer(mediaUrlData.videoTrackUrl!!, mediaUrlData.audioTrackUrl!!)
         }
     }
 
@@ -201,15 +218,6 @@ class ChocoDroidContentLoader(private val context: Context, private val chocoDro
             )
             historyDB.historyDao().insert(entity)
         }
-    }
-
-    /**
-     * プレイヤー終了。データクラス保持Flowにnullを入れます
-     * */
-    fun destroy() {
-        scope.coroutineContext.cancelChildren()
-        _watchPageData.value = null
-        _mediaUrlData.value = null
     }
 
 }

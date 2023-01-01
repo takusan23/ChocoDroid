@@ -23,16 +23,18 @@ class PictureInPictureTool(
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
     /** Android Tiramisu 以上 */
-    private val isAndroidSAndLater: Boolean
-        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    private val isAndroidTiramisuAndLater: Boolean
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
     /** パラメーター */
     private val params by lazy {
         if (isAndroidOAndLater) {
             PictureInPictureParams.Builder().apply {
                 setAspectRatio(Rational(16, 9))
-                if (isAndroidSAndLater) {
+                if (isAndroidTiramisuAndLater) {
                     setAutoEnterEnabled(true)
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     setSeamlessResizeEnabled(true)
                 }
             }
@@ -45,6 +47,19 @@ class PictureInPictureTool(
             activity.isInPictureInPictureMode
         } else false
 
+    /** ピクチャーインピクチャー機能を有効にするか */
+    var isEnablePictureInPicture: Boolean = false
+        set(value) {
+            // Android 13 以降はここで制御できる
+            if (isAndroidTiramisuAndLater) {
+                activity.setPictureInPictureParams(params!!.apply {
+                    setAutoEnterEnabled(value)
+                }.build())
+            }
+            field = value
+        }
+
+
     init {
         if (isAndroidOAndLater) {
             activity.setPictureInPictureParams(params!!.build())
@@ -56,7 +71,7 @@ class PictureInPictureTool(
 
     /** ピクチャーインピクチャーに切り替える */
     fun enterPictureInPicture() {
-        if (isAndroidOAndLater) {
+        if (isAndroidOAndLater && isEnablePictureInPicture) {
             activity.enterPictureInPictureMode(params!!.build())
         }
     }
@@ -71,7 +86,7 @@ class PictureInPictureTool(
 
     /** [AppCompatActivity.onUserLeaveHint]の際に呼び出す */
     fun onUserLeaveHint() {
-        if (isAndroidOAndLater && !isAndroidSAndLater) {
+        if (isAndroidOAndLater && !isAndroidTiramisuAndLater) {
             enterPictureInPicture()
         }
     }

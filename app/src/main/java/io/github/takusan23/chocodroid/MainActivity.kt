@@ -43,6 +43,10 @@ class MainActivity : ComponentActivity() {
         viewModel.pictureInPictureRect.filterNotNull().onEach {
             pictureInPictureTool.setPictureInPictureRect(it)
         }.launchIn(lifecycleScope)
+        // 再生中のみピクチャーインピクチャーを有効にする
+        ChocoDroidApplication.instance.chocoDroidPlayer.playbackStateFlow.onEach {
+            pictureInPictureTool.isEnablePictureInPicture = ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying
+        }.launchIn(lifecycleScope)
 
         // 共有から起動した
         // ただし、画面回転した場合は動かさない
@@ -55,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    /** アプリ起動中に他アプリから共有で開いた場合に呼ばれる。launchMode=singleTop */
+    /** アプリ起動中に他アプリから共有で開いた場合に呼ばれる。launchMode=singleTask */
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent != null) {
@@ -64,17 +68,17 @@ class MainActivity : ComponentActivity() {
     }
 
     /** フォアグラウンドへ戻った際は終了 */
-    override fun onStart() {
-        super.onStart()
-        // ピクチャーインピクチャー時に止めるとおかしくなる
+    override fun onResume() {
+        super.onResume()
+        // ピクチャーインピクチャーに入っても呼ばれる？らしいのでやめる
         if (!pictureInPictureTool.isPictureInPicture) {
             SmoothBackgroundPlayService.stopService(this)
         }
     }
 
     /** バックグラウンド再生へ */
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         // 視聴行動中のみ
         if (ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying) {
             SmoothBackgroundPlayService.startService(this)

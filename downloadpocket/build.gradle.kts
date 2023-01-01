@@ -9,10 +9,13 @@ java {
 }
 
 dependencies {
+    // Gradle の Version Catalog 機能を使い、ライブラリのバージョンを一元管理しています。
+    // libs.version.toml を見てください。
+
     // OkHttp
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation(libs.okhttp)
     // kotlinx coroutine
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation(libs.kotlinx.coroutine)
     // test
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }

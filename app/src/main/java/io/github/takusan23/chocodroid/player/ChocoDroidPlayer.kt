@@ -17,29 +17,31 @@ import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.internet.tool.SingletonOkHttpClientTool
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 /**
- * プレイヤー。シングルトンにする
+ * プレイヤー
  *
  * @param context [Context]
  */
-class ChocoDroidPlayer(private val context: Context) {
+class ChocoDroidPlayer(
+    private val context: Context,
+    private val onPlayerState: (PlayerState) -> Unit,
+    private val onCurrentPositionData: (CurrentPositionData) -> Unit,
+    private val onVideoAspectRate: (Float) -> Unit,
+    private val onVideoDuration: (Long) -> Unit,
+) {
 
     /** コルーチンスコープ。終了時にキャンセルするため */
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
-
-    /** ExoPlayer。 [createPlayer]から[destroy]まで有効 */
-    private var exoPlayer: ExoPlayer? = null
 
     private val defaultDataSourceFactory = DefaultDataSource.Factory(context) {
         DefaultDataSource(context, SingletonOkHttpClientTool.USER_AGENT, true).apply {
             addTransferListener(transferListener)
         }
     }
+
     private val transferListener = object : TransferListener {
         override fun onTransferInitializing(source: DataSource, dataSpec: DataSpec, isNetwork: Boolean) {
 
@@ -57,97 +59,87 @@ class ChocoDroidPlayer(private val context: Context) {
 
         }
     }
+
     private val playerListener = object : Player.Listener {
         /** アスペクト比 */
         override fun onVideoSizeChanged(videoSize: VideoSize) {
             super.onVideoSizeChanged(videoSize)
-            _videoDataFlow.value = videoDataFlow.value.copy(aspectRate = videoSize.width / videoSize.height.toFloat())
+            onVideoAspectRate(videoSize.width / videoSize.height.toFloat())
         }
 
         /** プレイヤー状況をUIに渡す */
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
-            _playbackStateFlow.value = when {
-                player.playbackState == Player.STATE_BUFFERING -> PlayerState.Buffering
-                playWhenReady -> PlayerState.Play
-                !playWhenReady -> PlayerState.Pause
-                player.playerError != null -> PlayerState.Error
-                else -> PlayerState.Destroy
-            }
+            onPlayerState(
+                when {
+                    player.playbackState == Player.STATE_BUFFERING -> PlayerState.Buffering
+                    playWhenReady -> PlayerState.Play
+                    !playWhenReady -> PlayerState.Pause
+                    player.playerError != null -> PlayerState.Error
+                    else -> PlayerState.Destroy
+                }
+            )
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
             super.onPlaybackStateChanged(playbackState)
-            _videoDataFlow.value = videoDataFlow.value.copy(durationMs = exoPlayer?.duration?:0)
+            onVideoDuration(exoPlayer.duration)
         }
     }
 
-    // UI層にプレイヤーの状態を返す
-    private val _playbackStateFlow = MutableStateFlow<PlayerState>(PlayerState.Destroy)
-    private val _currentPositionDataFlow = MutableStateFlow(CurrentPositionData(0, 0))
-    private val _videoDataFlow = MutableStateFlow(VideoData(0, 1.7f)) // copy するので適当な初期値を入れる
+    /** ExoPlayer */
+    private val exoPlayer by lazy {
+        ExoPlayer.Builder(context).build().apply {
+            playWhenReady = true
+        }
+    }
 
-    /** 現在の再生状態 */
-    val playbackStateFlow = _playbackStateFlow.asStateFlow()
-
-    /** 現在の再生位置とバッファリング位置 */
-    val currentPositionDataFlow = _currentPositionDataFlow.asStateFlow()
-
-    /** 動画情報 */
-    val videoDataFlow = _videoDataFlow.asStateFlow()
-
-    /** 視聴行動中か。破棄時とエラー時以外 */
-    val isContentPlaying: Boolean
-        get() = playbackStateFlow.value == PlayerState.Play
-                || playbackStateFlow.value == PlayerState.Pause
-                || playbackStateFlow.value == PlayerState.Buffering
+    /** 動画時間 */
+    val durationMs: Long
+        get() = exoPlayer.duration
 
     /** 再生位置 */
     var currentPositionMs: Long
-        get() = exoPlayer?.currentPosition ?: 0
+        get() = exoPlayer.currentPosition
         set(value) {
-            exoPlayer?.seekTo(value)
+            exoPlayer.seekTo(value)
         }
 
     /** 再生 / 一時停止 */
     var playWhenReady: Boolean
-        get() = exoPlayer?.playWhenReady == true
+        get() = exoPlayer.playWhenReady
         set(value) {
-            exoPlayer?.playWhenReady = value
+            exoPlayer.playWhenReady = value
         }
 
     /** リピートモード */
     var repeatMode: Boolean
-        get() = exoPlayer?.repeatMode == Player.REPEAT_MODE_ONE
+        get() = exoPlayer.repeatMode == Player.REPEAT_MODE_ONE
         set(value) {
-            exoPlayer?.repeatMode = if (value) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
+            exoPlayer.repeatMode = if (value) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_ALL
         }
 
-    /** プレイヤーを作成 */
-    fun createPlayer() {
-        // 破棄済みのみ
-        if (playbackStateFlow.value != PlayerState.Destroy) {
-            return
-        }
-        exoPlayer = ExoPlayer.Builder(context).build().apply {
-            addListener(playerListener)
-            playWhenReady = true
-        }
+    init {
+        exoPlayer.addListener(playerListener)
+
         // 再生時間更新用
         scope.launch {
             while (isActive) {
-                _currentPositionDataFlow.value = CurrentPositionData(
-                    currentPositionMs = exoPlayer?.currentPosition ?: 0,
-                    bufferingPositionMs = exoPlayer?.bufferedPosition ?: 0
+                onCurrentPositionData(
+                    CurrentPositionData(
+                        currentPositionMs = exoPlayer.currentPosition,
+                        bufferingPositionMs = exoPlayer.bufferedPosition
+                    )
                 )
                 delay(100)
             }
         }
+
         // 設定値の監視を行う
         // リピートモード / 音量調整 など DataStore の値が変わったら更新する
         context.dataStore.data.onEach { setting ->
             repeatMode = setting[SettingKeyObject.PLAYER_REPEAT_MODE] == true
-            exoPlayer?.volume = setting[SettingKeyObject.PLAYER_VOLUME] ?: 1f
+            exoPlayer.volume = setting[SettingKeyObject.PLAYER_VOLUME] ?: 1f
         }.launchIn(scope)
     }
 
@@ -157,12 +149,12 @@ class ChocoDroidPlayer(private val context: Context) {
      * @param surfaceView [SurfaceView]
      */
     fun setSurfaceView(surfaceView: SurfaceView) {
-        exoPlayer?.setVideoSurfaceView(surfaceView)
+        exoPlayer.setVideoSurfaceView(surfaceView)
     }
 
     /** [SurfaceView]を取り外す */
     fun clearSurface() {
-        exoPlayer?.clearVideoSurface()
+        exoPlayer.clearVideoSurface()
     }
 
     /**
@@ -179,8 +171,8 @@ class ChocoDroidPlayer(private val context: Context) {
                 setMimeType(MimeTypes.APPLICATION_MPD)
             }
         }.build()
-        exoPlayer?.setMediaItem(mediaItem)
-        exoPlayer?.prepare()
+        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
     }
 
     /**
@@ -193,21 +185,20 @@ class ChocoDroidPlayer(private val context: Context) {
      */
     fun setMediaSourceVideoAudioUriSupportVer(videoTrackUri: String, audioTrackUri: String) {
         // シーク前位置
-        val prevPos = exoPlayer?.currentPosition ?: 0
+        val prevPos = exoPlayer.currentPosition
         val videoSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(videoTrackUri))
         val audioSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(audioTrackUri))
         val mergeSource = MergingMediaSource(videoSource, audioSource)
-        exoPlayer?.setMediaSource(mergeSource)
-        exoPlayer?.prepare()
-        exoPlayer?.seekTo(prevPos)
+        exoPlayer.setMediaSource(mergeSource)
+        exoPlayer.prepare()
+        exoPlayer.seekTo(prevPos)
     }
 
-    /** プレイヤー破棄。[exoPlayer]は呼び出してはいけない */
+    /** プレイヤー破棄 */
     fun destroy() {
-        exoPlayer?.clearVideoSurface()
-        exoPlayer?.release()
+        exoPlayer.clearVideoSurface()
+        exoPlayer.release()
         scope.coroutineContext.cancelChildren()
-        _playbackStateFlow.value = PlayerState.Destroy
     }
 
 }

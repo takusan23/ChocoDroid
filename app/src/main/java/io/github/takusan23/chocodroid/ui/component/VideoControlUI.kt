@@ -22,7 +22,7 @@ import androidx.datastore.preferences.core.edit
 import io.github.takusan23.chocodroid.R
 import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
 import io.github.takusan23.chocodroid.player.CurrentPositionData
-import io.github.takusan23.chocodroid.player.VideoData
+import io.github.takusan23.chocodroid.player.VideoMetaData
 import io.github.takusan23.chocodroid.setting.SettingKeyObject
 import io.github.takusan23.chocodroid.setting.dataStore
 import io.github.takusan23.chocodroid.tool.TimeFormatTool
@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
  * 動画プレイヤーのUI。重ねる
  *
  * @param chocoDroidPlayer Applicationにあるコントローラー
- * @param videoData 動画データ情報
+ * @param videoMetaData 動画データ情報
  * @param currentPositionData プレイヤーの現在位置
  * @param watchPageData 視聴ページデータ
  * @param mediaUrlData ストリーミング情報
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 fun VideoControlUI(
     watchPageData: WatchPageData,
     chocoDroidPlayer: ChocoDroidPlayer,
-    videoData: VideoData,
+    videoMetaData: VideoMetaData,
     currentPositionData: CurrentPositionData,
     miniPlayerState: MiniPlayerState,
     mediaUrlData: MediaUrlData,
@@ -188,15 +188,15 @@ fun VideoControlUI(
                                 modifier = Modifier.padding(5.dp),
                                 text = TimeFormatTool.videoDurationToFormatText(chocoDroidPlayer.currentPositionMs / 1000),
                             )
-                            if (chocoDroidPlayer.currentPositionMs > 0 && videoData.durationMs > 0) {
+                            if (chocoDroidPlayer.currentPositionMs > 0 && videoMetaData.durationMs > 0) {
                                 val isTouchingSlider = remember { mutableStateOf(false) }
                                 val progressFloat = remember { mutableStateOf(0f) }
-                                val progressBuffered = (currentPositionData.bufferingPositionMs / videoData.durationMs.toFloat())
+                                val progressBuffered = (currentPositionData.bufferingPositionMs / videoMetaData.durationMs.toFloat())
 
                                 // 操作中でなければ
                                 LaunchedEffect(key1 = currentPositionData.currentPositionMs) {
                                     if (!isTouchingSlider.value) {
-                                        progressFloat.value = (currentPositionData.currentPositionMs / videoData.durationMs.toFloat())
+                                        progressFloat.value = (currentPositionData.currentPositionMs / videoMetaData.durationMs.toFloat())
                                     }
                                 }
                                 BufferSeekbar(
@@ -211,13 +211,13 @@ fun VideoControlUI(
                                     },
                                     onValueChangeFinished = {
                                         isTouchingSlider.value = false
-                                        chocoDroidPlayer.currentPositionMs = (progressFloat.value * videoData.durationMs).toLong()
+                                        chocoDroidPlayer.currentPositionMs = (progressFloat.value * videoMetaData.durationMs).toLong()
                                     }
                                 )
                             } else Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 modifier = Modifier.padding(5.dp),
-                                text = TimeFormatTool.videoDurationToFormatText(videoData.durationMs / 1000),
+                                text = TimeFormatTool.videoDurationToFormatText(videoMetaData.durationMs / 1000),
                             )
                             // 全画面ボタン
                             FullscreenButton(

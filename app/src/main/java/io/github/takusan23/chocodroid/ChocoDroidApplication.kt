@@ -1,8 +1,6 @@
 package io.github.takusan23.chocodroid
 
 import android.app.Application
-import io.github.takusan23.chocodroid.player.ChocoDroidContentLoader
-import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
 
 /**
  * ChocoDroid の [Application]。アプリ作成時に一度だけ作成され、アプリが行きてる間ずっと生きている。
@@ -12,19 +10,19 @@ import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
 class ChocoDroidApplication : Application() {
 
     /** 動画プレイヤー */
-    val chocoDroidPlayer by lazy { ChocoDroidPlayer(this) }
+    // val chocoDroidPlayer by lazy { ChocoDroidPlayer(this) }
 
     /** 動画読み込むやつ */
-    val chocoDroidContentLoader by lazy { ChocoDroidContentLoader(this, chocoDroidPlayer) }
+    // val chocoDroidContentLoader by lazy { ChocoDroidContentLoader(this, chocoDroidPlayer) }
 
     /**
      * プレイヤー、再生中コンテンツの破棄を行う。
      * もう再生しない場合に呼ぶ。
      */
-    fun playerDestroy() {
-        chocoDroidPlayer.destroy()
-        chocoDroidContentLoader.destroy()
-    }
+    // fun playerDestroy() {
+    //     chocoDroidPlayer.destroy()
+    //     chocoDroidContentLoader.destroy()
+    // }
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +34,7 @@ class ChocoDroidApplication : Application() {
         private var _instance: ChocoDroidApplication? = null
 
         /** [ChocoDroidApplication]を取得する */
-        val instance: ChocoDroidApplication
-            get() = _instance!!
+        //  val instance: ChocoDroidApplication
+        //      get() = _instance!!
     }
 }

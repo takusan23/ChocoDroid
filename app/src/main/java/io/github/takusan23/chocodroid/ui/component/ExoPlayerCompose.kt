@@ -13,20 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.takusan23.chocodroid.player.ChocoDroidPlayer
 import io.github.takusan23.chocodroid.player.PlayerState
-import io.github.takusan23.chocodroid.player.VideoData
+import io.github.takusan23.chocodroid.player.VideoMetaData
 
 
 /**
  * [ChocoDroidPlayer]のUI部分
  *
- * @param videoData 動画データ情報
+ * @param videoMetaData 動画データ情報
  * @param playbackState プレイヤーの状態
  * @param surfaceView SurfaceView
  */
 @Composable
 fun ExoPlayerComposeUI(
     modifier: Modifier = Modifier,
-    videoData: VideoData,
+    videoMetaData: VideoMetaData,
     playbackState: PlayerState,
     surfaceView: SurfaceView,
 ) {
@@ -41,7 +41,7 @@ fun ExoPlayerComposeUI(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxHeight()
-                .aspectRatio(videoData.aspectRate),
+                .aspectRatio(videoMetaData.aspectRate),
             factory = { surfaceView }
         )
         if (playbackState == PlayerState.Buffering) {

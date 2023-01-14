@@ -38,7 +38,7 @@ data class CurrentPositionData(
  * @param durationMs 動画時間
  * @param aspectRate アスペクト比。16:9 なら 1.7F
  */
-data class VideoData(
+data class VideoMetaData(
     val durationMs: Long,
     val aspectRate: Float,
 )

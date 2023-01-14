@@ -8,7 +8,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import io.github.takusan23.chocodroid.service.SmoothBackgroundPlayService
+import io.github.takusan23.chocodroid.service.SmoothChocoPlayerService
 import io.github.takusan23.chocodroid.ui.screen.ChocoDroidMainScreen
 import io.github.takusan23.chocodroid.ui.tool.PictureInPictureTool
 import io.github.takusan23.chocodroid.viewmodel.MainScreenViewModel
@@ -30,14 +30,23 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    /** プレイヤーサービスとバインドする */
+    private var smoothChocoPlayerService: SmoothChocoPlayerService? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             ChocoDroidMainScreen(
                 viewModel = viewModel,
-                onPictureInPictureModeChange = { pictureInPictureTool.enterPictureInPicture() }
+                pictureInPictureTool = pictureInPictureTool,
             )
+        }
+
+        lifecycleScope.launch {
+            // サービスとバインドする
+            SmoothChocoPlayerService.bindSmoothChocoPlayer(this@MainActivity, this@MainActivity)
+                .collect { smoothChocoPlayerService = it }
         }
 
         lifecycleScope.launch {
@@ -45,14 +54,6 @@ class MainActivity : ComponentActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.pictureInPictureRect.filterNotNull().collect {
                     pictureInPictureTool.setPictureInPictureRect(it)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            // 再生中のみピクチャーインピクチャーを有効にする
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                ChocoDroidApplication.instance.chocoDroidPlayer.playbackStateFlow.collect {
-                    pictureInPictureTool.isEnablePictureInPicture = ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying
                 }
             }
         }
@@ -76,24 +77,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** フォアグラウンドへ戻った際は終了 */
-    override fun onResume() {
-        super.onResume()
-        // ピクチャーインピクチャーに入っても呼ばれる？らしいのでやめる
-        if (!pictureInPictureTool.isPictureInPicture) {
-            SmoothBackgroundPlayService.stopService(this)
-        }
-    }
-
-    /** バックグラウンド再生へ */
-    override fun onPause() {
-        super.onPause()
-        // 視聴行動中のみ
-        if (ChocoDroidApplication.instance.chocoDroidPlayer.isContentPlaying) {
-            SmoothBackgroundPlayService.startService(this)
-        }
-    }
-
     /** ホームボタン押したら */
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
@@ -103,7 +86,7 @@ class MainActivity : ComponentActivity() {
     /** ブラウザから起動 */
     private fun launchFromBrowser() {
         val url = intent.data?.toString() ?: return
-        ChocoDroidApplication.instance.chocoDroidContentLoader.loadWatchPage(url)
+        smoothChocoPlayerService?.loadWatchPage(url)
     }
 
     /** 共有から起動したとき */
@@ -112,8 +95,7 @@ class MainActivity : ComponentActivity() {
             val extras = intent.extras
             // URLを開く
             val url = extras?.getCharSequence(Intent.EXTRA_TEXT) ?: return
-            ChocoDroidApplication.instance.chocoDroidContentLoader.loadWatchPage(url.toString())
+            smoothChocoPlayerService?.loadWatchPage(url.toString())
         }
     }
-
 }

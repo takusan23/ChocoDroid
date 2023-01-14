@@ -51,11 +51,11 @@
         </activity>
 
         <service
-            android:name=".service.ContentDownloadService"
+            android:name=".service.SmoothChocoPlayerService"
             android:exported="false" />
 
         <service
-            android:name=".service.SmoothBackgroundPlayService"
+            android:name=".service.ContentDownloadService"
             android:exported="false" />
 
         <receiver
